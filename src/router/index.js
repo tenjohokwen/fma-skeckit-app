@@ -6,6 +6,7 @@ import {
   createWebHashHistory,
 } from 'vue-router'
 import routes from './routes'
+import { useAuthStore } from 'src/stores/authStore'
 
 /*
  * If not building with SSR mode, you can
@@ -31,6 +32,54 @@ export default defineRouter(function (/* { store, ssrContext } */) {
     // quasar.conf.js -> build -> vueRouterMode
     // quasar.conf.js -> build -> publicPath
     history: createHistory(process.env.VUE_ROUTER_BASE),
+  })
+
+  /**
+   * Global navigation guard
+   * Checks authentication status and permissions before each route
+   */
+  Router.beforeEach((to, _from, next) => {
+    const authStore = useAuthStore()
+
+    // Check if route requires authentication
+    if (to.meta.requiresAuth) {
+      if (!authStore.isAuthenticated) {
+        // Not authenticated, redirect to login
+        next({
+          name: 'login',
+          query: { redirect: to.fullPath }
+        })
+        return
+      }
+
+      // Check if token is still valid
+      if (!authStore.isTokenValid) {
+        // Token expired, clear auth and redirect to login
+        authStore.clearAuth()
+        next({
+          name: 'login',
+          query: { redirect: to.fullPath, expired: 'true' }
+        })
+        return
+      }
+
+      // Check if route requires admin role
+      if (to.meta.requiresAdmin && !authStore.isAdmin) {
+        // Not admin, redirect to dashboard
+        next({ name: 'dashboard' })
+        return
+      }
+    }
+
+    // Check if route should be hidden for authenticated users
+    if (to.meta.hideForAuth && authStore.isAuthenticated) {
+      // Already authenticated, redirect to dashboard
+      next({ name: 'dashboard' })
+      return
+    }
+
+    // All checks passed
+    next()
   })
 
   return Router

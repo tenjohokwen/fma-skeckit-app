@@ -1,0 +1,198 @@
+/**
+ * Design System - Constitution Color Palette
+ * File Management Application
+ */
+
+:root {
+  /* Primary Colors */
+  --color-primary-blue: #2563eb;
+  --color-white: #ffffff;
+  --color-dark-text: #1e293b;
+  --color-light-gray: #f1f5f9;
+
+  /* Interactive Colors */
+  --color-hover-blue: #1d4ed8;
+
+  /* Status Colors */
+  --color-success-green: #10b981;
+  --color-warning-amber: #f59e0b;
+  --color-error-red: #ef4444;
+
+  /* Typography */
+  --font-primary: Inter, system-ui, -apple-system, sans-serif;
+  --font-alternative: Roboto, Helvetica, Arial, sans-serif;
+
+  /* Font Sizes */
+  --font-size-h1: 28px;
+  --font-size-h2: 24px;
+  --font-size-h3: 20px;
+  --font-size-body-large: 16px;
+  --font-size-body-medium: 14px;
+  --font-size-body-small: 12px;
+
+  /* Font Weights */
+  --font-weight-h1: 700;
+  --font-weight-h2: 600;
+  --font-weight-h3: 600;
+  --font-weight-body: 400;
+
+  /* Line Heights */
+  --line-height-heading: 1.2;
+  --line-height-body: 1.5;
+
+  /* Layout */
+  --max-width: 1200px;
+  --gutter: 24px;
+  --header-height: 80px;
+  --footer-height: 60px;
+
+  /* Spacing Scale */
+  --spacing-xs: 4px;
+  --spacing-sm: 8px;
+  --spacing-md: 16px;
+  --spacing-lg: 24px;
+  --spacing-xl: 32px;
+  --spacing-2xl: 48px;
+  --spacing-3xl: 64px;
+}
+
+/* Typography Styles */
+h1 {
+  font-size: var(--font-size-h1);
+  font-weight: var(--font-weight-h1);
+  line-height: var(--line-height-heading);
+  color: var(--color-dark-text);
+}
+
+h2 {
+  font-size: var(--font-size-h2);
+  font-weight: var(--font-weight-h2);
+  line-height: var(--line-height-heading);
+  color: var(--color-dark-text);
+}
+
+h3 {
+  font-size: var(--font-size-h3);
+  font-weight: var(--font-weight-h3);
+  line-height: var(--line-height-heading);
+  color: var(--color-dark-text);
+}
+
+body {
+  font-family: var(--font-primary);
+  font-size: var(--font-size-body-large);
+  font-weight: var(--font-weight-body);
+  line-height: var(--line-height-body);
+  color: var(--color-dark-text);
+}
+
+/* Utility Classes */
+.text-primary {
+  color: var(--color-primary-blue);
+}
+
+.text-dark {
+  color: var(--color-dark-text);
+}
+
+.text-success {
+  color: var(--color-success-green);
+}
+
+.text-warning {
+  color: var(--color-warning-amber);
+}
+
+.text-error {
+  color: var(--color-error-red);
+}
+
+.bg-white {
+  background-color: var(--color-white);
+}
+
+.bg-light-gray {
+  background-color: var(--color-light-gray);
+}
+
+.bg-primary {
+  background-color: var(--color-primary-blue);
+}
+
+/* Button Styles */
+.btn-primary {
+  background-color: var(--color-primary-blue);
+  color: var(--color-white);
+  padding: 12px 24px;
+  border-radius: 6px;
+  font-weight: 500;
+  border: none;
+  cursor: pointer;
+  transition: background-color 0.2s;
+}
+
+.btn-primary:hover {
+  background-color: var(--color-hover-blue);
+}
+
+.btn-secondary {
+  background-color: var(--color-white);
+  color: var(--color-primary-blue);
+  padding: 12px 24px;
+  border-radius: 6px;
+  font-weight: 500;
+  border: 1px solid var(--color-primary-blue);
+  cursor: pointer;
+  transition: background-color 0.2s;
+}
+
+.btn-secondary:hover {
+  background-color: var(--color-light-gray);
+}
+
+/* Layout Styles */
+.container {
+  max-width: var(--max-width);
+  margin: 0 auto;
+  padding: 0 var(--gutter);
+}
+
+.header {
+  height: var(--header-height);
+  background-color: var(--color-primary-blue);
+  color: var(--color-white);
+}
+
+.footer {
+  height: var(--footer-height);
+  background-color: var(--color-light-gray);
+  color: var(--color-dark-text);
+}
+
+/* Form Styles */
+.form-section {
+  background-color: var(--color-white);
+  border-radius: 8px;
+  padding: var(--spacing-md);
+  box-shadow: 0 1px 3px 0 rgba(0, 0, 0, 0.1);
+}
+
+.form-input {
+  background-color: var(--color-white);
+  border: 1px solid var(--color-light-gray);
+  border-radius: 6px;
+  padding: var(--spacing-sm) var(--spacing-md);
+}
+
+/* Responsive Grid */
+.grid-12 {
+  display: grid;
+  grid-template-columns: repeat(12, 1fr);
+  gap: var(--gutter);
+}
+
+@media (max-width: 768px) {
+  .grid-12 {
+    grid-template-columns: repeat(4, 1fr);
+  }
+}

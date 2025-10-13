@@ -1,0 +1,192 @@
+{
+  "common": {
+    "appName": "File Management System",
+    "loading": "Loading...",
+    "save": "Save",
+    "cancel": "Cancel",
+    "delete": "Delete",
+    "edit": "Edit",
+    "search": "Search",
+    "back": "Back",
+    "next": "Next",
+    "submit": "Submit",
+    "close": "Close",
+    "confirm": "Confirm",
+    "yes": "Yes",
+    "no": "No",
+    "error": "Error",
+    "success": "Success",
+    "required": "Required",
+    "optional": "Optional"
+  },
+  "auth": {
+    "signup": {
+      "title": "Create Account",
+      "subtitle": "Sign up to get started",
+      "email": "Email Address",
+      "password": "Password",
+      "confirmPassword": "Confirm Password",
+      "submit": "Create Account",
+      "success": "Account created successfully. Please check your email for verification.",
+      "alreadyHaveAccount": "Already have an account?",
+      "login": "Log in"
+    },
+    "verify": {
+      "title": "Verify Email",
+      "verifying": "Verifying your email...",
+      "success": "Email verified successfully. You can now log in.",
+      "error": "Verification failed. The link may be invalid or expired.",
+      "resend": "Resend Verification Email",
+      "resendSuccess": "Verification email sent. Please check your inbox."
+    },
+    "login": {
+      "title": "Welcome Back",
+      "subtitle": "Log in to your account",
+      "email": "Email Address",
+      "password": "Password",
+      "submit": "Log In",
+      "success": "Login successful",
+      "forgotPassword": "Forgot password?",
+      "noAccount": "Don't have an account?",
+      "signup": "Sign up"
+    },
+    "passwordReset": {
+      "title": "Reset Password",
+      "subtitle": "Enter your email to receive a reset code",
+      "email": "Email Address",
+      "sendOtp": "Send Reset Code",
+      "otpSent": "Password reset code sent to your email. Valid for 2 hours.",
+      "enterOtp": "Enter 6-digit code",
+      "otp": "Reset Code",
+      "verifyOtp": "Verify Code",
+      "verified": "Code verified. You can now reset your password.",
+      "newPassword": "New Password",
+      "confirmPassword": "Confirm New Password",
+      "resetPassword": "Reset Password",
+      "success": "Password reset successfully. You can now log in with your new password.",
+      "backToLogin": "Back to login"
+    },
+    "logout": "Log Out"
+  },
+  "validation": {
+    "required": "This field is required",
+    "email": {
+      "invalid": "Please enter a valid email address",
+      "required": "Email is required"
+    },
+    "password": {
+      "required": "Password is required",
+      "minLength": "Password must be at least 8 characters",
+      "weak": "Password must contain uppercase, lowercase, number, and special character",
+      "mismatch": "Passwords do not match"
+    },
+    "otp": {
+      "invalid": "Please enter a valid 6-digit code",
+      "expired": "Reset code has expired",
+      "incorrect": "Incorrect reset code"
+    }
+  },
+  "error": {
+    "network": "Network error. Please check your connection.",
+    "server": "Server error. Please try again later.",
+    "unauthorized": "Unauthorized. Please log in again.",
+    "forbidden": "You don't have permission to perform this action.",
+    "notFound": "Resource not found.",
+    "conflict": "This resource already exists.",
+    "validation": "Please check your input and try again.",
+    "unknown": "An unknown error occurred.",
+    "user": {
+      "notFound": "User not found",
+      "alreadyExists": "A user with this email already exists",
+      "notVerified": "Please verify your email before logging in",
+      "alreadyVerified": "Your email is already verified"
+    },
+    "login": {
+      "invalid": "Invalid email or password"
+    },
+    "token": {
+      "missing": "Authentication token is missing",
+      "invalid": "Invalid authentication token",
+      "expired": "Your session has expired. Please log in again"
+    }
+  },
+  "metadata": {
+    "search": {
+      "title": "Search Cases",
+      "placeholder": "Search by name or case ID",
+      "noResults": "No cases found",
+      "results": "{count} case(s) found"
+    },
+    "case": {
+      "id": "Case ID",
+      "name": "Case Name",
+      "client": "Client Name",
+      "assignedTo": "Assigned To",
+      "type": "Case Type",
+      "status": "Status",
+      "notes": "Notes",
+      "createdBy": "Created By",
+      "createdAt": "Created At",
+      "assignedAt": "Assigned At",
+      "lastUpdatedBy": "Last Updated By",
+      "lastUpdatedAt": "Last Updated At"
+    },
+    "edit": {
+      "title": "Edit Case",
+      "save": "Save Changes",
+      "success": "Case updated successfully",
+      "conflict": "This case was updated by someone else. Please refresh and try again."
+    },
+    "create": {
+      "title": "Create Case",
+      "submit": "Create Case",
+      "success": "Case created successfully"
+    }
+  },
+  "files": {
+    "upload": {
+      "title": "Upload File",
+      "selectFile": "Select File",
+      "uploading": "Uploading...",
+      "success": "File uploaded successfully",
+      "maxSize": "Maximum file size is 10MB",
+      "conflict": {
+        "title": "File Already Exists",
+        "message": "A file with this name already exists. What would you like to do?",
+        "overwrite": "Overwrite existing file",
+        "rename": "Rename new file",
+        "cancel": "Cancel upload"
+      }
+    },
+    "folder": {
+      "create": "Create Folder",
+      "client": "Create Client Folder",
+      "case": "Create Case Folder",
+      "success": "Folder created successfully"
+    },
+    "download": "Download",
+    "delete": {
+      "title": "Delete File",
+      "confirm": "Are you sure you want to delete this file? This action cannot be undone.",
+      "success": "File deleted successfully"
+    },
+    "navigate": {
+      "breadcrumb": "Navigation",
+      "files": "Files",
+      "folders": "Folders"
+    }
+  },
+  "navigation": {
+    "home": "Home",
+    "search": "Search",
+    "cases": "Cases",
+    "files": "Files",
+    "admin": "Admin",
+    "profile": "Profile"
+  },
+  "language": {
+    "switch": "Switch Language",
+    "en": "English",
+    "fr": "Français"
+  }
+}

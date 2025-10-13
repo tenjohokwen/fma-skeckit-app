@@ -31,3 +31,27 @@ yarn-error.log*
 
 # local .env files
 .env.local*
+.env
+
+# Test coverage
+coverage/
+.nyc_output/
+
+# Temporary files
+*.tmp
+*.swp
+*~
+
+# OS files
+.DS_Store
+Thumbs.db
+
+# IDE
+.vscode/
+*.code-workspace
+
+# Logs
+*.log*
+
+# Build artifacts
+*.tgz

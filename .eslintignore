@@ -1,0 +1,31 @@
+# Dependencies
+node_modules/
+
+# Build outputs
+dist/
+build/
+.quasar/
+
+# Test coverage
+coverage/
+.nyc_output/
+
+# Configuration files
+*.config.js
+*.config.*.js
+
+# Minified files
+*.min.js
+
+# Third-party
+/public/
+/src-cordova/
+/src-capacitor/
+/src-electron/
+/src-pwa/
+/src-ssr/
+/src-bex/
+
+# Temporary
+*.tmp
+.cache/

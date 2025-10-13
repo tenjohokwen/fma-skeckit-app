@@ -1,0 +1,192 @@
+{
+  "common": {
+    "appName": "Système de Gestion de Fichiers",
+    "loading": "Chargement...",
+    "save": "Enregistrer",
+    "cancel": "Annuler",
+    "delete": "Supprimer",
+    "edit": "Modifier",
+    "search": "Rechercher",
+    "back": "Retour",
+    "next": "Suivant",
+    "submit": "Soumettre",
+    "close": "Fermer",
+    "confirm": "Confirmer",
+    "yes": "Oui",
+    "no": "Non",
+    "error": "Erreur",
+    "success": "Succès",
+    "required": "Requis",
+    "optional": "Optionnel"
+  },
+  "auth": {
+    "signup": {
+      "title": "Créer un Compte",
+      "subtitle": "Inscrivez-vous pour commencer",
+      "email": "Adresse Email",
+      "password": "Mot de Passe",
+      "confirmPassword": "Confirmer le Mot de Passe",
+      "submit": "Créer un Compte",
+      "success": "Compte créé avec succès. Veuillez vérifier votre email pour la vérification.",
+      "alreadyHaveAccount": "Vous avez déjà un compte?",
+      "login": "Se connecter"
+    },
+    "verify": {
+      "title": "Vérifier l'Email",
+      "verifying": "Vérification de votre email...",
+      "success": "Email vérifié avec succès. Vous pouvez maintenant vous connecter.",
+      "error": "Échec de la vérification. Le lien peut être invalide ou expiré.",
+      "resend": "Renvoyer l'Email de Vérification",
+      "resendSuccess": "Email de vérification envoyé. Veuillez vérifier votre boîte de réception."
+    },
+    "login": {
+      "title": "Bienvenue",
+      "subtitle": "Connectez-vous à votre compte",
+      "email": "Adresse Email",
+      "password": "Mot de Passe",
+      "submit": "Se Connecter",
+      "success": "Connexion réussie",
+      "forgotPassword": "Mot de passe oublié?",
+      "noAccount": "Vous n'avez pas de compte?",
+      "signup": "S'inscrire"
+    },
+    "passwordReset": {
+      "title": "Réinitialiser le Mot de Passe",
+      "subtitle": "Entrez votre email pour recevoir un code de réinitialisation",
+      "email": "Adresse Email",
+      "sendOtp": "Envoyer le Code",
+      "otpSent": "Code de réinitialisation envoyé à votre email. Valide pendant 2 heures.",
+      "enterOtp": "Entrez le code à 6 chiffres",
+      "otp": "Code de Réinitialisation",
+      "verifyOtp": "Vérifier le Code",
+      "verified": "Code vérifié. Vous pouvez maintenant réinitialiser votre mot de passe.",
+      "newPassword": "Nouveau Mot de Passe",
+      "confirmPassword": "Confirmer le Nouveau Mot de Passe",
+      "resetPassword": "Réinitialiser le Mot de Passe",
+      "success": "Mot de passe réinitialisé avec succès. Vous pouvez maintenant vous connecter avec votre nouveau mot de passe.",
+      "backToLogin": "Retour à la connexion"
+    },
+    "logout": "Se Déconnecter"
+  },
+  "validation": {
+    "required": "Ce champ est requis",
+    "email": {
+      "invalid": "Veuillez entrer une adresse email valide",
+      "required": "L'email est requis"
+    },
+    "password": {
+      "required": "Le mot de passe est requis",
+      "minLength": "Le mot de passe doit contenir au moins 8 caractères",
+      "weak": "Le mot de passe doit contenir des majuscules, minuscules, chiffres et caractères spéciaux",
+      "mismatch": "Les mots de passe ne correspondent pas"
+    },
+    "otp": {
+      "invalid": "Veuillez entrer un code à 6 chiffres valide",
+      "expired": "Le code de réinitialisation a expiré",
+      "incorrect": "Code de réinitialisation incorrect"
+    }
+  },
+  "error": {
+    "network": "Erreur réseau. Veuillez vérifier votre connexion.",
+    "server": "Erreur serveur. Veuillez réessayer plus tard.",
+    "unauthorized": "Non autorisé. Veuillez vous reconnecter.",
+    "forbidden": "Vous n'avez pas la permission d'effectuer cette action.",
+    "notFound": "Ressource non trouvée.",
+    "conflict": "Cette ressource existe déjà.",
+    "validation": "Veuillez vérifier votre saisie et réessayer.",
+    "unknown": "Une erreur inconnue s'est produite.",
+    "user": {
+      "notFound": "Utilisateur non trouvé",
+      "alreadyExists": "Un utilisateur avec cet email existe déjà",
+      "notVerified": "Veuillez vérifier votre email avant de vous connecter",
+      "alreadyVerified": "Votre email est déjà vérifié"
+    },
+    "login": {
+      "invalid": "Email ou mot de passe invalide"
+    },
+    "token": {
+      "missing": "Jeton d'authentification manquant",
+      "invalid": "Jeton d'authentification invalide",
+      "expired": "Votre session a expiré. Veuillez vous reconnecter"
+    }
+  },
+  "metadata": {
+    "search": {
+      "title": "Rechercher des Dossiers",
+      "placeholder": "Rechercher par nom ou ID de dossier",
+      "noResults": "Aucun dossier trouvé",
+      "results": "{count} dossier(s) trouvé(s)"
+    },
+    "case": {
+      "id": "ID du Dossier",
+      "name": "Nom du Dossier",
+      "client": "Nom du Client",
+      "assignedTo": "Assigné à",
+      "type": "Type de Dossier",
+      "status": "Statut",
+      "notes": "Notes",
+      "createdBy": "Créé par",
+      "createdAt": "Créé le",
+      "assignedAt": "Assigné le",
+      "lastUpdatedBy": "Dernière mise à jour par",
+      "lastUpdatedAt": "Dernière mise à jour le"
+    },
+    "edit": {
+      "title": "Modifier le Dossier",
+      "save": "Enregistrer les Modifications",
+      "success": "Dossier mis à jour avec succès",
+      "conflict": "Ce dossier a été modifié par quelqu'un d'autre. Veuillez actualiser et réessayer."
+    },
+    "create": {
+      "title": "Créer un Dossier",
+      "submit": "Créer le Dossier",
+      "success": "Dossier créé avec succès"
+    }
+  },
+  "files": {
+    "upload": {
+      "title": "Télécharger un Fichier",
+      "selectFile": "Sélectionner un Fichier",
+      "uploading": "Téléchargement...",
+      "success": "Fichier téléchargé avec succès",
+      "maxSize": "La taille maximale du fichier est de 10 Mo",
+      "conflict": {
+        "title": "Le Fichier Existe Déjà",
+        "message": "Un fichier avec ce nom existe déjà. Que souhaitez-vous faire?",
+        "overwrite": "Écraser le fichier existant",
+        "rename": "Renommer le nouveau fichier",
+        "cancel": "Annuler le téléchargement"
+      }
+    },
+    "folder": {
+      "create": "Créer un Dossier",
+      "client": "Créer un Dossier Client",
+      "case": "Créer un Dossier de Cas",
+      "success": "Dossier créé avec succès"
+    },
+    "download": "Télécharger",
+    "delete": {
+      "title": "Supprimer le Fichier",
+      "confirm": "Êtes-vous sûr de vouloir supprimer ce fichier? Cette action ne peut pas être annulée.",
+      "success": "Fichier supprimé avec succès"
+    },
+    "navigate": {
+      "breadcrumb": "Navigation",
+      "files": "Fichiers",
+      "folders": "Dossiers"
+    }
+  },
+  "navigation": {
+    "home": "Accueil",
+    "search": "Rechercher",
+    "cases": "Dossiers",
+    "files": "Fichiers",
+    "admin": "Admin",
+    "profile": "Profil"
+  },
+  "language": {
+    "switch": "Changer de Langue",
+    "en": "English",
+    "fr": "Français"
+  }
+}

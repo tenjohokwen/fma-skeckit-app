@@ -15,7 +15,7 @@ export default defineConfig((ctx) => {
     boot: ['i18n', 'axios'],
 
     // https://v2.quasar.dev/quasar-cli-vite/quasar-config-file#css
-    css: ['app.scss'],
+    css: ['app.scss', 'assets/styles/design-system.css'],
 
     // https://github.com/quasarframework/quasar/tree/dev/extras
     extras: [
@@ -41,7 +41,7 @@ export default defineConfig((ctx) => {
       vueRouterMode: 'hash', // available values: 'hash', 'history'
       // vueRouterBase,
       // vueDevtools,
-      // vueOptionsAPI: false,
+      vueOptionsAPI: false, // Disable Options API per constitution
 
       // rebuildCache: true, // rebuilds Vite/linter/etc cache on startup
 
@@ -98,8 +98,8 @@ export default defineConfig((ctx) => {
     framework: {
       config: {},
 
-      // iconSet: 'material-icons', // Quasar icon set
-      // lang: 'en-US', // Quasar language pack
+      iconSet: 'material-icons', // Quasar icon set per constitution
+      lang: 'en-US', // Quasar language pack
 
       // For special cases outside of where the auto-import strategy can have an impact
       // (like functional components as one of the examples),
@@ -109,7 +109,7 @@ export default defineConfig((ctx) => {
       // directives: [],
 
       // Quasar plugins
-      plugins: [],
+      plugins: ['Notify', 'Loading', 'Dialog'],
     },
 
     // animations: 'all', // --- includes all animations
