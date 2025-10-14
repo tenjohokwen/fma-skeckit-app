@@ -1,6 +1,5 @@
 import { defineConfig } from 'vitest/config'
 import vue from '@vitejs/plugin-vue'
-import { quasar, transformAssetUrls } from '@quasar/app-vite'
 import { fileURLToPath } from 'node:url'
 
 export default defineConfig({
@@ -21,15 +20,11 @@ export default defineConfig({
     }
   },
   plugins: [
-    vue({
-      template: { transformAssetUrls }
-    }),
-    quasar({
-      sassVariables: 'src/css/quasar-variables.sass'
-    })
+    vue()
   ],
   resolve: {
     alias: {
+      src: fileURLToPath(new URL('./src', import.meta.url)),
       '@': fileURLToPath(new URL('./src', import.meta.url))
     }
   }

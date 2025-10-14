@@ -1,16 +1,21 @@
 import { config } from '@vue/test-utils'
-import { Quasar, Notify, Loading, Dialog } from 'quasar'
+import { Quasar } from 'quasar'
+import { vi } from 'vitest'
 
-// Configure Vue Test Utils
-config.global.plugins = [
-  [Quasar, {
-    plugins: { Notify, Loading, Dialog }
-  }]
-]
+// Mock vue-i18n globally
+vi.mock('vue-i18n', () => ({
+  useI18n: () => ({
+    t: (key) => key,
+    locale: { value: 'en' }
+  })
+}))
 
-// Mock Quasar composables
+// Configure Vue Test Utils with Quasar
+config.global.plugins = [[Quasar, {}]]
+
+// Mock Quasar composables and i18n
 config.global.mocks = {
-  $t: (key) => key, // Mock i18n
+  $t: (key) => key,
   $q: {
     notify: vi.fn(),
     loading: {
@@ -18,5 +23,15 @@ config.global.mocks = {
       hide: vi.fn()
     },
     dialog: vi.fn()
+  }
+}
+
+// Provide global stubs for commonly used Quasar components
+config.global.stubs = {
+  QPage: {
+    template: '<div class="q-page"><slot /></div>'
+  },
+  QBanner: {
+    template: '<div class="q-banner"><slot /></div>'
   }
 }

@@ -55,7 +55,7 @@ Main.gs                            # Entry point (doPost)
 
 1. In the Apps Script editor, click **+** next to **Files**
 2. Choose **Script** for .gs files
-3. Copy and paste the content from each file in the `gas/` directory
+3. Copy and paste the content from each file in the `gas/` directory (if a file called DateUtil.gs is in the utils directory then name it like so: "utils/DateUtil.gs" since gas will not let you create the folders)
 4. Save each file
 
 ### Option B: Using clasp (Command Line)
@@ -68,6 +68,10 @@ npm install -g @google/clasp
 
 # Login to Google account
 clasp login
+
+# enable the API
+Go to the URL below and then toggle the link/button to "on"
+https://script.google.com/home/usersettings
 
 # Create .clasp.json in project root
 clasp create --type standalone --title "File Management System - Backend"
@@ -89,14 +93,14 @@ clasp open
 2. Scroll to **Script Properties**
 3. Click **Add script property** for each:
 
-| Property | Example Value | Required |
-|----------|---------------|----------|
-| `SPREADSHEET_ID` | `1abc...xyz` | Yes |
-| `CASES_FOLDER_ID` | `1def...uvw` | Yes |
-| `ENCRYPTION_KEY` | `aBc123...XyZ` (32 chars) | Yes |
-| `TOKEN_TTL_MINUTES` | `15` | Yes |
-| `OTP_TTL_HOURS` | `2` | Yes |
-| `APP_TIMEZONE` | `Africa/Douala` | Yes |
+| Property            | Example Value             | Required |
+| ------------------- | ------------------------- | -------- |
+| `SPREADSHEET_ID`    | `1abc...xyz`              | Yes      |
+| `CASES_FOLDER_ID`   | `1def...uvw`              | Yes      |
+| `ENCRYPTION_KEY`    | `aBc123...XyZ` (32 chars) | Yes      |
+| `TOKEN_TTL_MINUTES` | `15`                      | Yes      |
+| `OTP_TTL_HOURS`     | `2`                       | Yes      |
+| `APP_TIMEZONE`      | `Africa/Douala`           | Yes      |
 
 ### 4.2 Set Properties via Code (Alternative)
 
@@ -104,18 +108,18 @@ Run this function once to set properties programmatically:
 
 ```javascript
 function setupScriptProperties() {
-  const props = PropertiesService.getScriptProperties();
+  const props = PropertiesService.getScriptProperties()
 
   props.setProperties({
-    'SPREADSHEET_ID': 'YOUR_SPREADSHEET_ID',
-    'CASES_FOLDER_ID': 'YOUR_FOLDER_ID',
-    'ENCRYPTION_KEY': 'YOUR_32_CHAR_ENCRYPTION_KEY',
-    'TOKEN_TTL_MINUTES': '15',
-    'OTP_TTL_HOURS': '2',
-    'APP_TIMEZONE': 'Africa/Douala'
-  });
+    SPREADSHEET_ID: 'YOUR_SPREADSHEET_ID',
+    CASES_FOLDER_ID: 'YOUR_FOLDER_ID',
+    ENCRYPTION_KEY: 'YOUR_32_CHAR_ENCRYPTION_KEY',
+    TOKEN_TTL_MINUTES: '15',
+    OTP_TTL_HOURS: '2',
+    APP_TIMEZONE: 'Africa/Douala',
+  })
 
-  console.log('Script properties set successfully');
+  console.log('Script properties set successfully')
 }
 ```
 
@@ -134,6 +138,7 @@ function setupScriptProperties() {
 ### 5.2 Authorize Permissions
 
 On first deployment, you'll be prompted to authorize:
+
 1. Click **Authorize access**
 2. Choose your Google account
 3. Click **Advanced** > **Go to [Project Name] (unsafe)** if prompted
@@ -145,6 +150,7 @@ On first deployment, you'll be prompted to authorize:
 ### 5.3 Copy Web App URL
 
 After deployment, copy the **Web app URL**:
+
 ```
 https://script.google.com/macros/s/AKfycby.../exec
 ```
@@ -162,19 +168,19 @@ function testDeployment() {
   // Test signup endpoint
   const signupRequest = {
     parameter: {
-      action: 'auth.signup'
+      action: 'auth.signup',
     },
     postData: {
       contents: JSON.stringify({
         email: 'test@example.com',
-        password: 'Test123!@#'
+        password: 'Test123!@#',
       }),
-      type: 'application/json'
-    }
-  };
+      type: 'application/json',
+    },
+  }
 
-  const response = doPost(signupRequest);
-  console.log('Signup response:', response.getContent());
+  const response = doPost(signupRequest)
+  console.log('Signup response:', response.getContent())
 }
 ```
 
@@ -198,6 +204,7 @@ curl -X POST \
 ```
 
 Expected response:
+
 ```json
 {
   "status": 201,
@@ -215,6 +222,7 @@ Expected response:
 ### 7.1 Version Management
 
 When updating code:
+
 1. Make changes to files in `gas/` directory
 2. Test changes using Apps Script editor test runner
 3. Create new deployment (recommended) or update existing one
@@ -222,6 +230,7 @@ When updating code:
 ### 7.2 Create New Version
 
 For production changes:
+
 1. Click **Deploy** > **New deployment**
 2. Select previous deployment from **Version**
 3. Increment version description: `Production v2`
@@ -231,6 +240,7 @@ For production changes:
 ### 7.3 Manage Deployments
 
 View and manage deployments:
+
 1. Click **Deploy** > **Manage deployments**
 2. See all active deployments
 3. Archive old deployments
@@ -250,16 +260,17 @@ Add logging to your functions:
 
 ```javascript
 function myFunction() {
-  console.log('Starting function');
-  console.info('Info message');
-  console.warn('Warning message');
-  console.error('Error message');
+  console.log('Starting function')
+  console.info('Info message')
+  console.warn('Warning message')
+  console.error('Error message')
 }
 ```
 
 ### 8.3 Set Up Triggers (Optional)
 
 For maintenance tasks:
+
 1. Click **Triggers** (clock icon in left sidebar)
 2. Click **Add Trigger**
 3. Configure:
@@ -298,6 +309,7 @@ For maintenance tasks:
 ### "Authorization required" Error
 
 **Solution**: Re-authorize the script
+
 1. Go to Apps Script project
 2. Run any function manually
 3. Complete authorization flow
@@ -306,6 +318,7 @@ For maintenance tasks:
 ### "Service invoked too many times" Error
 
 **Solution**: Apps Script has quota limits
+
 - Free tier: 20,000 URL Fetch calls/day
 - Consider caching responses
 - Implement request throttling
@@ -313,6 +326,7 @@ For maintenance tasks:
 ### "Script function not found" Error
 
 **Solution**: Verify function names
+
 - Check that handler methods exist
 - Ensure router maps actions correctly
 - Verify case-sensitive names
@@ -320,6 +334,7 @@ For maintenance tasks:
 ### Slow Response Times
 
 **Solution**: Optimize queries
+
 - Use batch operations for Sheets
 - Cache frequently accessed data
 - Minimize API calls

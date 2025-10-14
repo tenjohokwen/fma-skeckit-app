@@ -18,8 +18,8 @@ const axiosInstance = axios.create({
   baseURL: API_URL,
   timeout: 30000,
   headers: {
-    'Content-Type': 'application/json'
-  }
+    'Content-Type': 'text/plain;charset=utf-8',
+  },
 })
 
 /**
@@ -43,7 +43,7 @@ export const api = {
       // Build request payload
       const payload = {
         action: action,
-        data: data
+        data: data,
       }
 
       // Add token for secured endpoints
@@ -56,11 +56,7 @@ export const api = {
 
       // Check response status
       if (response.data.status >= 400) {
-        throw new ApiError(
-          response.data.status,
-          response.data.message,
-          response.data.msgKey
-        )
+        throw new ApiError(response.data.status, response.data.message, response.data.msgKey)
       }
 
       return response.data
@@ -72,25 +68,21 @@ export const api = {
         throw new ApiError(
           data.status || error.response.status,
           data.message || 'Server error',
-          data.msgKey || 'error.server'
+          data.msgKey || 'error.server',
         )
       } else if (error.request) {
         // Request made but no response
         throw new ApiError(
           0,
           'No response from server. Check your internet connection.',
-          'error.network'
+          'error.network',
         )
       } else if (error instanceof ApiError) {
         // Re-throw ApiError
         throw error
       } else {
         // Other errors
-        throw new ApiError(
-          0,
-          error.message || 'Unknown error occurred',
-          'error.unknown'
-        )
+        throw new ApiError(0, error.message || 'Unknown error occurred', 'error.unknown')
       }
     }
   },
@@ -107,10 +99,10 @@ export const api = {
       throw new ApiError(
         error.response?.status || 0,
         error.message || 'Request failed',
-        'error.request'
+        'error.request',
       )
     }
-  }
+  },
 }
 
 /**
@@ -142,46 +134,56 @@ export const authApi = {
   verifyOTP: (email, otp) => api.post('auth.verifyOTP', { email, otp }),
 
   resetPassword: (email, otp, newPassword) =>
-    api.post('auth.resetPassword', { email, otp, newPassword })
+    api.post('auth.resetPassword', { email, otp, newPassword }),
 }
 
 /**
  * Metadata API methods
  */
 export const metadataApi = {
-  search: (searchTerm) => api.post('metadata.search', { searchTerm }),
+  searchByName: (firstName, lastName) =>
+    api.post('metadata.searchCasesByName', { firstName, lastName }),
 
-  getById: (caseId) => api.post('metadata.getById', { caseId }),
+  searchByCaseId: (caseId) => api.post('metadata.searchCaseByCaseId', { caseId }),
 
-  create: (metadata) => api.post('metadata.create', metadata),
+  getCaseForEdit: (caseId) => api.post('metadata.getCaseForEdit', { caseId }),
 
-  update: (caseId, updates, version) =>
-    api.post('metadata.update', { caseId, updates, version }),
+  createCase: (caseData) => api.post('metadata.createCaseMetadata', caseData),
 
-  delete: (caseId) => api.post('metadata.delete', { caseId })
+  updateCase: (caseId, updates, version) =>
+    api.post('metadata.updateCaseMetadata', { caseId, updates, version }),
 }
 
 /**
  * File API methods
  */
 export const fileApi = {
-  createClientFolder: (clientName) =>
-    api.post('file.createClientFolder', { clientName }),
+  searchClientFolder: (firstName, lastName, idCardNo) =>
+    api.post('file.searchClientFolder', { firstName, lastName, idCardNo }),
 
-  createCaseFolder: (caseId, caseName, clientName) =>
-    api.post('file.createCaseFolder', { caseId, caseName, clientName }),
+  createClientFolder: (firstName, lastName, idCardNo, telephone, email) =>
+    api.post('file.createClientFolder', { firstName, lastName, idCardNo, telephone, email }),
 
-  uploadFile: (caseId, fileName, fileContent, mimeType) =>
-    api.post('file.uploadFile', { caseId, fileName, fileContent, mimeType }),
+  createCaseFolder: (clientFolderId, caseId) =>
+    api.post('file.createCaseFolder', { clientFolderId, caseId }),
 
-  listFiles: (caseId) => api.post('file.listFiles', { caseId }),
+  listFolders: (folderId) => api.post('file.listFolders', { folderId }),
+
+  listFiles: (folderId) => api.post('file.listFiles', { folderId }),
+
+  listFolderContents: (folderId) => api.post('file.listFolderContents', { folderId }),
+
+  uploadFile: (folderId, fileName, fileBlob) =>
+    api.post('file.uploadFile', { folderId, fileName, fileBlob }),
+
+  resolveFileConflict: (folderId, fileName, fileBlob, resolution) =>
+    api.post('file.resolveFileConflict', { folderId, fileName, fileBlob, resolution }),
 
   downloadFile: (fileId) => api.post('file.downloadFile', { fileId }),
 
   deleteFile: (fileId) => api.post('file.deleteFile', { fileId }),
 
-  getCaseFolderStructure: (caseId) =>
-    api.post('file.getCaseFolderStructure', { caseId }),
+  getCaseFolderStructure: (caseId) => api.post('file.getCaseFolderStructure', { caseId }),
 
-  searchFiles: (searchTerm) => api.post('file.searchFiles', { searchTerm })
+  searchFiles: (searchTerm) => api.post('file.searchFiles', { searchTerm }),
 }

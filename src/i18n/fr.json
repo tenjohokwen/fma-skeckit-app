@@ -110,6 +110,85 @@
       "expired": "Votre session a expiré. Veuillez vous reconnecter"
     }
   },
+  "search": {
+    "pageTitle": "Rechercher des Dossiers",
+    "pageSubtitle": "Rechercher des dossiers clients par nom ou ID de dossier",
+    "title": "Rechercher des Dossiers",
+    "byName": "Par Nom",
+    "byCaseId": "Par ID de Dossier",
+    "firstName": "Prénom",
+    "lastName": "Nom de Famille",
+    "caseId": "ID du Dossier",
+    "searchButton": "Rechercher",
+    "clearButton": "Effacer",
+    "searching": "Recherche en cours...",
+    "noResults": "Aucun dossier trouvé",
+    "noResultsHint": "Essayez d'ajuster vos critères de recherche",
+    "resultsTitle": "Résultats de Recherche",
+    "resultsCount": "{count} dossier(s) trouvé(s)",
+    "initialStateTitle": "Commencer la Recherche",
+    "initialStateHint": "Entrez un nom ou un ID de dossier pour rechercher des dossiers",
+    "error": {
+      "title": "Erreur de Recherche",
+      "generic": "Échec de la recherche de dossiers. Veuillez réessayer."
+    }
+  },
+  "case": {
+    "clientInfo": "Informations Client",
+    "clientName": "Nom du Client",
+    "clientEmail": "Email",
+    "clientPhone": "Numéro de Téléphone",
+    "paymentInfo": "Informations de Paiement",
+    "amountPaid": "Montant Payé",
+    "paymentStatus": "Statut du Paiement",
+    "managementInfo": "Gestion du Dossier",
+    "assignedTo": "Assigné à",
+    "dueDate": "Date d'Échéance",
+    "tasksRemaining": "Tâches Restantes",
+    "nextAction": "Prochaine Action",
+    "comments": "Commentaires",
+    "viewDetails": "Voir les Détails",
+    "edit": "Modifier le Dossier"
+  },
+  "edit": {
+    "pageTitle": "Modifier le Dossier",
+    "pageSubtitle": "Mettre à jour les métadonnées du dossier avec suivi d'audit automatique",
+    "title": "Modifier les Informations du Dossier",
+    "loading": "Chargement des données du dossier...",
+    "sections": {
+      "clientInfo": "Informations Client",
+      "paymentInfo": "Informations de Paiement",
+      "caseManagement": "Gestion du Dossier",
+      "comments": "Commentaires",
+      "folderInfo": "Informations du Dossier"
+    },
+    "fields": {
+      "firstName": "Prénom",
+      "lastName": "Nom de Famille",
+      "email": "Adresse Email",
+      "phone": "Numéro de Téléphone",
+      "amountPaid": "Montant Payé",
+      "paymentStatus": "Statut du Paiement",
+      "assignedTo": "Assigné à",
+      "dueDate": "Date d'Échéance",
+      "status": "Statut",
+      "tasksRemaining": "Tâches Restantes",
+      "nextAction": "Prochaine Action",
+      "comment": "Commentaires",
+      "folderName": "Nom du Dossier",
+      "folderPath": "Chemin du Dossier"
+    },
+    "conflict": {
+      "title": "Conflit de Version",
+      "message": "Ce dossier a été modifié par un autre utilisateur. Veuillez actualiser pour obtenir la dernière version et réessayer.",
+      "cancel": "Annuler",
+      "refresh": "Actualiser les Données"
+    },
+    "error": {
+      "title": "Erreur de Chargement du Dossier",
+      "generic": "Échec du chargement des données du dossier. Veuillez réessayer."
+    }
+  },
   "metadata": {
     "search": {
       "title": "Rechercher des Dossiers",
@@ -144,18 +223,78 @@
     }
   },
   "files": {
+    "management": {
+      "pageTitle": "Gestion des Fichiers",
+      "pageSubtitle": "Télécharger des fichiers, créer des dossiers de cas et gérer les opérations de fichiers",
+      "tabs": {
+        "upload": "Télécharger des Fichiers",
+        "caseFolder": "Dossiers de Cas",
+        "browse": "Parcourir les Fichiers"
+      },
+      "recentUpload": "Fichier Récemment Téléchargé",
+      "recentCaseFolder": "Dossier de Cas Récemment Créé",
+      "browseFiles": "Parcourir les Fichiers",
+      "browseHint": "Fonctionnalité de navigation des fichiers à venir"
+    },
     "upload": {
       "title": "Télécharger un Fichier",
+      "folderId": "ID du Dossier",
       "selectFile": "Sélectionner un Fichier",
+      "dragDrop": "Glissez-déposez le fichier ici",
+      "or": "ou",
       "uploading": "Téléchargement...",
+      "uploadButton": "Télécharger le Fichier",
       "success": "Fichier téléchargé avec succès",
-      "maxSize": "La taille maximale du fichier est de 10 Mo",
-      "conflict": {
-        "title": "Le Fichier Existe Déjà",
-        "message": "Un fichier avec ce nom existe déjà. Que souhaitez-vous faire?",
-        "overwrite": "Écraser le fichier existant",
-        "rename": "Renommer le nouveau fichier",
-        "cancel": "Annuler le téléchargement"
+      "maxSize": "Taille maximale du fichier: 10 Mo",
+      "fileName": "Nom du Fichier",
+      "fileSize": "Taille du Fichier",
+      "uploadedAt": "Téléchargé le",
+      "fileId": "ID du Fichier",
+      "error": {
+        "size": "Le fichier dépasse la taille maximale de 10 Mo",
+        "filename": "Le nom du fichier contient des caractères invalides",
+        "generic": "Échec du téléchargement du fichier"
+      }
+    },
+    "conflict": {
+      "title": "Le Fichier Existe Déjà",
+      "message": "Un fichier avec ce nom existe déjà. Comment souhaitez-vous procéder?",
+      "fileName": "Nom du Fichier",
+      "cancelled": "Téléchargement annulé",
+      "overwriteSuccess": "Fichier écrasé avec succès",
+      "renameSuccess": "Fichier téléchargé sous {fileName}",
+      "error": "Échec de la résolution du conflit de fichier",
+      "options": {
+        "overwrite": {
+          "title": "Écraser",
+          "description": "Remplacer le fichier existant par le nouveau"
+        },
+        "rename": {
+          "title": "Renommer",
+          "description": "Télécharger avec un nouveau nom (horodatage ajouté)"
+        },
+        "cancel": {
+          "title": "Annuler",
+          "description": "Ne pas télécharger ce fichier"
+        }
+      }
+    },
+    "caseFolder": {
+      "title": "Créer un Dossier de Cas",
+      "hint": "Créer un nouveau dossier de cas dans un dossier client existant",
+      "clientFolderId": "ID du Dossier Client",
+      "caseId": "ID du Cas",
+      "createButton": "Créer le Dossier de Cas",
+      "createSuccess": "Dossier de cas créé avec succès",
+      "createError": "Échec de la création du dossier de cas",
+      "folderName": "Nom du Dossier",
+      "folderPath": "Chemin du Dossier",
+      "folderId": "ID du Dossier",
+      "createdAt": "Créé le",
+      "existingFolderId": "ID du Dossier Existant",
+      "existsDialog": {
+        "title": "Le Dossier de Cas Existe Déjà",
+        "message": "Un dossier de cas avec cet ID existe déjà dans le dossier client."
       }
     },
     "folder": {
@@ -164,16 +303,61 @@
       "case": "Créer un Dossier de Cas",
       "success": "Dossier créé avec succès"
     },
+    "client": {
+      "pageTitle": "Gestion des Dossiers Clients",
+      "pageSubtitle": "Rechercher des dossiers clients existants ou en créer de nouveaux",
+      "title": "Gérer les Dossiers Clients",
+      "searchSection": "Rechercher un Dossier Client",
+      "searchHint": "Rechercher par nom de client et numéro de carte d'identité pour vérifier si un dossier existe déjà",
+      "createSection": "Créer un Nouveau Dossier Client",
+      "createHint": "Remplissez tous les champs requis pour créer un nouveau dossier client dans Google Drive",
+      "firstName": "Prénom",
+      "lastName": "Nom de Famille",
+      "idCardNo": "Numéro de Carte d'Identité",
+      "telephone": "Téléphone",
+      "email": "Adresse Email",
+      "searchButton": "Rechercher le Dossier",
+      "createButton": "Créer le Dossier",
+      "folderFound": "Dossier Client Trouvé",
+      "folderNotFound": "Dossier Client Non Trouvé",
+      "canCreate": "Vous pouvez créer un nouveau dossier en utilisant le formulaire ci-dessous",
+      "folderPath": "Chemin du Dossier",
+      "folderName": "Nom du Dossier",
+      "folderId": "ID du Dossier",
+      "createdAt": "Créé le",
+      "createdBy": "Créé par",
+      "searchSuccess": "Dossier trouvé avec succès",
+      "searchError": "Échec de la recherche du dossier",
+      "createSuccess": "Dossier client créé avec succès",
+      "createError": "Échec de la création du dossier client",
+      "recentFolder": "Dossier Récemment Créé/Trouvé",
+      "openFolder": "Ouvrir dans Google Drive",
+      "copyFolderId": "Copier l'ID du Dossier",
+      "existsDialog": {
+        "title": "Le Dossier Existe Déjà",
+        "message": "Un dossier client avec ce nom existe déjà. Veuillez d'abord le rechercher ou utiliser des informations client différentes."
+      }
+    },
     "download": "Télécharger",
     "delete": {
       "title": "Supprimer le Fichier",
       "confirm": "Êtes-vous sûr de vouloir supprimer ce fichier? Cette action ne peut pas être annulée.",
-      "success": "Fichier supprimé avec succès"
+      "success": "Fichier supprimé avec succès",
+      "error": "Échec de la suppression du fichier"
     },
     "navigate": {
       "breadcrumb": "Navigation",
       "files": "Fichiers",
-      "folders": "Dossiers"
+      "folders": "Dossiers",
+      "folderId": "ID du Dossier",
+      "reload": "Recharger",
+      "error": "Échec du chargement du contenu du dossier",
+      "summary": "{folders} dossiers, {files} fichiers",
+      "empty": "Ce dossier est vide"
+    },
+    "download": {
+      "success": "Téléchargement de {fileName}...",
+      "error": "Échec du téléchargement du fichier"
     }
   },
   "navigation": {

@@ -1,4 +1,4 @@
-{
+export default {
   "common": {
     "appName": "File Management System",
     "loading": "Loading...",
@@ -338,7 +338,10 @@
         "message": "A client folder with this name already exists. Please search for it first or use different client information."
       }
     },
-    "download": "Download",
+    "download": {
+      "success": "Downloading {fileName}...",
+      "error": "Failed to download file"
+    },
     "delete": {
       "title": "Delete File",
       "confirm": "Are you sure you want to delete this file? This action cannot be undone.",
@@ -354,10 +357,6 @@
       "error": "Failed to load folder contents",
       "summary": "{folders} folders, {files} files",
       "empty": "This folder is empty"
-    },
-    "download": {
-      "success": "Downloading {fileName}...",
-      "error": "Failed to download file"
     }
   },
   "navigation": {

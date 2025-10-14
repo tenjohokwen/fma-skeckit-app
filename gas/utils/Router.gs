@@ -92,19 +92,23 @@ const Router = {
       'auth.resetPassword': 'Reset password with verified OTP',
 
       // Metadata routes
-      'metadata.search': 'Search case metadata (admin only)',
-      'metadata.getById': 'Get case metadata by ID',
-      'metadata.create': 'Create new case metadata (admin only)',
-      'metadata.update': 'Update case metadata (admin only)',
-      'metadata.delete': 'Delete case metadata (admin only)',
+      'metadata.searchCasesByName': 'Search cases by client name',
+      'metadata.searchCaseByCaseId': 'Search case by case ID',
+      'metadata.getCaseForEdit': 'Get case for editing (admin only)',
+      'metadata.updateCaseMetadata': 'Update case metadata (admin only)',
+      'metadata.createCaseMetadata': 'Create new case metadata (admin only)',
 
       // File routes
-      'file.createClientFolder': 'Create a new client folder',
-      'file.createCaseFolder': 'Create a new case folder',
-      'file.uploadFile': 'Upload a file to a case folder',
-      'file.listFiles': 'List files in a case folder',
-      'file.downloadFile': 'Download a file',
-      'file.deleteFile': 'Delete a file',
+      'file.searchClientFolder': 'Search for a client folder by name (admin only)',
+      'file.createClientFolder': 'Create a new client folder (admin only)',
+      'file.createCaseFolder': 'Create a new case folder (admin only)',
+      'file.listFolders': 'List folders within a folder (admin only)',
+      'file.listFiles': 'List files in a folder (admin only)',
+      'file.listFolderContents': 'List both folders and files for navigation (admin only)',
+      'file.uploadFile': 'Upload a file to a folder with conflict detection (admin only)',
+      'file.resolveFileConflict': 'Resolve file upload conflict - overwrite/rename/cancel (admin only)',
+      'file.downloadFile': 'Get download URL for a file (admin only)',
+      'file.deleteFile': 'Delete a file from Drive (admin only)',
       'file.getCaseFolderStructure': 'Get folder structure for a case',
       'file.searchFiles': 'Search files by name or metadata'
     };

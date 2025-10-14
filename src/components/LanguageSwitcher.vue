@@ -1,19 +1,8 @@
 <template>
-  <q-btn-dropdown
-    flat
-    dense
-    :label="currentLanguage"
-    icon="language"
-    aria-label="Switch language"
-  >
+  <q-btn-dropdown flat dense :label="currentLanguage" icon="language" aria-label="Switch language">
     <q-list>
-      <q-item
-        v-for="lang in languages"
-        :key="lang.value"
-        clickable
-        :active="locale === lang.value"
-        @click="changeLanguage(lang.value)"
-      >
+      <q-item v-for="lang in languages" :key="lang.value" clickable :active="locale === lang.value"
+        @click="changeLanguage(lang.value)">
         <q-item-section>
           <q-item-label>{{ lang.label }}</q-item-label>
         </q-item-section>
@@ -35,7 +24,7 @@
 import { computed } from 'vue'
 import { useI18n } from 'vue-i18n'
 
-const { locale, t } = useI18n()
+const { locale } = useI18n()
 
 const languages = [
   { value: 'en', label: 'English' },

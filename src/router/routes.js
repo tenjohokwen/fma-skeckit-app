@@ -57,14 +57,8 @@ const routes = [
         meta: { requiresAuth: true }
       },
       {
-        path: 'case/:id',
-        name: 'case-view',
-        component: () => import('pages/CaseViewPage.vue'),
-        meta: { requiresAuth: true }
-      },
-      {
-        path: 'case/:id/edit',
-        name: 'case-edit',
+        path: 'case/:caseId/edit',
+        name: 'CaseEdit',
         component: () => import('pages/CaseEditPage.vue'),
         meta: { requiresAuth: true, requiresAdmin: true }
       },
