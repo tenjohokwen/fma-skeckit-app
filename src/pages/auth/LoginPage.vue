@@ -46,7 +46,7 @@
 
       <!-- OTP Verification Form -->
       <div v-else-if="currentView === 'verify-otp'">
-        <otp-verification-form :loading="isLoading" @submit="handleVerifyOTP" @back="currentView = 'forgot-password'" />
+        <OTPVerificationForm :loading="isLoading" @submit="handleVerifyOTP" @back="currentView = 'forgot-password'" />
       </div>
 
       <!-- Reset Password Form -->
@@ -71,8 +71,10 @@ import { ref, onMounted } from 'vue'
 import { useRoute } from 'vue-router'
 import { useI18n } from 'vue-i18n'
 import { useAuth } from 'src/composables/useAuth'
+// Components - auto-registered in <script setup>
 import LoginForm from 'src/components/auth/LoginForm.vue'
 import ForgotPasswordForm from 'src/components/auth/ForgotPasswordForm.vue'
+import OTPVerificationForm from 'src/components/auth/OTPVerificationForm.vue'
 import ResetPasswordForm from 'src/components/auth/ResetPasswordForm.vue'
 import ErrorDisplay from 'src/components/shared/ErrorDisplay.vue'
 

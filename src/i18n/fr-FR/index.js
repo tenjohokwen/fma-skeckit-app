@@ -90,7 +90,10 @@ export default {
     network: "Erreur réseau. Veuillez vérifier votre connexion.",
     server: "Erreur serveur. Veuillez réessayer plus tard.",
     unauthorized: "Non autorisé. Veuillez vous reconnecter.",
-    forbidden: "Vous n'avez pas la permission d'effectuer cette action.",
+    forbidden: {
+      default: "Vous n'avez pas la permission d'effectuer cette action.",
+      adminOnly: "Rôle d'administrateur requis"
+    },
     notFound: "Ressource non trouvée.",
     conflict: "Cette ressource existe déjà.",
     validation: "Veuillez vérifier votre saisie et réessayer.",
@@ -367,6 +370,12 @@ export default {
     files: "Fichiers",
     admin: "Admin",
     profile: "Profil"
+  },
+  dashboard: {
+    welcome: "Bienvenue au Tableau de Bord",
+    successLogin: "Vous êtes connecté avec succès!",
+    user: "Utilisateur",
+    role: "Rôle"
   },
   language: {
     switch: "Changer de Langue",

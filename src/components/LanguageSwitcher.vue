@@ -27,8 +27,8 @@ import { useI18n } from 'vue-i18n'
 const { locale } = useI18n()
 
 const languages = [
-  { value: 'en', label: 'English' },
-  { value: 'fr', label: 'Français' }
+  { value: 'en-US', label: 'English' },
+  { value: 'fr-FR', label: 'Français' }
 ]
 
 const currentLanguage = computed(() => {

@@ -90,7 +90,10 @@ export default {
     network: "Network error. Please check your connection.",
     server: "Server error. Please try again later.",
     unauthorized: "Unauthorized. Please log in again.",
-    forbidden: "You don't have permission to perform this action.",
+    forbidden: {
+      default: "You don't have permission to perform this action.",
+      adminOnly: "Admin role required"
+    },
     notFound: "Resource not found.",
     conflict: "This resource already exists.",
     validation: "Please check your input and try again.",
@@ -367,6 +370,12 @@ export default {
     files: "Files",
     admin: "Admin",
     profile: "Profile"
+  },
+  dashboard: {
+    welcome: "Welcome to Dashboard",
+    successLogin: "You are successfully logged in!",
+    user: "User",
+    role: "Role"
   },
   language: {
     switch: "Switch Language",

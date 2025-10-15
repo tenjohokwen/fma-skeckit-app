@@ -154,7 +154,19 @@ const SecurityInterceptor = {
       return e.parameter.token;
     }
 
-    // Check request body
+    // Check request body directly (since requestData only contains body.data)
+    if (e.postData && e.postData.contents) {
+      try {
+        const body = JSON.parse(e.postData.contents);
+        if (body.token) {
+          return body.token;
+        }
+      } catch (error) {
+        console.warn('Failed to parse POST body for token:', error);
+      }
+    }
+
+    // Also check requestData for backward compatibility
     if (requestData.token) {
       return requestData.token;
     }

@@ -371,5 +371,11 @@ export default {
     "switch": "Switch Language",
     "en": "English",
     "fr": "Français"
+  },
+  "dashboard": {
+    "welcome": "Welcome to Dashboard",
+    "successLogin": "You are successfully logged in!",
+    "user": "User",
+    "role": "Role"
   }
 }

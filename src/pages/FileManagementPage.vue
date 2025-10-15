@@ -205,8 +205,8 @@ const conflictData = ref({
 
 // Check admin permission
 if (!authStore.isAdmin) {
-  notifyError('Admin role required')
-  router.push({ name: 'Search' })
+  notifyError('error.forbidden.adminOnly')
+  router.push({ name: 'search' })
 }
 
 /**
