@@ -1,8 +1,8 @@
 /**
  * useSearch.js
  *
- * Composable for search functionality with debouncing and loading state.
- * Provides search methods for case metadata by name or case ID.
+ * Composable for search functionality with debouncing, loading state, and fuzzy search.
+ * Provides search methods for case metadata by name or case ID, and client fuzzy search.
  *
  * Per constitution: Composition API composables for reusable logic
  */
@@ -10,6 +10,7 @@
 import { ref } from 'vue'
 import { metadataApi } from 'src/services/api'
 import { useAuthStore } from 'src/stores/authStore'
+import Fuse from 'fuse.js'
 
 export function useSearch() {
   const authStore = useAuthStore()
@@ -160,17 +161,86 @@ export function useSearch() {
     }
   }
 
+  // ==================== FUZZY SEARCH FOR CLIENTS ====================
+
+  const fuseInstance = ref(null)
+  const fuzzySearchResults = ref([])
+
+  /**
+   * Initialize Fuse.js with client data for fuzzy search
+   * @param {Array} clientList - Array of client objects to search
+   */
+  function initializeFuzzySearch(clientList) {
+    const fuseOptions = {
+      // Which keys to search
+      keys: [
+        { name: 'firstName', weight: 2 },
+        { name: 'lastName', weight: 2 },
+        { name: 'nationalId', weight: 1.5 }
+      ],
+      // Threshold for fuzzy matching (0.0 = perfect match, 1.0 = match anything)
+      // 0.4 allows for ~2 character typos
+      threshold: 0.4,
+      // Search in entire string, not just from beginning
+      ignoreLocation: true,
+      // Minimum character length for matching
+      minMatchCharLength: 2,
+      // Include score in results for sorting
+      includeScore: true
+    }
+
+    fuseInstance.value = new Fuse(clientList, fuseOptions)
+  }
+
+  /**
+   * Perform fuzzy search on clients
+   * @param {string} query - Search query string
+   * @returns {Array} Array of matching client objects
+   */
+  function fuzzySearchClients(query) {
+    if (!query || query.trim().length < 2) {
+      fuzzySearchResults.value = []
+      return []
+    }
+
+    if (!fuseInstance.value) {
+      fuzzySearchResults.value = []
+      return []
+    }
+
+    // Perform fuzzy search
+    const results = fuseInstance.value.search(query.trim())
+
+    // Extract items from Fuse.js results
+    fuzzySearchResults.value = results.map(result => result.item)
+
+    return fuzzySearchResults.value
+  }
+
+  /**
+   * Clear fuzzy search results
+   */
+  function clearFuzzySearch() {
+    fuzzySearchResults.value = []
+  }
+
   return {
     // State
     searchResults,
     isSearching,
     searchError,
     searchType,
+    fuzzySearchResults,
 
-    // Methods
+    // Case search methods
     searchByName,
     searchByCaseId,
     clearSearch,
     refreshSearch,
+
+    // Fuzzy search methods for clients
+    initializeFuzzySearch,
+    fuzzySearchClients,
+    clearFuzzySearch
   }
 }

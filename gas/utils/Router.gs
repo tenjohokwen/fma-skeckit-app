@@ -70,7 +70,9 @@ const Router = {
     const handlers = {
       'auth': AuthHandler,
       'metadata': MetadataHandler,
-      'file': FileHandler
+      'file': FileHandler,
+      'client': ClientHandler,
+      'case': CaseHandler
     };
 
     return handlers[handlerName] || null;
@@ -98,6 +100,14 @@ const Router = {
       'metadata.updateCaseMetadata': 'Update case metadata (admin only)',
       'metadata.createCaseMetadata': 'Create new case metadata (admin only)',
 
+      // Client routes
+      'client.search': 'Search clients by name and/or national ID',
+      'client.create': 'Create a new client with folder (admin only)',
+      'client.get': 'Get client details with cases',
+
+      // Case routes
+      'case.create': 'Create a new case folder for a client',
+
       // File routes
       'file.searchClientFolder': 'Search for a client folder by name (admin only)',
       'file.createClientFolder': 'Create a new client folder (admin only)',
@@ -106,6 +116,7 @@ const Router = {
       'file.listFiles': 'List files in a folder (admin only)',
       'file.listFolderContents': 'List both folders and files for navigation (admin only)',
       'file.uploadFile': 'Upload a file to a folder with conflict detection (admin only)',
+      'file.uploadBatch': 'Upload multiple files with base64 encoding and progress tracking (admin only)',
       'file.resolveFileConflict': 'Resolve file upload conflict - overwrite/rename/cancel (admin only)',
       'file.downloadFile': 'Get download URL for a file (admin only)',
       'file.deleteFile': 'Delete a file from Drive (admin only)',

@@ -4,6 +4,8 @@ Auto-generated from all feature plans. Last updated: 2025-10-13
 
 ## Active Technologies
 - JavaScript ES6+ (frontend), Google Apps Script JavaScript (backend) + Vue 3, Quasar 2, Vue Router, Pinia (state management), Vite (build tool), Vitest + Vue Test Utils (testing) (001-use-the-information)
+- JavaScript ES6+ (frontend), Google Apps Script JavaScript (backend) + Vue 3, Quasar 2, Vue Router, Pinia (state management), Vite (build tool), Fuse.js (fuzzy search) (002-improved-file-navigation)
+- Google Sheets (client metadata), Google Drive (file storage) (002-improved-file-navigation)
 
 ## Project Structure
 ```
@@ -18,6 +20,7 @@ npm test [ONLY COMMANDS FOR ACTIVE TECHNOLOGIES][ONLY COMMANDS FOR ACTIVE TECHNO
 JavaScript ES6+ (frontend), Google Apps Script JavaScript (backend): Follow standard conventions
 
 ## Recent Changes
+- 002-improved-file-navigation: Added JavaScript ES6+ (frontend), Google Apps Script JavaScript (backend) + Vue 3, Quasar 2, Vue Router, Pinia (state management), Vite (build tool), Fuse.js (fuzzy search)
 - 001-use-the-information: Added JavaScript ES6+ (frontend), Google Apps Script JavaScript (backend) + Vue 3, Quasar 2, Vue Router, Pinia (state management), Vite (build tool), Vitest + Vue Test Utils (testing)
 
 <!-- MANUAL ADDITIONS START -->

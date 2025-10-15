@@ -641,6 +641,167 @@ const FileHandler = {
   },
 
   /**
+   * Uploads multiple files to a case folder (batch upload)
+   * Handles base64-encoded files with optional display names
+   *
+   * @param {Object} params - Request parameters
+   * @param {string} params.caseFolderId - Target case folder ID
+   * @param {Array} params.files - Array of file objects with fileName, content (base64), mimeType, displayName (optional)
+   * @param {Object} context - Request context (user, headers)
+   * @returns {Object} Response with per-file results, successCount, failureCount
+   */
+  uploadBatch: function(params, context) {
+    try {
+      // Admin-only authorization check
+      if (!context.user || context.user.role !== 'ROLE_ADMIN') {
+        return ResponseHandler.error({
+          status: 403,
+          msgKey: 'error.forbidden',
+          message: 'Admin access required'
+        });
+      }
+
+      // Validate required fields
+      const { caseFolderId, files } = params;
+
+      if (!caseFolderId) {
+        return ResponseHandler.validationError(
+          'Case folder ID is required',
+          'file.upload.error.missingFolderId'
+        );
+      }
+
+      if (!files || !Array.isArray(files) || files.length === 0) {
+        return ResponseHandler.validationError(
+          'Files array is required and must not be empty',
+          'file.upload.error.missingFiles'
+        );
+      }
+
+      // Verify folder exists
+      let folder;
+      try {
+        folder = DriveApp.getFolderById(caseFolderId.trim());
+      } catch (e) {
+        return ResponseHandler.notFoundError(
+          'Case folder not found',
+          'file.upload.error.folderNotFound'
+        );
+      }
+
+      const results = [];
+      let successCount = 0;
+      let failureCount = 0;
+      const maxFileSize = 50 * 1024 * 1024; // 50MB in bytes
+
+      // Process each file
+      for (let i = 0; i < files.length; i++) {
+        const fileData = files[i];
+
+        try {
+          // Validate file data
+          if (!fileData.fileName || !fileData.content) {
+            results.push({
+              fileName: fileData.fileName || 'unknown',
+              success: false,
+              error: 'Missing file name or content',
+              msgKey: 'file.upload.error.invalidFileData'
+            });
+            failureCount++;
+            continue;
+          }
+
+          // Decode base64 content
+          let blobData;
+          try {
+            blobData = Utilities.base64Decode(fileData.content);
+          } catch (e) {
+            results.push({
+              fileName: fileData.fileName,
+              success: false,
+              error: 'Invalid base64 encoding',
+              msgKey: 'file.upload.error.invalidEncoding'
+            });
+            failureCount++;
+            continue;
+          }
+
+          // Check file size (50MB limit)
+          if (blobData.length > maxFileSize) {
+            results.push({
+              fileName: fileData.fileName,
+              success: false,
+              error: 'File exceeds 50MB size limit',
+              msgKey: 'file.upload.error.fileTooLarge',
+              size: blobData.length
+            });
+            failureCount++;
+            continue;
+          }
+
+          // Create blob with MIME type
+          const mimeType = fileData.mimeType || 'application/octet-stream';
+          const blob = Utilities.newBlob(blobData, mimeType);
+
+          // Use displayName if provided, otherwise use fileName
+          const finalFileName = fileData.displayName ? fileData.displayName.trim() : fileData.fileName.trim();
+          blob.setName(finalFileName);
+
+          // Upload file to Drive
+          const uploadedFile = folder.createFile(blob);
+
+          results.push({
+            fileName: fileData.fileName,
+            displayName: finalFileName,
+            success: true,
+            fileId: uploadedFile.getId(),
+            size: uploadedFile.getSize(),
+            url: uploadedFile.getUrl(),
+            createdAt: DateUtil.formatTimestamp(uploadedFile.getDateCreated())
+          });
+          successCount++;
+
+        } catch (error) {
+          results.push({
+            fileName: fileData.fileName || 'unknown',
+            success: false,
+            error: error.toString(),
+            msgKey: 'file.upload.error.uploadFailed'
+          });
+          failureCount++;
+        }
+      }
+
+      return ResponseHandler.success({
+        message: `Uploaded ${successCount} of ${files.length} files successfully`,
+        msgKey: 'file.upload.batch.complete',
+        data: {
+          results: results,
+          successCount: successCount,
+          failureCount: failureCount,
+          totalCount: files.length
+        }
+      });
+
+    } catch (error) {
+      Logger.log('Error in FileHandler.uploadBatch: ' + error.toString());
+
+      // If error is already a formatted response, return it
+      if (error.status && error.msgKey) {
+        return error;
+      }
+
+      // Otherwise, return generic server error
+      return ResponseHandler.error({
+        status: 500,
+        msgKey: 'error.server',
+        message: 'Failed to upload files',
+        error: error.toString()
+      });
+    }
+  },
+
+  /**
    * Gets download URL for a file
    * Admin only endpoint
    *

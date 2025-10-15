@@ -494,5 +494,183 @@ const DriveService = {
       fileName: fileName,
       deleted: true
     };
+  },
+
+  /**
+   * Lists both folders and files in a given folder
+   * @param {string} folderId - Folder ID to list contents
+   * @returns {Object} Object with folders and files arrays
+   */
+  listFolderContents: function(folderId) {
+    let folder;
+    try {
+      folder = DriveApp.getFolderById(folderId);
+    } catch (e) {
+      throw ResponseHandler.notFoundError(
+        'Folder not found',
+        'file.folder.error.notFound'
+      );
+    }
+
+    const folders = [];
+    const files = [];
+
+    // Get folders
+    const subfolders = folder.getFolders();
+    while (subfolders.hasNext()) {
+      const subfolder = subfolders.next();
+
+      // Count items in subfolder
+      const itemCount = subfolder.getFiles().hasNext() || subfolder.getFolders().hasNext()
+        ? this.countFolderItems(subfolder)
+        : 0;
+
+      folders.push({
+        type: 'folder',
+        folderId: subfolder.getId(),
+        name: subfolder.getName(),
+        itemCount: itemCount,
+        lastModified: DateUtil.formatTimestamp(subfolder.getLastUpdated())
+      });
+    }
+
+    // Get files
+    const fileIterator = folder.getFiles();
+    while (fileIterator.hasNext()) {
+      const file = fileIterator.next();
+      files.push({
+        type: 'file',
+        fileId: file.getId(),
+        name: file.getName(),
+        mimeType: file.getMimeType(),
+        size: file.getSize(),
+        lastModified: DateUtil.formatTimestamp(file.getLastUpdated()),
+        downloadUrl: `https://drive.google.com/uc?export=download&id=${file.getId()}`
+      });
+    }
+
+    return {
+      folderId: folderId,
+      folderName: folder.getName(),
+      folders: folders,
+      files: files
+    };
+  },
+
+  /**
+   * Counts total items (files + folders) in a folder
+   * @param {GoogleAppsScript.Drive.Folder} folder - Folder object
+   * @returns {number} Total count of items
+   */
+  countFolderItems: function(folder) {
+    let count = 0;
+    const files = folder.getFiles();
+    while (files.hasNext()) {
+      files.next();
+      count++;
+    }
+    const subfolders = folder.getFolders();
+    while (subfolders.hasNext()) {
+      subfolders.next();
+      count++;
+    }
+    return count;
+  },
+
+  /**
+   * Gets download URL for a file
+   * @param {string} fileId - File ID
+   * @returns {Object} Download information
+   */
+  downloadFile: function(fileId) {
+    let file;
+    try {
+      file = DriveApp.getFileById(fileId);
+    } catch (e) {
+      throw ResponseHandler.notFoundError(
+        'File not found',
+        'file.download.error.notFound'
+      );
+    }
+
+    return {
+      fileId: fileId,
+      fileName: file.getName(),
+      mimeType: file.getMimeType(),
+      size: file.getSize(),
+      downloadUrl: `https://drive.google.com/uc?export=download&id=${fileId}`
+    };
+  },
+
+  /**
+   * Renames a file in Drive
+   * @param {string} fileId - File ID to rename
+   * @param {string} newName - New file name
+   * @returns {Object} Renamed file information
+   */
+  renameFile: function(fileId, newName) {
+    let file;
+    try {
+      file = DriveApp.getFileById(fileId);
+    } catch (e) {
+      throw ResponseHandler.notFoundError(
+        'File not found',
+        'file.rename.error.notFound'
+      );
+    }
+
+    // Validate file name (no invalid characters)
+    const invalidChars = /[<>:"/\\|?*]/g;
+    if (invalidChars.test(newName)) {
+      throw ResponseHandler.error({
+        status: 400,
+        msgKey: 'file.rename.error.invalidChars',
+        message: 'File name contains invalid characters',
+        data: null
+      });
+    }
+
+    const oldName = file.getName();
+    file.setName(newName);
+
+    return {
+      fileId: fileId,
+      oldName: oldName,
+      newName: newName,
+      renamed: true
+    };
+  },
+
+  /**
+   * Deletes a folder and all its contents from Drive
+   * @param {string} folderId - Folder ID to delete
+   * @returns {Object} Deletion result
+   */
+  deleteFolder: function(folderId) {
+    let folder;
+    try {
+      folder = DriveApp.getFolderById(folderId);
+    } catch (e) {
+      throw ResponseHandler.notFoundError(
+        'Folder not found',
+        'folder.delete.error.notFound'
+      );
+    }
+
+    const folderName = folder.getName();
+
+    // Get parent folder info before deletion
+    const parents = folder.getParents();
+    const parentFolderId = parents.hasNext() ? parents.next().getId() : null;
+
+    // Move to trash (permanent deletion requires admin permissions)
+    folder.setTrashed(true);
+
+    return {
+      folderId: folderId,
+      folderName: folderName,
+      parentFolderId: parentFolderId,
+      deleted: true
+    };
   }
 };

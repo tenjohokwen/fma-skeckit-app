@@ -59,6 +59,15 @@ export const api = {
         throw new ApiError(response.data.status, response.data.message, response.data.msgKey)
       }
 
+      // Handle token refresh from response (15-minute TTL)
+      if (response.data.token && response.data.token.value) {
+        localStorage.setItem('auth_token', response.data.token.value)
+        localStorage.setItem('auth_token_ttl', response.data.token.ttl)
+        if (response.data.token.username) {
+          localStorage.setItem('auth_username', response.data.token.username)
+        }
+      }
+
       return response.data
     } catch (error) {
       // Handle axios errors
@@ -155,9 +164,39 @@ export const metadataApi = {
 }
 
 /**
+ * Client API methods
+ */
+export const clientApi = {
+  search: (firstName, lastName, nationalId) =>
+    api.post('client.search', { firstName, lastName, nationalId }),
+
+  create: (clientData) => api.post('client.create', clientData),
+
+  get: (clientId) => api.post('client.get', { clientId }),
+}
+
+/**
+ * Case API methods
+ */
+export const caseApi = {
+  create: (clientId, caseId) => api.post('case.create', { clientId, caseId }),
+}
+
+/**
  * File API methods
  */
 export const fileApi = {
+  upload: (caseFolderId, files) => api.post('file.upload', { caseFolderId, files }),
+
+  list: (folderId) => api.post('file.list', { folderId }),
+
+  download: (fileId) => api.post('file.download', { fileId }),
+
+  delete: (fileId) => api.post('file.delete', { fileId }),
+
+  rename: (fileId, newName) => api.post('file.rename', { fileId, newName }),
+
+  // Legacy methods for backward compatibility
   searchClientFolder: (firstName, lastName, idCardNo) =>
     api.post('file.searchClientFolder', { firstName, lastName, idCardNo }),
 
@@ -186,4 +225,11 @@ export const fileApi = {
   getCaseFolderStructure: (caseId) => api.post('file.getCaseFolderStructure', { caseId }),
 
   searchFiles: (searchTerm) => api.post('file.searchFiles', { searchTerm }),
+}
+
+/**
+ * Folder API methods
+ */
+export const folderApi = {
+  delete: (folderId, confirmation) => api.post('folder.delete', { folderId, confirmation }),
 }

@@ -54,7 +54,13 @@ const routes = [
         path: 'search',
         name: 'search',
         component: () => import('pages/SearchPage.vue'),
-        meta: { requiresAuth: true }
+        meta: { requiresAuth: true, title: 'Search Clients' }
+      },
+      {
+        path: 'clients/:clientId',
+        name: 'client-details',
+        component: () => import('pages/ClientDetailsPage.vue'),
+        meta: { requiresAuth: true, title: 'Client Details' }
       },
       {
         path: 'case/:caseId/edit',
@@ -63,16 +69,16 @@ const routes = [
         meta: { requiresAuth: true, requiresAdmin: true }
       },
       {
-        path: 'files',
+        path: 'files/:pathMatch(.*)*',
         name: 'files',
         component: () => import('pages/FileManagementPage.vue'),
-        meta: { requiresAuth: true }
+        meta: { requiresAuth: true, title: 'File Management' }
       },
       {
         path: 'clients',
         name: 'clients',
         component: () => import('pages/ClientManagementPage.vue'),
-        meta: { requiresAuth: true, requiresAdmin: true }
+        meta: { requiresAuth: true, requiresAdmin: true, title: 'Client Management' }
       },
       {
         path: 'profile',

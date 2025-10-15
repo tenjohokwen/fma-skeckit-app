@@ -11,6 +11,7 @@ export default {
     "next": "Next",
     "submit": "Submit",
     "close": "Close",
+    "clear": "Clear",
     "confirm": "Confirm",
     "yes": "Yes",
     "no": "No",
@@ -70,6 +71,7 @@ export default {
   },
   "validation": {
     "required": "This field is required",
+    "maxLength": "Maximum {max} characters allowed",
     "email": {
       "invalid": "Please enter a valid email address",
       "required": "Email is required"
@@ -111,8 +113,12 @@ export default {
     }
   },
   "search": {
-    "pageTitle": "Search Cases",
-    "pageSubtitle": "Search for client cases by name or case ID",
+    "pageTitle": "Search",
+    "pageSubtitle": "Search for clients and cases",
+    "tabs": {
+      "clients": "Clients",
+      "cases": "Cases"
+    },
     "title": "Search Cases",
     "byName": "By Name",
     "byCaseId": "By Case ID",
@@ -218,8 +224,15 @@ export default {
     },
     "create": {
       "title": "Create Case",
+      "caseId": "Case ID",
+      "caseIdHint": "Alphanumeric characters, hyphens, and underscores only (1-100 characters)",
+      "createButton": "Create Case",
       "submit": "Create Case",
-      "success": "Case created successfully"
+      "success": "Case created successfully",
+      "validation": {
+        "length": "Case ID must be 1-100 characters long",
+        "format": "Case ID can only contain letters, numbers, hyphens, and underscores"
+      }
     }
   },
   "files": {
@@ -377,5 +390,148 @@ export default {
     "successLogin": "You are successfully logged in!",
     "user": "User",
     "role": "Role"
+  },
+  "client": {
+    "search": {
+      "title": "Search Clients",
+      "subtitle": "Find existing clients or create new ones",
+      "firstName": "First Name",
+      "lastName": "Last Name",
+      "nationalId": "National ID",
+      "searchButton": "Search",
+      "clearButton": "Clear",
+      "searching": "Searching...",
+      "noResults": "No clients found",
+      "noResultsHint": "Try adjusting your search criteria or create a new client",
+      "createNew": "Create New Client",
+      "results": "{count} client(s) found",
+      "error": {
+        "missingCriteria": "Please enter at least one search criterion",
+        "generic": "Failed to search clients. Please try again."
+      }
+    },
+    "view": {
+      "tooltip": "View client details"
+    },
+    "createCase": {
+      "tooltip": "Create new case for this client"
+    },
+    "create": {
+      "title": "Create New Client",
+      "subtitle": "Add a new client to the system",
+      "comingSoon": "Client creation form will be available in Phase 4",
+      "firstName": "First Name",
+      "lastName": "Last Name",
+      "nationalId": "National ID",
+      "telephone": "Telephone",
+      "email": "Email Address",
+      "createButton": "Create Client",
+      "creating": "Creating...",
+      "success": "Client created successfully",
+      "error": {
+        "duplicate": "A client with this National ID already exists",
+        "missingFields": "First name, last name, and national ID are required"
+      }
+    },
+    "details": {
+      "title": "Client Details",
+      "personalInfo": "Personal Information",
+      "firstName": "First Name",
+      "lastName": "Last Name",
+      "nationalId": "National ID",
+      "telephone": "Telephone",
+      "email": "Email",
+      "folderId": "Folder ID",
+      "cases": "Cases",
+      "noCases": "No cases found for this client",
+      "createCase": "Create New Case",
+      "caseId": "Case ID",
+      "fileCount": "{count} file(s)"
+    }
+  },
+  "caseFolder": {
+    "create": {
+      "title": "Create New Case",
+      "caseId": "Case ID",
+      "createButton": "Create Case",
+      "creating": "Creating...",
+      "success": "Case created successfully",
+      "error": {
+        "duplicate": "A case with this ID already exists for this client",
+        "missingFields": "Case ID is required"
+      }
+    }
+  },
+  "fileUpload": {
+    "title": "Upload Files",
+    "selectFiles": "Select Files",
+    "dragDrop": "Drag and drop files here",
+    "or": "or",
+    "browse": "Browse",
+    "displayName": "Display Name (optional)",
+    "uploadButton": "Upload",
+    "uploading": "Uploading {current} of {total}...",
+    "progress": "{percent}%",
+    "success": "File uploaded successfully",
+    "allSuccess": "All files uploaded successfully",
+    "someSuccess": "{count} of {total} files uploaded successfully",
+    "error": {
+      "size": "File exceeds maximum size of 10MB",
+      "filename": "File name contains invalid characters",
+      "generic": "Failed to upload file"
+    }
+  },
+  "fileDownload": {
+    "button": "Download",
+    "downloading": "Downloading {fileName}...",
+    "success": "File downloaded successfully",
+    "error": "Failed to download file"
+  },
+  "fileDelete": {
+    "button": "Delete",
+    "confirm": "Are you sure you want to delete this file?",
+    "confirmTitle": "Delete File",
+    "confirmMessage": "This action cannot be undone. The file will be permanently deleted.",
+    "deleting": "Deleting...",
+    "success": "File deleted successfully",
+    "error": "Failed to delete file"
+  },
+  "fileRename": {
+    "button": "Rename",
+    "title": "Rename File",
+    "newName": "New Name",
+    "renameButton": "Rename",
+    "renaming": "Renaming...",
+    "success": "File renamed successfully",
+    "error": {
+      "invalidChars": "File name contains invalid characters",
+      "generic": "Failed to rename file"
+    }
+  },
+  "fileList": {
+    "loading": "Loading...",
+    "empty": "This folder is empty",
+    "filesLabel": "Files",
+    "foldersLabel": "Folders",
+    "itemCount": "{count} item(s)",
+    "lastModified": "Last modified",
+    "size": "Size",
+    "name": "Name",
+    "type": "Type"
+  },
+  "folderDelete": {
+    "button": "Delete Folder",
+    "confirm": "Type DELETE to confirm",
+    "confirmTitle": "Delete Folder",
+    "confirmMessage": "This will permanently delete the folder and all its contents. This action cannot be undone.",
+    "typeDelete": "Type DELETE to confirm:",
+    "invalidConfirmation": "You must type DELETE to confirm deletion",
+    "deleting": "Deleting...",
+    "success": "Folder deleted successfully",
+    "error": "Failed to delete folder"
+  },
+  "breadcrumb": {
+    "home": "Home",
+    "cases": "Cases"
   }
 }

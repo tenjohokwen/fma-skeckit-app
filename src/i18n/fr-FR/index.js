@@ -381,5 +381,136 @@ export default {
     switch: "Changer de Langue",
     en: "English",
     fr: "Français"
+  },
+  client: {
+    search: {
+      title: "Rechercher des Clients",
+      subtitle: "Trouver des clients existants ou en créer de nouveaux",
+      firstName: "Prénom",
+      lastName: "Nom de Famille",
+      nationalId: "Numéro d'Identité Nationale",
+      searchButton: "Rechercher",
+      clearButton: "Effacer",
+      searching: "Recherche en cours...",
+      noResults: "Aucun client trouvé",
+      createNew: "Créer un Nouveau Client",
+      results: "{count} client(s) trouvé(s)"
+    },
+    create: {
+      title: "Créer un Nouveau Client",
+      subtitle: "Ajouter un nouveau client au système",
+      firstName: "Prénom",
+      lastName: "Nom de Famille",
+      nationalId: "Numéro d'Identité Nationale",
+      telephone: "Téléphone",
+      email: "Adresse Email",
+      createButton: "Créer le Client",
+      creating: "Création en cours...",
+      success: "Client créé avec succès",
+      error: {
+        duplicate: "Un client avec ce numéro d'identité nationale existe déjà",
+        missingFields: "Le prénom, le nom de famille et le numéro d'identité nationale sont requis"
+      }
+    },
+    details: {
+      title: "Détails du Client",
+      personalInfo: "Informations Personnelles",
+      firstName: "Prénom",
+      lastName: "Nom de Famille",
+      nationalId: "Numéro d'Identité Nationale",
+      telephone: "Téléphone",
+      email: "Email",
+      folderId: "ID du Dossier",
+      cases: "Dossiers",
+      noCases: "Aucun dossier trouvé pour ce client",
+      createCase: "Créer un Nouveau Dossier",
+      caseId: "ID du Dossier",
+      fileCount: "{count} fichier(s)"
+    }
+  },
+  caseFolder: {
+    create: {
+      title: "Créer un Nouveau Dossier",
+      caseId: "ID du Dossier",
+      createButton: "Créer le Dossier",
+      creating: "Création en cours...",
+      success: "Dossier créé avec succès",
+      error: {
+        duplicate: "Un dossier avec cet ID existe déjà",
+        missingFields: "L'ID du dossier est requis"
+      }
+    }
+  },
+  fileUpload: {
+    title: "Télécharger des Fichiers",
+    selectFiles: "Sélectionner des Fichiers",
+    dragDrop: "Glissez-déposez les fichiers ici",
+    or: "ou",
+    browse: "Parcourir",
+    displayName: "Nom d'Affichage (optionnel)",
+    uploadButton: "Télécharger",
+    uploading: "Téléchargement {current} sur {total}...",
+    progress: "{percent}%",
+    success: "Fichier téléchargé avec succès",
+    allSuccess: "Tous les fichiers téléchargés avec succès",
+    someSuccess: "{count} sur {total} fichiers téléchargés avec succès",
+    error: {
+      size: "Le fichier dépasse la taille maximale de 10 Mo",
+      filename: "Le nom du fichier contient des caractères invalides",
+      generic: "Échec du téléchargement du fichier"
+    }
+  },
+  fileDownload: {
+    button: "Télécharger",
+    downloading: "Téléchargement de {fileName}...",
+    success: "Fichier téléchargé avec succès",
+    error: "Échec du téléchargement du fichier"
+  },
+  fileDelete: {
+    button: "Supprimer",
+    confirm: "Êtes-vous sûr de vouloir supprimer ce fichier?",
+    confirmTitle: "Supprimer le Fichier",
+    confirmMessage: "Cette action ne peut pas être annulée. Le fichier sera définitivement supprimé.",
+    deleting: "Suppression en cours...",
+    success: "Fichier supprimé avec succès",
+    error: "Échec de la suppression du fichier"
+  },
+  fileRename: {
+    button: "Renommer",
+    title: "Renommer le Fichier",
+    newName: "Nouveau Nom",
+    renameButton: "Renommer",
+    renaming: "Renommage en cours...",
+    success: "Fichier renommé avec succès",
+    error: {
+      invalidChars: "Le nom du fichier contient des caractères invalides",
+      generic: "Échec du renommage du fichier"
+    }
+  },
+  fileList: {
+    loading: "Chargement...",
+    empty: "Ce dossier est vide",
+    filesLabel: "Fichiers",
+    foldersLabel: "Dossiers",
+    itemCount: "{count} élément(s)",
+    lastModified: "Dernière modification",
+    size: "Taille",
+    name: "Nom",
+    type: "Type"
+  },
+  folderDelete: {
+    button: "Supprimer le Dossier",
+    confirm: "Tapez SUPPRIMER pour confirmer",
+    confirmTitle: "Supprimer le Dossier",
+    confirmMessage: "Cela supprimera définitivement le dossier et tout son contenu. Cette action ne peut pas être annulée.",
+    typeDelete: "Tapez SUPPRIMER pour confirmer:",
+    invalidConfirmation: "Vous devez taper SUPPRIMER pour confirmer la suppression",
+    deleting: "Suppression en cours...",
+    success: "Dossier supprimé avec succès",
+    error: "Échec de la suppression du dossier"
+  },
+  breadcrumb: {
+    home: "Accueil",
+    cases: "Dossiers"
   }
 };

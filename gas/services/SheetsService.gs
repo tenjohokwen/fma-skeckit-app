@@ -1,15 +1,19 @@
 /**
  * SheetsService.gs
  *
- * Provides database operations for case metadata management.
- * Interacts with the 'metadata' sheet in Google Sheets.
+ * Provides database operations for case metadata and client management.
+ * Interacts with 'metadata' and 'clients' sheets in Google Sheets.
  *
- * Schema:
+ * Metadata Schema:
  * A: clientFirstName, B: clientLastName, C: clientEmail, D: clientPhoneNumber,
  * E: amountPaid, F: paymentStatus, G: folderName, H: folderPath,
  * I: assignedTo, J: assignedAt, K: lastUpdatedBy, L: lastUpdatedAt,
  * M: tasksRemaining, N: nextAction, O: comment, P: dueDate,
  * Q: status, R: caseId, S: version
+ *
+ * Clients Schema:
+ * A: clientId (UUID), B: firstName, C: lastName, D: nationalId (unique),
+ * E: telephone, F: email, G: folderId, H: createdAt, I: updatedAt
  */
 
 const SheetsService = {
@@ -22,6 +26,17 @@ const SheetsService = {
     const spreadsheetId = props.getProperty('SPREADSHEET_ID');
     const ss = SpreadsheetApp.openById(spreadsheetId);
     return ss.getSheetByName('metadata');
+  },
+
+  /**
+   * Gets the clients sheet
+   * @returns {GoogleAppsScript.Spreadsheet.Sheet} Clients sheet
+   */
+  getClientsSheet: function() {
+    const props = PropertiesService.getScriptProperties();
+    const spreadsheetId = props.getProperty('SPREADSHEET_ID');
+    const ss = SpreadsheetApp.openById(spreadsheetId);
+    return ss.getSheetByName('clients');
   },
 
   /**
@@ -288,5 +303,184 @@ const SheetsService = {
 
     // Return updated case
     return this.getCaseById(caseId);
+  },
+
+  // ==================== CLIENT MANAGEMENT METHODS ====================
+
+  /**
+   * Parses a client row into a client object
+   * @param {Array} row - Row data from clients sheet
+   * @returns {Object} Client object
+   */
+  parseClientRow: function(row) {
+    return {
+      clientId: row[0],
+      firstName: row[1],
+      lastName: row[2],
+      nationalId: row[3],
+      telephone: row[4] || '',
+      email: row[5] || '',
+      folderId: row[6] || '',
+      createdAt: row[7],
+      updatedAt: row[8]
+    };
+  },
+
+  /**
+   * Gets all clients from the clients sheet
+   * @returns {Array} Array of all client objects
+   */
+  getAllClients: function() {
+    const sheet = this.getClientsSheet();
+    const data = sheet.getDataRange().getValues();
+    const clients = [];
+
+    // Skip header row
+    for (let i = 1; i < data.length; i++) {
+      const row = data[i];
+      // Skip empty rows
+      if (row[0]) {
+        clients.push(this.parseClientRow(row));
+      }
+    }
+
+    return clients;
+  },
+
+  /**
+   * Gets a client by their unique national ID
+   * @param {string} nationalId - National ID to search for
+   * @returns {Object|null} Client object or null if not found
+   */
+  getClientByNationalId: function(nationalId) {
+    const sheet = this.getClientsSheet();
+    const data = sheet.getDataRange().getValues();
+
+    // Skip header row
+    for (let i = 1; i < data.length; i++) {
+      const row = data[i];
+      if (row[3] === nationalId) {
+        return this.parseClientRow(row);
+      }
+    }
+
+    return null;
+  },
+
+  /**
+   * Gets a client by their client ID
+   * @param {string} clientId - Client ID (UUID)
+   * @returns {Object|null} Client object or null if not found
+   */
+  getClientById: function(clientId) {
+    const sheet = this.getClientsSheet();
+    const data = sheet.getDataRange().getValues();
+
+    // Skip header row
+    for (let i = 1; i < data.length; i++) {
+      const row = data[i];
+      if (row[0] === clientId) {
+        return this.parseClientRow(row);
+      }
+    }
+
+    return null;
+  },
+
+  /**
+   * Creates a new client entry
+   * @param {Object} clientData - Client data object
+   * @param {string} clientData.clientId - UUID for the client
+   * @param {string} clientData.firstName - First name (required)
+   * @param {string} clientData.lastName - Last name (required)
+   * @param {string} clientData.nationalId - National ID (required, unique)
+   * @param {string} clientData.telephone - Telephone (optional)
+   * @param {string} clientData.email - Email (optional)
+   * @param {string} clientData.folderId - Google Drive folder ID (optional)
+   * @returns {Object} Created client object
+   */
+  createClient: function(clientData) {
+    const sheet = this.getClientsSheet();
+
+    // Check if national ID already exists
+    const existing = this.getClientByNationalId(clientData.nationalId);
+    if (existing) {
+      throw ResponseHandler.conflictError(
+        'A client with this National ID already exists',
+        'client.create.error.duplicate'
+      );
+    }
+
+    const now = DateUtil.getCurrentTimestamp();
+
+    // Create client row
+    const row = [
+      clientData.clientId,            // A: clientId (UUID)
+      clientData.firstName,           // B: firstName
+      clientData.lastName,            // C: lastName
+      clientData.nationalId,          // D: nationalId (unique)
+      clientData.telephone || '',     // E: telephone
+      clientData.email || '',         // F: email
+      clientData.folderId || '',      // G: folderId
+      now,                            // H: createdAt
+      now                             // I: updatedAt
+    ];
+
+    sheet.appendRow(row);
+
+    // Return created client
+    return this.getClientById(clientData.clientId);
+  },
+
+  /**
+   * Updates an existing client
+   * @param {string} clientId - Client ID to update
+   * @param {Object} updates - Fields to update
+   * @returns {Object} Updated client object
+   */
+  updateClient: function(clientId, updates) {
+    const sheet = this.getClientsSheet();
+    const data = sheet.getDataRange().getValues();
+    let rowIndex = -1;
+
+    // Find the client row
+    for (let i = 1; i < data.length; i++) {
+      if (data[i][0] === clientId) {
+        rowIndex = i + 1; // Convert to 1-based index
+        break;
+      }
+    }
+
+    if (rowIndex === -1) {
+      throw ResponseHandler.notFoundError(
+        'Client not found',
+        'client.update.error.notfound'
+      );
+    }
+
+    const now = DateUtil.getCurrentTimestamp();
+
+    // Update editable fields
+    if (updates.firstName !== undefined) {
+      sheet.getRange(rowIndex, 2).setValue(updates.firstName);
+    }
+    if (updates.lastName !== undefined) {
+      sheet.getRange(rowIndex, 3).setValue(updates.lastName);
+    }
+    if (updates.telephone !== undefined) {
+      sheet.getRange(rowIndex, 5).setValue(updates.telephone);
+    }
+    if (updates.email !== undefined) {
+      sheet.getRange(rowIndex, 6).setValue(updates.email);
+    }
+    if (updates.folderId !== undefined) {
+      sheet.getRange(rowIndex, 7).setValue(updates.folderId);
+    }
+
+    // Auto-update updatedAt timestamp
+    sheet.getRange(rowIndex, 9).setValue(now);
+
+    // Return updated client
+    return this.getClientById(clientId);
   }
 };
