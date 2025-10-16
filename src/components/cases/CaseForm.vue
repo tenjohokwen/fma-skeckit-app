@@ -53,7 +53,7 @@ import { ref, computed } from 'vue'
 import { useI18n } from 'vue-i18n'
 
 // Props
-const props = defineProps({
+defineProps({
   loading: {
     type: Boolean,
     default: false

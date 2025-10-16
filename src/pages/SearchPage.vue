@@ -27,21 +27,25 @@
         <q-tab-panel name="clients">
           <div class="q-gutter-lg">
             <!-- Client Search Form -->
-            <ClientSearchForm
-              :loading="clientStore.loading"
-              @search="handleClientSearch"
-              @clear="handleClearClientSearch"
-            />
+            <div>
+              <ClientSearchForm
+                :loading="clientStore.loading"
+                @search="handleClientSearch"
+                @clear="handleClearClientSearch"
+              />
+            </div>
 
             <!-- Client Search Results -->
-            <ClientSearchResults
-              :results="displayedClientResults"
-              :loading="clientStore.loading"
-              @select-client="handleSelectClient"
-              @view-client="handleViewClient"
-              @create-client="showCreateClientDialog = true"
-              @create-case="handleCreateCase"
-            />
+            <div>
+              <ClientSearchResults
+                :results="displayedClientResults"
+                :loading="clientStore.loading"
+                @select-client="handleSelectClient"
+                @view-client="handleViewClient"
+                @create-client="showCreateClientDialog = true"
+                @create-case="handleCreateCase"
+              />
+            </div>
           </div>
         </q-tab-panel>
 
@@ -136,6 +140,29 @@
           </q-card-section>
         </q-card>
       </q-dialog>
+
+      <!-- Create Case Dialog -->
+      <q-dialog v-model="showCreateCaseDialog" persistent>
+        <q-card style="min-width: 500px">
+          <q-card-section>
+            <div class="text-h6">{{ $t('case.create.title') }}</div>
+            <div class="text-caption text-grey-7">
+              {{ selectedClientForCase ? `${selectedClientForCase.firstName} ${selectedClientForCase.lastName}` : '' }}
+            </div>
+          </q-card-section>
+
+          <q-separator />
+
+          <q-card-section>
+            <CaseForm
+              ref="caseFormRef"
+              :loading="creatingCase"
+              @submit="handleCaseSubmit"
+              @cancel="handleCaseCancel"
+            />
+          </q-card-section>
+        </q-card>
+      </q-dialog>
     </div>
   </q-page>
 </template>
@@ -152,29 +179,37 @@
 
 import { ref, computed, onMounted } from 'vue'
 import { useRouter } from 'vue-router'
+import { useI18n } from 'vue-i18n'
 import SearchBar from 'src/components/search/SearchBar.vue'
 import CaseCard from 'src/components/search/CaseCard.vue'
 import ClientSearchForm from 'src/components/search/ClientSearchForm.vue'
 import ClientSearchResults from 'src/components/search/ClientSearchResults.vue'
 import ClientForm from 'src/components/clients/ClientForm.vue'
+import CaseForm from 'src/components/cases/CaseForm.vue'
 import LoadingIndicator from 'src/components/shared/LoadingIndicator.vue'
 import ErrorDisplay from 'src/components/shared/ErrorDisplay.vue'
 import { useNotifications } from 'src/composables/useNotifications'
 import { useClientStore } from 'src/stores/client'
 import { useSearch } from 'src/composables/useSearch'
+import { api } from 'src/services/api'
 
 const router = useRouter()
-const { notifyInfo, notifyError } = useNotifications()
+const { t } = useI18n()
+const { notifyInfo, notifyError, notifySuccess } = useNotifications()
 const clientStore = useClientStore()
 const { initializeFuzzySearch } = useSearch()
 
 // State
 const activeTab = ref('clients')
 const showCreateClientDialog = ref(false)
+const showCreateCaseDialog = ref(false)
+const creatingCase = ref(false)
+const selectedClientForCase = ref(null)
 
 // Refs
 const searchBarRef = ref(null)
 const clientFormRef = ref(null)
+const caseFormRef = ref(null)
 
 // Computed - access search state from SearchBar
 const searchResults = computed(() => {
@@ -239,9 +274,59 @@ function handleViewClient(client) {
 }
 
 function handleCreateCase(client) {
-  // Navigate to case creation for this client (US4)
-  notifyInfo('Case creation coming in Phase 4')
-  console.log('Create case for client:', client)
+  // Store the client and open the case creation dialog
+  selectedClientForCase.value = client
+  showCreateCaseDialog.value = true
+}
+
+async function handleCaseSubmit(caseData) {
+  if (!selectedClientForCase.value || !selectedClientForCase.value.clientId) {
+    notifyError('Client information is missing')
+    return
+  }
+
+  creatingCase.value = true
+
+  try {
+    // Call API to create case
+    await api.post('case.create', {
+      clientId: selectedClientForCase.value.clientId,
+      caseId: caseData.caseId
+    })
+
+    // Close dialog and reset form
+    showCreateCaseDialog.value = false
+    caseFormRef.value?.resetForm()
+
+    // Show success message
+    notifySuccess(t('case.create.success'))
+
+    // Navigate to client details page to show the new case
+    router.push({
+      name: 'client-details',
+      params: { clientId: selectedClientForCase.value.clientId }
+    })
+
+  } catch (err) {
+    console.error('Failed to create case:', err)
+
+    // Handle specific error types
+    if (err.msgKey === 'case.create.error.duplicate') {
+      caseFormRef.value?.setError(t('case.create.error.duplicate'))
+    } else if (err.msgKey === 'case.create.error.invalidFormat') {
+      caseFormRef.value?.setError(t('case.create.validation.format'))
+    } else {
+      notifyError(err.message || 'Failed to create case')
+    }
+  } finally {
+    creatingCase.value = false
+  }
+}
+
+function handleCaseCancel() {
+  showCreateCaseDialog.value = false
+  caseFormRef.value?.resetForm()
+  selectedClientForCase.value = null
 }
 
 async function handleCreateClient(clientData) {

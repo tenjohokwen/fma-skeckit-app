@@ -2,6 +2,12 @@
   <div class="folder-navigator">
     <q-card flat bordered>
       <q-card-section>
+        <!-- Breadcrumb Navigation -->
+        <BreadcrumbNav
+          class="q-mb-md"
+          @navigate="handleBreadcrumbNavigate"
+        />
+
         <!-- Folder ID Input -->
         <div class="q-mb-md">
           <q-input
@@ -42,6 +48,15 @@
               <q-icon name="error" />
             </template>
             {{ error.message || $t('files.navigate.error') }}
+            <template v-slot:action>
+              <q-btn
+                flat
+                color="white"
+                :label="$t('common.retry')"
+                @click="loadFolderContents"
+                icon="refresh"
+              />
+            </template>
           </q-banner>
         </div>
 
@@ -49,95 +64,25 @@
         <div v-else-if="folderContents">
           <!-- Summary -->
           <div class="q-mb-md text-body2 text-grey-7">
-            {{ $t('files.navigate.summary', { folders: folderContents.folderCount, files: folderContents.fileCount }) }}
+            {{ $t('files.navigate.summary', { folders: folderContents.folders?.length || 0, files: folderContents.files?.length || 0 }) }}
           </div>
 
-          <!-- Folders List -->
-          <div v-if="folderContents.folders.length > 0" class="q-mb-md">
-            <div class="text-subtitle2 q-mb-sm">
-              <q-icon name="folder" class="q-mr-xs" />
-              {{ $t('files.navigate.folders') }}
-            </div>
-            <q-list bordered separator>
-              <q-item
-                v-for="folder in folderContents.folders"
-                :key="folder.folderId"
-                clickable
-                v-ripple
-                @click="navigateToFolder(folder.folderId)"
-              >
-                <q-item-section avatar>
-                  <q-icon name="folder" color="amber" />
-                </q-item-section>
-                <q-item-section>
-                  <q-item-label>{{ folder.folderName }}</q-item-label>
-                  <q-item-label caption>{{ folder.createdAt }}</q-item-label>
-                </q-item-section>
-                <q-item-section side>
-                  <q-icon name="chevron_right" />
-                </q-item-section>
-              </q-item>
-            </q-list>
-          </div>
-
-          <!-- Files List -->
-          <div v-if="folderContents.files.length > 0">
-            <div class="text-subtitle2 q-mb-sm">
-              <q-icon name="insert_drive_file" class="q-mr-xs" />
-              {{ $t('files.navigate.files') }}
-            </div>
-            <q-list bordered separator>
-              <q-item
-                v-for="file in folderContents.files"
-                :key="file.fileId"
-              >
-                <q-item-section avatar>
-                  <q-icon :name="getFileIcon(file.mimeType)" color="blue" />
-                </q-item-section>
-                <q-item-section>
-                  <q-item-label>{{ file.fileName }}</q-item-label>
-                  <q-item-label caption>
-                    {{ formatFileSize(file.size) }} • {{ file.createdAt }}
-                  </q-item-label>
-                </q-item-section>
-                <q-item-section side>
-                  <div class="row q-gutter-xs">
-                    <q-btn
-                      flat
-                      dense
-                      round
-                      icon="download"
-                      color="primary"
-                      @click="handleDownload(file)"
-                    >
-                      <q-tooltip>{{ $t('files.download') }}</q-tooltip>
-                    </q-btn>
-                    <q-btn
-                      flat
-                      dense
-                      round
-                      icon="delete"
-                      color="negative"
-                      @click="handleDelete(file)"
-                    >
-                      <q-tooltip>{{ $t('files.delete.title') }}</q-tooltip>
-                    </q-btn>
-                  </div>
-                </q-item-section>
-              </q-item>
-            </q-list>
-          </div>
-
-          <!-- Empty State -->
-          <div v-if="folderContents.folders.length === 0 && folderContents.files.length === 0" class="text-center q-my-lg">
-            <q-icon name="folder_open" size="64px" color="grey-5" />
-            <div class="text-h6 text-grey-7 q-mt-md">{{ $t('files.navigate.empty') }}</div>
-          </div>
+          <!-- Folder Browser Component -->
+          <FolderBrowser
+            :folders="folderContents.folders || []"
+            :files="folderContents.files || []"
+            :loading="isLoading"
+            @folder-click="handleFolderClick"
+            @download="handleDownloadFile"
+            @rename="handleRenameFile"
+            @delete="handleDeleteFile"
+            @delete-folder="handleDeleteFolder"
+          />
         </div>
       </q-card-section>
     </q-card>
 
-    <!-- Delete Confirmation Dialog -->
+    <!-- File Delete Confirmation Dialog -->
     <q-dialog v-model="showDeleteDialog" persistent>
       <q-card>
         <q-card-section>
@@ -147,7 +92,7 @@
         <q-card-section class="q-pt-none">
           {{ $t('files.delete.confirm') }}
           <div v-if="fileToDelete" class="q-mt-sm text-caption text-grey-7">
-            <strong>{{ $t('files.upload.fileName') }}:</strong> {{ fileToDelete.fileName }}
+            <strong>{{ $t('files.upload.fileName') }}:</strong> {{ fileToDelete.name || fileToDelete.fileName }}
           </div>
         </q-card-section>
 
@@ -158,11 +103,29 @@
             :label="$t('files.delete.title')"
             color="negative"
             :loading="isDeleting"
-            @click="confirmDelete"
+            @click="confirmDeleteFile"
           />
         </q-card-actions>
       </q-card>
     </q-dialog>
+
+    <!-- Folder Delete Confirmation Dialog -->
+    <FolderDeleteDialog
+      v-model="showFolderDeleteDialog"
+      :folder="folderToDelete"
+      :deleting="isDeletingFolder"
+      @confirm="confirmDeleteFolder"
+      @cancel="showFolderDeleteDialog = false"
+    />
+
+    <!-- File Rename Dialog -->
+    <FileRenameDialog
+      v-model="showRenameDialog"
+      :file="fileToRename"
+      :renaming="isRenaming"
+      @rename="confirmRenameFile"
+      @cancel="showRenameDialog = false"
+    />
   </div>
 </template>
 
@@ -171,13 +134,21 @@ import { ref } from 'vue'
 import { useI18n } from 'vue-i18n'
 import { useQuasar } from 'quasar'
 import { useFileOperations } from 'src/composables/useFileOperations'
+import { useNavigation } from 'src/composables/useNavigation'
+import { useFilesStore } from 'src/stores/files'
+import BreadcrumbNav from 'src/components/files/BreadcrumbNav.vue'
+import FolderBrowser from 'src/components/files/FolderBrowser.vue'
+import FolderDeleteDialog from 'src/components/files/FolderDeleteDialog.vue'
+import FileRenameDialog from 'src/components/files/FileRenameDialog.vue'
 
 const { t } = useI18n()
 const $q = useQuasar()
-const { listFolderContents, getDownloadUrl, deleteFile, isLoading } = useFileOperations()
+const { listFolderContents } = useFileOperations()
+const { pushFolder } = useNavigation()
+const filesStore = useFilesStore()
 
 // Emit events
-const emit = defineEmits(['file-deleted'])
+const emit = defineEmits(['file-deleted', 'folder-deleted', 'file-renamed'])
 
 // State
 const currentFolderId = ref('')
@@ -186,6 +157,13 @@ const error = ref(null)
 const showDeleteDialog = ref(false)
 const fileToDelete = ref(null)
 const isDeleting = ref(false)
+const showFolderDeleteDialog = ref(false)
+const folderToDelete = ref(null)
+const isDeletingFolder = ref(false)
+const showRenameDialog = ref(false)
+const fileToRename = ref(null)
+const isRenaming = ref(false)
+const isLoading = ref(false)
 
 /**
  * Loads folder contents
@@ -197,6 +175,7 @@ async function loadFolderContents() {
 
   error.value = null
   folderContents.value = null
+  isLoading.value = true
 
   try {
     const contents = await listFolderContents(currentFolderId.value.trim())
@@ -204,28 +183,52 @@ async function loadFolderContents() {
   } catch (err) {
     console.error('Load folder contents failed:', err)
     error.value = err
+  } finally {
+    isLoading.value = false
   }
 }
 
 /**
  * Navigates to a subfolder
  */
-function navigateToFolder(folderId) {
+function navigateToFolder(folderId, folderName = 'Folder') {
   currentFolderId.value = folderId
+
+  // Update breadcrumb trail
+  pushFolder({
+    folderId: folderId,
+    folderName: folderName,
+    type: 'folder'
+  })
+
   loadFolderContents()
 }
 
 /**
- * Handles file download
+ * Handles breadcrumb navigation
  */
-async function handleDownload(file) {
+function handleBreadcrumbNavigate(breadcrumb) {
+  currentFolderId.value = breadcrumb.folderId
+  loadFolderContents()
+}
+
+/**
+ * Handles folder click from FolderBrowser
+ */
+function handleFolderClick(folder) {
+  navigateToFolder(folder.folderId, folder.name)
+}
+
+/**
+ * Handles file download from FolderBrowser
+ */
+async function handleDownloadFile(file) {
   try {
-    const downloadData = await getDownloadUrl(file.fileId)
-    window.open(downloadData.downloadUrl, '_blank')
+    await filesStore.downloadFile(file.fileId)
 
     $q.notify({
       type: 'positive',
-      message: t('files.download.success', { fileName: file.fileName }),
+      message: t('files.download.success', { fileName: file.name }),
       position: 'top'
     })
   } catch (err) {
@@ -239,9 +242,57 @@ async function handleDownload(file) {
 }
 
 /**
- * Shows delete confirmation dialog
+ * Handles file rename from FolderBrowser
  */
-function handleDelete(file) {
+function handleRenameFile(file) {
+  fileToRename.value = file
+  showRenameDialog.value = true
+}
+
+/**
+ * Confirms file rename with new name
+ */
+async function confirmRenameFile(data) {
+  if (!fileToRename.value) {
+    return
+  }
+
+  isRenaming.value = true
+
+  try {
+    await filesStore.renameFile(data.fileId, data.newName)
+
+    $q.notify({
+      type: 'positive',
+      message: t('fileRename.success'),
+      position: 'top'
+    })
+
+    // Close dialog
+    showRenameDialog.value = false
+    fileToRename.value = null
+
+    // Reload folder contents to show new name
+    loadFolderContents()
+
+    // Emit event
+    emit('file-renamed')
+  } catch (err) {
+    console.error('Rename failed:', err)
+    $q.notify({
+      type: 'negative',
+      message: err.message || t('fileRename.error.generic'),
+      position: 'top'
+    })
+  } finally {
+    isRenaming.value = false
+  }
+}
+
+/**
+ * Handles file delete from FolderBrowser
+ */
+function handleDeleteFile(file) {
   fileToDelete.value = file
   showDeleteDialog.value = true
 }
@@ -249,7 +300,7 @@ function handleDelete(file) {
 /**
  * Confirms file deletion
  */
-async function confirmDelete() {
+async function confirmDeleteFile() {
   if (!fileToDelete.value) {
     return
   }
@@ -257,7 +308,7 @@ async function confirmDelete() {
   isDeleting.value = true
 
   try {
-    await deleteFile(fileToDelete.value.fileId)
+    await filesStore.deleteFile(fileToDelete.value.fileId)
 
     $q.notify({
       type: 'positive',
@@ -287,34 +338,51 @@ async function confirmDelete() {
 }
 
 /**
- * Gets icon for file type
+ * Handles folder delete from FolderBrowser
  */
-function getFileIcon(mimeType) {
-  if (!mimeType) return 'insert_drive_file'
-
-  if (mimeType.startsWith('image/')) return 'image'
-  if (mimeType.startsWith('video/')) return 'videocam'
-  if (mimeType.startsWith('audio/')) return 'audiotrack'
-  if (mimeType.includes('pdf')) return 'picture_as_pdf'
-  if (mimeType.includes('word')) return 'description'
-  if (mimeType.includes('sheet') || mimeType.includes('excel')) return 'table_chart'
-  if (mimeType.includes('presentation') || mimeType.includes('powerpoint')) return 'slideshow'
-  if (mimeType.includes('zip') || mimeType.includes('rar')) return 'folder_zip'
-
-  return 'insert_drive_file'
+function handleDeleteFolder(folder) {
+  folderToDelete.value = folder
+  showFolderDeleteDialog.value = true
 }
 
 /**
- * Formats file size
+ * Confirms folder deletion with typed confirmation
  */
-function formatFileSize(bytes) {
-  if (!bytes || bytes === 0) return '0 Bytes'
+async function confirmDeleteFolder(data) {
+  if (!folderToDelete.value) {
+    return
+  }
 
-  const k = 1024
-  const sizes = ['Bytes', 'KB', 'MB', 'GB']
-  const i = Math.floor(Math.log(bytes) / Math.log(k))
+  isDeletingFolder.value = true
 
-  return Math.round(bytes / Math.pow(k, i) * 100) / 100 + ' ' + sizes[i]
+  try {
+    await filesStore.deleteFolder(data.folderId, data.confirmation)
+
+    $q.notify({
+      type: 'positive',
+      message: t('folderDelete.success'),
+      position: 'top'
+    })
+
+    // Close dialog
+    showFolderDeleteDialog.value = false
+    folderToDelete.value = null
+
+    // Reload folder contents
+    loadFolderContents()
+
+    // Emit event
+    emit('folder-deleted')
+  } catch (err) {
+    console.error('Folder delete failed:', err)
+    $q.notify({
+      type: 'negative',
+      message: err.message || t('folderDelete.error'),
+      position: 'top'
+    })
+  } finally {
+    isDeletingFolder.value = false
+  }
 }
 </script>
 

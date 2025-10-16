@@ -104,8 +104,77 @@ export function useFileIcons() {
     return 'folder';
   };
 
+  /**
+   * Get icon and color for file based on MIME type
+   * @param {string} mimeType - The MIME type of the file
+   * @returns {Object} Object with icon and color properties
+   */
+  const getIconForFile = (mimeType) => {
+    if (!mimeType) {
+      return { icon: 'insert_drive_file', color: 'grey-7' }
+    }
+
+    // Image files
+    if (mimeType.startsWith('image/')) {
+      return { icon: 'image', color: 'purple' }
+    }
+
+    // Video files
+    if (mimeType.startsWith('video/')) {
+      return { icon: 'movie', color: 'pink' }
+    }
+
+    // Audio files
+    if (mimeType.startsWith('audio/')) {
+      return { icon: 'audio_file', color: 'orange' }
+    }
+
+    // PDF
+    if (mimeType.includes('pdf')) {
+      return { icon: 'picture_as_pdf', color: 'red' }
+    }
+
+    // Word documents
+    if (mimeType.includes('word') || mimeType.includes('document')) {
+      return { icon: 'description', color: 'blue' }
+    }
+
+    // Excel/Spreadsheets
+    if (mimeType.includes('sheet') || mimeType.includes('excel')) {
+      return { icon: 'table_chart', color: 'green' }
+    }
+
+    // PowerPoint/Presentations
+    if (mimeType.includes('presentation') || mimeType.includes('powerpoint')) {
+      return { icon: 'slideshow', color: 'amber' }
+    }
+
+    // Archives
+    if (mimeType.includes('zip') || mimeType.includes('rar') || mimeType.includes('compressed')) {
+      return { icon: 'folder_zip', color: 'brown' }
+    }
+
+    // Text files
+    if (mimeType.includes('text')) {
+      return { icon: 'description', color: 'grey-8' }
+    }
+
+    // Default
+    return { icon: 'insert_drive_file', color: 'grey-7' }
+  }
+
+  /**
+   * Get icon and color for folder
+   * @returns {Object} Object with icon and color properties
+   */
+  const getIconForFolder = () => {
+    return { icon: 'folder', color: 'amber' }
+  }
+
   return {
     getFileIcon,
-    getFolderIcon
+    getFolderIcon,
+    getIconForFile,
+    getIconForFolder
   };
 }

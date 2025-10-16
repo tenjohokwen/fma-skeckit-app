@@ -13,12 +13,16 @@ export default {
     "close": "Close",
     "clear": "Clear",
     "confirm": "Confirm",
+    "retry": "Retry",
     "yes": "Yes",
     "no": "No",
     "error": "Error",
     "success": "Success",
     "required": "Required",
-    "optional": "Optional"
+    "optional": "Optional",
+    "createdAt": "Created At",
+    "updatedAt": "Updated At",
+    "lastModified": "Last Modified"
   },
   "auth": {
     "signup": {
@@ -154,7 +158,24 @@ export default {
     "nextAction": "Next Action",
     "comments": "Comments",
     "viewDetails": "View Details",
-    "edit": "Edit Case"
+    "edit": "Edit Case",
+    "create": {
+      "title": "Create New Case",
+      "caseId": "Case ID",
+      "caseIdHint": "Alphanumeric characters, hyphens, and underscores only (1-100 characters)",
+      "createButton": "Create Case",
+      "creating": "Creating...",
+      "success": "Case created successfully",
+      "validation": {
+        "length": "Case ID must be 1-100 characters long",
+        "format": "Case ID can only contain letters, numbers, hyphens, and underscores"
+      },
+      "error": {
+        "duplicate": "A case with this ID already exists for this client",
+        "missingFields": "Case ID is required",
+        "invalidFormat": "Case ID must be 1-100 characters and contain only letters, numbers, hyphens, and underscores"
+      }
+    }
   },
   "edit": {
     "pageTitle": "Edit Case",
@@ -236,6 +257,19 @@ export default {
     }
   },
   "files": {
+    "case": {
+      "title": "Case Files",
+      "subtitle": "Manage files for this case"
+    },
+    "browse": {
+      "title": "Files",
+      "empty": "No files in this folder",
+      "emptyHint": "Upload files using the form above"
+    },
+    "rename": {
+      "success": "File renamed successfully",
+      "error": "Failed to rename file"
+    },
     "management": {
       "pageTitle": "File Management",
       "pageSubtitle": "Upload files, create case folders, and manage file operations",
@@ -374,6 +408,7 @@ export default {
   },
   "navigation": {
     "home": "Home",
+    "root": "Root",
     "search": "Search",
     "cases": "Cases",
     "files": "Files",
@@ -435,6 +470,8 @@ export default {
     },
     "details": {
       "title": "Client Details",
+      "subtitle": "View and manage client information",
+      "notFound": "Client not found",
       "personalInfo": "Personal Information",
       "firstName": "First Name",
       "lastName": "Last Name",
@@ -502,9 +539,12 @@ export default {
     "newName": "New Name",
     "renameButton": "Rename",
     "renaming": "Renaming...",
+    "hint": "Invalid characters: < > : \" / \\ | ? *",
     "success": "File renamed successfully",
     "error": {
+      "required": "File name is required",
       "invalidChars": "File name contains invalid characters",
+      "sameAsOld": "New name must be different from current name",
       "generic": "Failed to rename file"
     }
   },

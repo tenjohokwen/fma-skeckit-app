@@ -8,16 +8,16 @@
 
         <q-separator class="q-mb-md" />
 
-        <!-- Folder ID Input -->
-        <div class="q-mb-md">
-          <FieldInput v-model="folderId" type="text" :label="$t('files.upload.folderId')" icon="folder" required
+        <!-- Folder ID Input (only show if not provided as prop) -->
+        <div v-if="!folderId" class="q-mb-md">
+          <FieldInput v-model="folderIdInput" type="text" :label="$t('files.upload.folderId')" icon="folder" required
             :disable="isUploading" />
         </div>
 
         <!-- File Upload Area -->
-        <div class="upload-area" :class="{ 'drag-over': isDragging, 'disabled': isUploading || !folderId }"
+        <div class="upload-area" :class="{ 'drag-over': isDragging, 'disabled': isUploading || !effectiveFolderId }"
           @dragover.prevent="handleDragOver" @dragleave.prevent="handleDragLeave" @drop.prevent="handleDrop"
-          @click="!isUploading && folderId && triggerFileInput()">
+          @click="!isUploading && effectiveFolderId && triggerFileInput()">
           <input ref="fileInput" type="file" class="hidden-input" @change="handleFileSelect" />
 
           <div v-if="!selectedFile" class="upload-prompt">
@@ -29,7 +29,7 @@
               {{ $t('files.upload.or') }}
             </div>
             <q-btn flat color="primary" icon="attach_file" :label="$t('files.upload.selectFile')"
-              :disable="isUploading || !folderId" class="q-mt-sm" />
+              :disable="isUploading || !effectiveFolderId" class="q-mt-sm" />
             <div class="text-caption text-grey-6 q-mt-md">
               {{ $t('files.upload.maxSize') }}
             </div>
@@ -56,7 +56,7 @@
 
         <!-- Upload Button -->
         <div v-if="selectedFile && !isUploading" class="q-mt-md">
-          <q-btn color="primary" icon="cloud_upload" :label="$t('files.upload.uploadButton')" :disable="!folderId"
+          <q-btn color="primary" icon="cloud_upload" :label="$t('files.upload.uploadButton')" :disable="!effectiveFolderId"
             @click="handleUpload" />
         </div>
       </q-card-section>
@@ -65,7 +65,7 @@
 </template>
 
 <script setup>
-import { ref } from 'vue'
+import { ref, computed } from 'vue'
 import { useI18n } from 'vue-i18n'
 import { useQuasar } from 'quasar'
 import { useFileOperations } from 'src/composables/useFileOperations'
@@ -75,14 +75,27 @@ const { t } = useI18n()
 const $q = useQuasar()
 const { uploadFile, isLoading: isUploading } = useFileOperations()
 
+// Props
+const props = defineProps({
+  folderId: {
+    type: String,
+    default: ''
+  }
+})
+
 // Emit events
 const emit = defineEmits(['upload-success', 'upload-conflict'])
 
 // State
-const folderId = ref('')
+const folderIdInput = ref('')
 const selectedFile = ref(null)
 const isDragging = ref(false)
 const fileInput = ref(null)
+
+// Computed - use prop if provided, otherwise use input
+const effectiveFolderId = computed(() => {
+  return props.folderId || folderIdInput.value
+})
 
 /**
  * Triggers the hidden file input
@@ -107,7 +120,7 @@ function handleFileSelect(event) {
  * Handles drag over event
  */
 function handleDragOver() {
-  if (!isUploading.value && folderId.value) {
+  if (!isUploading.value && effectiveFolderId.value) {
     isDragging.value = true
   }
 }
@@ -125,7 +138,7 @@ function handleDragLeave() {
 function handleDrop(event) {
   isDragging.value = false
 
-  if (isUploading.value || !folderId.value) {
+  if (isUploading.value || !effectiveFolderId.value) {
     return
   }
 
@@ -178,17 +191,20 @@ function clearFile() {
  * Handles file upload
  */
 async function handleUpload() {
-  if (!folderId.value || !selectedFile.value) {
+  if (!effectiveFolderId.value || !selectedFile.value) {
     return
   }
 
   try {
-    const result = await uploadFile(folderId.value.trim(), selectedFile.value)
+    const result = await uploadFile({
+      caseFolderId: effectiveFolderId.value.trim(),
+      file: selectedFile.value
+    })
 
     // Check if conflict detected
     if (result.conflict) {
       emit('upload-conflict', {
-        folderId: folderId.value.trim(),
+        folderId: effectiveFolderId.value.trim(),
         file: selectedFile.value,
         existingFileId: result.existingFileId,
         fileName: result.fileName

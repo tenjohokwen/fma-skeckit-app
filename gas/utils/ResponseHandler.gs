@@ -36,20 +36,40 @@ const ResponseHandler = {
 
   /**
    * Creates success response
-   * @param {Object} result - Result object with status, msgKey, message, data, token
+   * Supports two call patterns:
+   * 1. success(result) - where result = { status, msgKey, message, data, token }
+   * 2. success(data, msgKey, message) - shorthand where data is wrapped automatically
+   *
+   * @param {Object} result - Result object OR data payload
+   * @param {string} msgKey - Optional message key (for shorthand pattern)
+   * @param {string} message - Optional message (for shorthand pattern)
    * @returns {GoogleAppsScript.Content.TextOutput} JSON response
    */
-  success: function(result) {
-    const response = {
-      status: result.status || 200,
-      msgKey: result.msgKey || 'success',
-      message: result.message || 'Operation completed successfully',
-      data: result.data || {}
-    };
+  success: function(result, msgKey, message) {
+    let response;
 
-    // Include token if provided
-    if (result.token) {
-      response.token = result.token;
+    // Check if this is shorthand pattern: success(data, msgKey, message)
+    if (msgKey || (!result.status && !result.msgKey && !result.message && !result.data)) {
+      // Shorthand pattern - wrap data
+      response = {
+        status: 200,
+        msgKey: msgKey || 'success',
+        message: message || 'Operation completed successfully',
+        data: result || {}
+      };
+    } else {
+      // Full pattern - result already has proper structure
+      response = {
+        status: result.status || 200,
+        msgKey: result.msgKey || 'success',
+        message: result.message || 'Operation completed successfully',
+        data: result.data || {}
+      };
+
+      // Include token if provided
+      if (result.token) {
+        response.token = result.token;
+      }
     }
 
     return ContentService
@@ -161,6 +181,20 @@ const ResponseHandler = {
   conflictError: function(message = 'Resource already exists', msgKey = 'error.conflict') {
     return {
       status: 409,
+      msgKey: msgKey,
+      message: message
+    };
+  },
+
+  /**
+   * Creates server error response
+   * @param {string} message - Server error message
+   * @param {string} msgKey - i18n message key
+   * @returns {Object} Error object to throw
+   */
+  serverError: function(message = 'Internal server error', msgKey = 'error.internal') {
+    return {
+      status: 500,
       msgKey: msgKey,
       message: message
     };

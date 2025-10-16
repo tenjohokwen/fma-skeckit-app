@@ -48,7 +48,7 @@ export const useClientStore = defineStore('client', () => {
       searchQuery.value = { ...query }
 
       // Call API
-      const response = await api.callFunction('client.search', query)
+      const response = await api.post('client.search', query)
 
       // Store results
       searchResults.value = response.data.clients || []
@@ -84,7 +84,7 @@ export const useClientStore = defineStore('client', () => {
       }
 
       // Call API
-      const response = await api.callFunction('client.create', clientData)
+      const response = await api.post('client.create', clientData)
 
       const newClient = response.data.client
 
@@ -106,21 +106,25 @@ export const useClientStore = defineStore('client', () => {
   /**
    * Get client details by ID
    * @param {string} clientId - Client ID
-   * @returns {Promise<Object>} Client object with cases
+   * @returns {Promise<Object>} Object with client and cases
    */
   async function getClientDetails(clientId) {
     loading.value = true
     error.value = null
 
     try {
-      const response = await api.callFunction('client.get', { clientId })
+      const response = await api.post('client.get', { clientId })
 
       const client = response.data.client
+      const cases = response.data.cases || []
 
       // Store as selected client
       selectedClient.value = client
 
-      return client
+      return {
+        client,
+        cases
+      }
     } catch (err) {
       error.value = err.message
       throw err

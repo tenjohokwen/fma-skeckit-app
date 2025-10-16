@@ -10,16 +10,17 @@
 const ClientHandler = {
   /**
    * Search for clients by name and/or national ID
-   * @param {Object} requestData - Request data
-   * @param {string} requestData.firstName - First name (optional)
-   * @param {string} requestData.lastName - Last name (optional)
-   * @param {string} requestData.nationalId - National ID (optional)
-   * @param {string} currentUser - Email of current user
+   * @param {Object} context - Request context from Router
+   * @param {Object} context.data - Request data
+   * @param {string} context.data.firstName - First name (optional)
+   * @param {string} context.data.lastName - Last name (optional)
+   * @param {string} context.data.nationalId - National ID (optional)
+   * @param {Object} context.user - Current user
    * @returns {Object} Response with matching clients
    */
-  search: function(requestData, currentUser) {
+  search: function(context) {
     try {
-      const { firstName, lastName, nationalId } = requestData;
+      const { firstName, lastName, nationalId } = context.data;
 
       // Validate at least one search criterion exists
       if (!firstName && !lastName && !nationalId) {
@@ -57,15 +58,20 @@ const ClientHandler = {
         return matches;
       });
 
-      return ResponseHandler.success({
-        clients: matchedClients,
-        count: matchedClients.length,
-        searchCriteria: {
-          firstName: firstName || '',
-          lastName: lastName || '',
-          nationalId: nationalId || ''
+      return {
+        status: 200,
+        msgKey: 'client.search.success',
+        message: `Found ${matchedClients.length} client(s)`,
+        data: {
+          clients: matchedClients,
+          count: matchedClients.length,
+          searchCriteria: {
+            firstName: firstName || '',
+            lastName: lastName || '',
+            nationalId: nationalId || ''
+          }
         }
-      }, 'client.search.success');
+      };
 
     } catch (error) {
       if (error.status) {
@@ -80,18 +86,19 @@ const ClientHandler = {
 
   /**
    * Create a new client with automatic folder creation
-   * @param {Object} requestData - Request data
-   * @param {string} requestData.firstName - First name (required)
-   * @param {string} requestData.lastName - Last name (required)
-   * @param {string} requestData.nationalId - National ID (required)
-   * @param {string} requestData.telephone - Telephone (optional)
-   * @param {string} requestData.email - Email (optional)
-   * @param {string} currentUser - Email of current user
+   * @param {Object} context - Request context from Router
+   * @param {Object} context.data - Request data
+   * @param {string} context.data.firstName - First name (required)
+   * @param {string} context.data.lastName - Last name (required)
+   * @param {string} context.data.nationalId - National ID (required)
+   * @param {string} context.data.telephone - Telephone (optional)
+   * @param {string} context.data.email - Email (optional)
+   * @param {Object} context.user - Current user
    * @returns {Object} Response with created client
    */
-  create: function(requestData, currentUser) {
+  create: function(context) {
     try {
-      const { firstName, lastName, nationalId, telephone, email } = requestData;
+      const { firstName, lastName, nationalId, telephone, email } = context.data;
 
       // Validate required fields
       if (!firstName || !lastName || !nationalId) {
@@ -145,11 +152,16 @@ const ClientHandler = {
 
       const createdClient = SheetsService.createClient(clientData);
 
-      return ResponseHandler.success({
-        client: createdClient,
-        folderPath: `cases/${folderName}`,
-        folderUrl: clientFolder.getUrl()
-      }, 'client.create.success');
+      return {
+        status: 200,
+        msgKey: 'client.create.success',
+        message: 'Client created successfully',
+        data: {
+          client: createdClient,
+          folderPath: `cases/${folderName}`,
+          folderUrl: clientFolder.getUrl()
+        }
+      };
 
     } catch (error) {
       if (error.status) {
@@ -164,14 +176,15 @@ const ClientHandler = {
 
   /**
    * Get client details by ID with associated cases
-   * @param {Object} requestData - Request data
-   * @param {string} requestData.clientId - Client ID
-   * @param {string} currentUser - Email of current user
+   * @param {Object} context - Request context from Router
+   * @param {Object} context.data - Request data
+   * @param {string} context.data.clientId - Client ID
+   * @param {Object} context.user - Current user
    * @returns {Object} Response with client details and cases
    */
-  get: function(requestData, currentUser) {
+  get: function(context) {
     try {
-      const { clientId } = requestData;
+      const { clientId } = context.data;
 
       if (!clientId) {
         throw ResponseHandler.validationError(
@@ -207,8 +220,8 @@ const ClientHandler = {
               caseId: caseFolder.getName(),
               folderId: caseFolder.getId(),
               fileCount: fileCount,
-              createdAt: DateUtil.formatTimestamp(caseFolder.getDateCreated()),
-              lastModified: DateUtil.formatTimestamp(caseFolder.getLastUpdated())
+              createdAt: DateUtil.formatDate(caseFolder.getDateCreated()),
+              lastModified: DateUtil.formatDate(caseFolder.getLastUpdated())
             });
           }
 
@@ -219,11 +232,16 @@ const ClientHandler = {
         }
       }
 
-      return ResponseHandler.success({
-        client: client,
-        cases: cases,
-        caseCount: caseCount
-      }, 'client.get.success');
+      return {
+        status: 200,
+        msgKey: 'client.get.success',
+        message: 'Client retrieved successfully',
+        data: {
+          client: client,
+          cases: cases,
+          caseCount: caseCount
+        }
+      };
 
     } catch (error) {
       if (error.status) {

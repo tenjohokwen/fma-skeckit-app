@@ -10,15 +10,16 @@
 const CaseHandler = {
   /**
    * Create a new case folder for a client
-   * @param {Object} requestData - Request data
-   * @param {string} requestData.clientId - Client ID (required)
-   * @param {string} requestData.caseId - Case ID/folder name (required)
-   * @param {string} currentUser - Email of current user
+   * @param {Object} context - Request context from Router
+   * @param {Object} context.data - Request data
+   * @param {string} context.data.clientId - Client ID (required)
+   * @param {string} context.data.caseId - Case ID/folder name (required)
+   * @param {Object} context.user - Current user
    * @returns {Object} Response with created case
    */
-  create: function(requestData, currentUser) {
+  create: function(context) {
     try {
-      const { clientId, caseId } = requestData;
+      const { clientId, caseId } = context.data;
 
       // Validate required fields
       if (!clientId) {
@@ -95,16 +96,21 @@ const CaseHandler = {
       // Build folder path
       const folderPath = `cases/${clientFolder.getName()}/${caseId}`;
 
-      return ResponseHandler.success({
-        caseId: caseId,
-        clientId: clientId,
-        folderId: caseFolderId,
-        folderPath: folderPath,
-        folderUrl: caseFolder.getUrl(),
-        fileCount: 0,
-        createdAt: DateUtil.formatTimestamp(caseFolder.getDateCreated()),
-        lastModified: DateUtil.formatTimestamp(caseFolder.getLastUpdated())
-      }, 'case.create.success');
+      return {
+        status: 200,
+        msgKey: 'case.create.success',
+        message: 'Case folder created successfully',
+        data: {
+          caseId: caseId,
+          clientId: clientId,
+          folderId: caseFolderId,
+          folderPath: folderPath,
+          folderUrl: caseFolder.getUrl(),
+          fileCount: 0,
+          createdAt: DateUtil.formatDate(caseFolder.getDateCreated()),
+          lastModified: DateUtil.formatDate(caseFolder.getLastUpdated())
+        }
+      };
 
     } catch (error) {
       if (error.status) {

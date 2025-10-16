@@ -120,7 +120,7 @@ const route = useRoute()
 const router = useRouter()
 const { t } = useI18n()
 const clientStore = useClientStore()
-const { notifyInfo, notifyError, notifySuccess } = useNotifications()
+const { notifyError, notifySuccess } = useNotifications()
 
 // State
 const loading = ref(false)
@@ -171,15 +171,15 @@ async function loadClientDetails() {
 }
 
 function handleCaseClick(caseItem) {
-  // Navigate to file management page for this case
-  notifyInfo('File management will be available in Phases 7-9')
-  console.log('View case:', caseItem)
-
-  // When implemented, navigate to:
-  // router.push({
-  //   name: 'files',
-  //   params: { pathMatch: ['cases', client.value.folderId, caseItem.caseId] }
-  // })
+  // Navigate to case files page
+  router.push({
+    name: 'case-files',
+    params: { folderId: caseItem.folderId },
+    query: {
+      caseId: caseItem.caseId,
+      clientName: `${client.value.firstName} ${client.value.lastName}`
+    }
+  })
 }
 
 function handleCreateCase() {
@@ -197,8 +197,7 @@ async function handleCaseSubmit(caseData) {
 
   try {
     // Call API to create case
-    await api.post({
-      action: 'case.create',
+    await api.post('case.create', {
       clientId: client.value.clientId,
       caseId: caseData.caseId
     })

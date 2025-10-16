@@ -131,7 +131,7 @@ function formatDate(timestamp) {
     }
 
     return date.formatDate(dateObj, 'YYYY-MM-DD HH:mm')
-  } catch (e) {
+  } catch {
     return timestamp
   }
 }

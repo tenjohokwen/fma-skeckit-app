@@ -44,7 +44,7 @@ const DriveService = {
         folderId: folder.getId(),
         folderName: folder.getName(),
         folderPath: `cases/${folder.getName()}`,
-        createdAt: DateUtil.formatTimestamp(folder.getDateCreated())
+        createdAt: DateUtil.formatDate(folder.getDateCreated())
       };
     }
 
@@ -196,7 +196,7 @@ const DriveService = {
       folders.push({
         folderId: subfolder.getId(),
         folderName: subfolder.getName(),
-        createdAt: DateUtil.formatTimestamp(subfolder.getDateCreated())
+        createdAt: DateUtil.formatDate(subfolder.getDateCreated())
       });
     }
 
@@ -462,7 +462,7 @@ const DriveService = {
         fileName: file.getName(),
         mimeType: file.getMimeType(),
         size: file.getSize(),
-        createdAt: DateUtil.formatTimestamp(file.getDateCreated()),
+        createdAt: DateUtil.formatDate(file.getDateCreated()),
         downloadUrl: `https://drive.google.com/uc?export=download&id=${file.getId()}`
       });
     }
@@ -530,7 +530,7 @@ const DriveService = {
         folderId: subfolder.getId(),
         name: subfolder.getName(),
         itemCount: itemCount,
-        lastModified: DateUtil.formatTimestamp(subfolder.getLastUpdated())
+        lastModified: DateUtil.formatDate(subfolder.getLastUpdated())
       });
     }
 
@@ -544,10 +544,16 @@ const DriveService = {
         name: file.getName(),
         mimeType: file.getMimeType(),
         size: file.getSize(),
-        lastModified: DateUtil.formatTimestamp(file.getLastUpdated()),
+        lastModified: DateUtil.formatDate(file.getLastUpdated()),
         downloadUrl: `https://drive.google.com/uc?export=download&id=${file.getId()}`
       });
     }
+
+    // Sort folders alphabetically by name
+    folders.sort((a, b) => a.name.localeCompare(b.name));
+
+    // Sort files alphabetically by name
+    files.sort((a, b) => a.name.localeCompare(b.name));
 
     return {
       folderId: folderId,

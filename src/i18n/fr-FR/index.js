@@ -17,7 +17,10 @@ export default {
     error: "Erreur",
     success: "Succès",
     required: "Requis",
-    optional: "Optionnel"
+    optional: "Optionnel",
+    createdAt: "Créé le",
+    updatedAt: "Mis à jour le",
+    lastModified: "Dernière modification"
   },
   auth: {
     signup: {
@@ -151,7 +154,24 @@ export default {
     nextAction: "Prochaine Action",
     comments: "Commentaires",
     viewDetails: "Voir les Détails",
-    edit: "Modifier le Dossier"
+    edit: "Modifier le Dossier",
+    create: {
+      title: "Créer un Nouveau Dossier",
+      caseId: "ID du Dossier",
+      caseIdHint: "Caractères alphanumériques, tirets et traits de soulignement uniquement (1-100 caractères)",
+      createButton: "Créer le Dossier",
+      creating: "Création en cours...",
+      success: "Dossier créé avec succès",
+      validation: {
+        length: "L'ID du dossier doit contenir entre 1 et 100 caractères",
+        format: "L'ID du dossier ne peut contenir que des lettres, chiffres, tirets et traits de soulignement"
+      },
+      error: {
+        duplicate: "Un dossier avec cet ID existe déjà pour ce client",
+        missingFields: "L'ID du dossier est requis",
+        invalidFormat: "L'ID du dossier doit contenir entre 1 et 100 caractères et uniquement des lettres, chiffres, tirets et traits de soulignement"
+      }
+    }
   },
   edit: {
     pageTitle: "Modifier le Dossier",
@@ -226,6 +246,19 @@ export default {
     }
   },
   files: {
+    case: {
+      title: "Fichiers du Cas",
+      subtitle: "Gérer les fichiers de ce cas"
+    },
+    browse: {
+      title: "Fichiers",
+      empty: "Aucun fichier dans ce dossier",
+      emptyHint: "Téléchargez des fichiers en utilisant le formulaire ci-dessus"
+    },
+    rename: {
+      success: "Fichier renommé avec succès",
+      error: "Échec du renommage du fichier"
+    },
     management: {
       pageTitle: "Gestion des Fichiers",
       pageSubtitle: "Télécharger des fichiers, créer des dossiers de cas et gérer les opérations de fichiers",
@@ -365,6 +398,7 @@ export default {
   },
   navigation: {
     home: "Accueil",
+    root: "Racine",
     search: "Rechercher",
     cases: "Dossiers",
     files: "Fichiers",
@@ -414,6 +448,8 @@ export default {
     },
     details: {
       title: "Détails du Client",
+      subtitle: "Voir et gérer les informations du client",
+      notFound: "Client non trouvé",
       personalInfo: "Informations Personnelles",
       firstName: "Prénom",
       lastName: "Nom de Famille",

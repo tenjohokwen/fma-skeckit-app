@@ -20,23 +20,43 @@ const SheetsService = {
   /**
    * Gets the metadata sheet
    * @returns {GoogleAppsScript.Spreadsheet.Sheet} Metadata sheet
+   * @throws {Error} If metadata sheet doesn't exist
    */
   getMetadataSheet: function() {
     const props = PropertiesService.getScriptProperties();
     const spreadsheetId = props.getProperty('SPREADSHEET_ID');
     const ss = SpreadsheetApp.openById(spreadsheetId);
-    return ss.getSheetByName('metadata');
+    const sheet = ss.getSheetByName('metadata');
+
+    if (!sheet) {
+      throw ResponseHandler.serverError(
+        'Metadata sheet not found. Please create a sheet named "metadata" in your spreadsheet with the required columns.',
+        'sheets.error.metadataNotFound'
+      );
+    }
+
+    return sheet;
   },
 
   /**
    * Gets the clients sheet
    * @returns {GoogleAppsScript.Spreadsheet.Sheet} Clients sheet
+   * @throws {Error} If clients sheet doesn't exist
    */
   getClientsSheet: function() {
     const props = PropertiesService.getScriptProperties();
     const spreadsheetId = props.getProperty('SPREADSHEET_ID');
     const ss = SpreadsheetApp.openById(spreadsheetId);
-    return ss.getSheetByName('clients');
+    const sheet = ss.getSheetByName('clients');
+
+    if (!sheet) {
+      throw ResponseHandler.serverError(
+        'Clients sheet not found. Please create a sheet named "clients" in your spreadsheet with the required columns.',
+        'sheets.error.clientsNotFound'
+      );
+    }
+
+    return sheet;
   },
 
   /**
