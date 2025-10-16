@@ -484,6 +484,36 @@ export default {
       "createCase": "Create New Case",
       "caseId": "Case ID",
       "fileCount": "{count} file(s)"
+    },
+    "edit": {
+      "title": "Edit Client Information",
+      "editButton": "Edit",
+      "saveButton": "Save Changes",
+      "cancelButton": "Cancel",
+      "saving": "Saving...",
+      "success": "Client information updated successfully",
+      "unsavedChanges": "You have unsaved changes. Are you sure you want to cancel?",
+      "error": {
+        "missingClientId": "Client ID is required",
+        "missingFields": "First name, last name, and national ID are required",
+        "validation": "Please check your input and try again",
+        "invalidEmail": "Please enter a valid email address",
+        "duplicateNationalId": "This National ID is already registered to another client",
+        "generic": "Failed to update client information. Please try again."
+      },
+      "validation": {
+        "firstNameRequired": "First name is required",
+        "firstNameMaxLength": "First name must be 50 characters or less",
+        "lastNameRequired": "Last name is required",
+        "lastNameMaxLength": "Last name must be 50 characters or less",
+        "nationalIdRequired": "National ID is required",
+        "nationalIdMinLength": "National ID must be at least 5 characters",
+        "nationalIdMaxLength": "National ID must be 20 characters or less",
+        "telephoneMinLength": "Telephone must be at least 10 digits",
+        "telephoneMaxLength": "Telephone must be 15 digits or less",
+        "emailInvalid": "Please enter a valid email address",
+        "emailMaxLength": "Email must be 100 characters or less"
+      }
     }
   },
   "caseFolder": {

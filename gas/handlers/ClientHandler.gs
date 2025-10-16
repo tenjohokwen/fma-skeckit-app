@@ -252,5 +252,113 @@ const ClientHandler = {
         'client.get.error.server'
       );
     }
+  },
+
+  /**
+   * Update client information (admin-only)
+   * @param {Object} context - Request context from Router
+   * @param {Object} context.data - Request data
+   * @param {string} context.data.clientId - Client ID to update
+   * @param {string} context.data.firstName - First name (required)
+   * @param {string} context.data.lastName - Last name (required)
+   * @param {string} context.data.nationalId - National ID (required)
+   * @param {string} context.data.telephone - Telephone (optional)
+   * @param {string} context.data.email - Email (optional)
+   * @param {Object} context.user - Current user
+   * @returns {Object} Response with updated client
+   */
+  update: function(context) {
+    try {
+      // Admin-only authorization check
+      if (!context.user || context.user.role !== 'ROLE_ADMIN') {
+        throw ResponseHandler.forbiddenError(
+          'Admin access required',
+          'error.forbidden'
+        );
+      }
+
+      const { clientId, firstName, lastName, nationalId, telephone, email } = context.data;
+
+      // Validate required fields
+      if (!clientId) {
+        throw ResponseHandler.validationError(
+          'Client ID is required',
+          'client.update.error.missingClientId'
+        );
+      }
+
+      if (!firstName || !lastName || !nationalId) {
+        throw ResponseHandler.validationError(
+          'First name, last name, and national ID are required',
+          'client.update.error.missingFields'
+        );
+      }
+
+      // Trim and validate field lengths
+      const trimmedFirstName = String(firstName || '').trim();
+      const trimmedLastName = String(lastName || '').trim();
+      const trimmedNationalId = String(nationalId || '').trim();
+      const trimmedTelephone = String(telephone || '').trim();
+      const trimmedEmail = String(email || '').trim();
+
+      if (trimmedFirstName.length === 0 || trimmedFirstName.length > 50) {
+        throw ResponseHandler.validationError(
+          'First name must be between 1 and 50 characters',
+          'client.update.error.validation'
+        );
+      }
+
+      if (trimmedLastName.length === 0 || trimmedLastName.length > 50) {
+        throw ResponseHandler.validationError(
+          'Last name must be between 1 and 50 characters',
+          'client.update.error.validation'
+        );
+      }
+
+      if (trimmedNationalId.length < 5 || trimmedNationalId.length > 20) {
+        throw ResponseHandler.validationError(
+          'National ID must be between 5 and 20 characters',
+          'client.update.error.validation'
+        );
+      }
+
+      // Validate email format if provided
+      if (trimmedEmail.length > 0) {
+        const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
+        if (!emailRegex.test(trimmedEmail)) {
+          throw ResponseHandler.validationError(
+            'Invalid email format',
+            'client.update.error.invalidEmail'
+          );
+        }
+      }
+
+      // Update client via SheetsService
+      const updatedClient = SheetsService.updateClient(clientId, {
+        firstName: trimmedFirstName,
+        lastName: trimmedLastName,
+        nationalId: trimmedNationalId,
+        telephone: trimmedTelephone,
+        email: trimmedEmail
+      });
+
+      return {
+        status: 200,
+        msgKey: 'client.update.success',
+        message: 'Client information updated successfully',
+        data: {
+          client: updatedClient
+        }
+      };
+
+    } catch (error) {
+      if (error.status) {
+        throw error;
+      }
+      throw ResponseHandler.serverError(
+        'Failed to update client: ' + error.toString(),
+        'client.update.error.server'
+      );
+    }
   }
 };

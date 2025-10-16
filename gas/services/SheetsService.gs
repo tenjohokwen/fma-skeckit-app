@@ -478,6 +478,19 @@ const SheetsService = {
       );
     }
 
+    // Check national ID uniqueness if being updated (excluding current client)
+    if (updates.nationalId !== undefined) {
+      for (let i = 1; i < data.length; i++) {
+        // Skip current client row
+        if (i + 1 !== rowIndex && data[i][3] === updates.nationalId) {
+          throw ResponseHandler.validationError(
+            'This National ID is already registered to another client',
+            'client.update.error.duplicateNationalId'
+          );
+        }
+      }
+    }
+
     const now = DateUtil.getCurrentTimestamp();
 
     // Update editable fields
@@ -486,6 +499,9 @@ const SheetsService = {
     }
     if (updates.lastName !== undefined) {
       sheet.getRange(rowIndex, 3).setValue(updates.lastName);
+    }
+    if (updates.nationalId !== undefined) {
+      sheet.getRange(rowIndex, 4).setValue(updates.nationalId);
     }
     if (updates.telephone !== undefined) {
       sheet.getRange(rowIndex, 5).setValue(updates.telephone);

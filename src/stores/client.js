@@ -134,6 +134,56 @@ export const useClientStore = defineStore('client', () => {
   }
 
   /**
+   * Update client information (admin-only)
+   * @param {string} clientId - Client ID
+   * @param {Object} clientData - Updated client data
+   * @param {string} clientData.firstName - First name
+   * @param {string} clientData.lastName - Last name
+   * @param {string} clientData.nationalId - National ID
+   * @param {string} clientData.telephone - Telephone (optional)
+   * @param {string} clientData.email - Email (optional)
+   * @returns {Promise<Object>} Updated client object
+   */
+  async function updateClient(clientId, clientData) {
+    loading.value = true
+    error.value = null
+
+    try {
+      // Call API
+      const response = await api.post('client.update', {
+        clientId,
+        ...clientData
+      })
+
+      const updatedClient = response.data.client
+
+      // Update selectedClient if it's the one being edited
+      if (selectedClient.value?.clientId === clientId) {
+        selectedClient.value = updatedClient
+      }
+
+      // Update in search results if present
+      const index = searchResults.value.findIndex(c => c.clientId === clientId)
+      if (index !== -1) {
+        searchResults.value[index] = updatedClient
+      }
+
+      // Update in clients array if present
+      const clientIndex = clients.value.findIndex(c => c.clientId === clientId)
+      if (clientIndex !== -1) {
+        clients.value[clientIndex] = updatedClient
+      }
+
+      return updatedClient
+    } catch (err) {
+      error.value = err.message
+      throw err
+    } finally {
+      loading.value = false
+    }
+  }
+
+  /**
    * Select a client from search results
    * @param {Object} client - Client object
    */
@@ -194,6 +244,7 @@ export const useClientStore = defineStore('client', () => {
     searchClients,
     createClient,
     getClientDetails,
+    updateClient,
     selectClient,
     clearSearch,
     clearSelectedClient,

@@ -105,6 +105,7 @@ const Router = {
       'client.search': 'Search clients by name and/or national ID',
       'client.create': 'Create a new client with folder (admin only)',
       'client.get': 'Get client details with cases',
+      'client.update': 'Update client personal information (admin only)',
 
       // Case routes
       'case.create': 'Create a new case folder for a client',

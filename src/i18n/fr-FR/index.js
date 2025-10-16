@@ -462,6 +462,36 @@ export default {
       createCase: "Créer un Nouveau Dossier",
       caseId: "ID du Dossier",
       fileCount: "{count} fichier(s)"
+    },
+    edit: {
+      title: "Modifier les Informations du Client",
+      editButton: "Modifier",
+      saveButton: "Enregistrer les Modifications",
+      cancelButton: "Annuler",
+      saving: "Enregistrement en cours...",
+      success: "Informations du client mises à jour avec succès",
+      unsavedChanges: "Vous avez des modifications non enregistrées. Êtes-vous sûr de vouloir annuler?",
+      error: {
+        missingClientId: "L'ID du client est requis",
+        missingFields: "Le prénom, le nom de famille et le numéro d'identité nationale sont requis",
+        validation: "Veuillez vérifier votre saisie et réessayer",
+        invalidEmail: "Veuillez entrer une adresse email valide",
+        duplicateNationalId: "Ce numéro d'identité nationale est déjà enregistré pour un autre client",
+        generic: "Échec de la mise à jour des informations du client. Veuillez réessayer."
+      },
+      validation: {
+        firstNameRequired: "Le prénom est requis",
+        firstNameMaxLength: "Le prénom doit contenir 50 caractères ou moins",
+        lastNameRequired: "Le nom de famille est requis",
+        lastNameMaxLength: "Le nom de famille doit contenir 50 caractères ou moins",
+        nationalIdRequired: "Le numéro d'identité nationale est requis",
+        nationalIdMinLength: "Le numéro d'identité nationale doit contenir au moins 5 caractères",
+        nationalIdMaxLength: "Le numéro d'identité nationale doit contenir 20 caractères ou moins",
+        telephoneMinLength: "Le téléphone doit contenir au moins 10 chiffres",
+        telephoneMaxLength: "Le téléphone doit contenir 15 chiffres ou moins",
+        emailInvalid: "Veuillez entrer une adresse email valide",
+        emailMaxLength: "L'email doit contenir 100 caractères ou moins"
+      }
     }
   },
   caseFolder: {

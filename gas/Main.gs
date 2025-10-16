@@ -127,3 +127,37 @@ function listApiRoutes() {
     console.log(' - ' + route + ': ' + routes[route]);
   });
 }
+
+/**
+ * Test the client.update endpoint
+ * Run this manually in Apps Script editor to test the update functionality
+ */
+function testClientUpdate() {
+  // Get a test client first
+  const clients = SheetsService.getAllClients();
+  if (clients.length === 0) {
+    console.error('No clients found to test with');
+    return;
+  }
+
+  const testClient = clients[0];
+  console.log('Testing with client:', testClient.clientId, testClient.firstName, testClient.lastName);
+
+  try {
+    // Test update
+    const updated = SheetsService.updateClient(testClient.clientId, {
+      firstName: testClient.firstName,
+      lastName: testClient.lastName,
+      nationalId: testClient.nationalId,
+      telephone: testClient.telephone || '',
+      email: testClient.email || ''
+    });
+
+    console.log('Update successful:', updated);
+    return true;
+  } catch (error) {
+    console.error('Update failed:', error.message);
+    console.error('Stack:', error.stack);
+    return false;
+  }
+}

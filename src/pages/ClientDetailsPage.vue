@@ -44,7 +44,10 @@
       <!-- Client Details and Cases -->
       <div v-else-if="client" class="q-gutter-lg">
         <!-- Client Personal Information -->
-        <ClientDetails :client="client" />
+        <ClientDetails
+          :client="client"
+          @client-updated="handleClientUpdated"
+        />
 
         <!-- Cases List -->
         <CaseList
@@ -168,6 +171,11 @@ async function loadClientDetails() {
   } finally {
     loading.value = false
   }
+}
+
+function handleClientUpdated(updatedClient) {
+  // Update the local client ref with the new data
+  client.value = updatedClient
 }
 
 function handleCaseClick(caseItem) {
