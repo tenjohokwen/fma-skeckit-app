@@ -44,7 +44,10 @@
       <!-- Client Details and Cases -->
       <div v-else-if="client" class="q-gutter-lg">
         <!-- Client Personal Information -->
-        <ClientDetails :client="client" />
+        <ClientDetails
+          :client="client"
+          @updated="handleClientUpdated"
+        />
 
         <!-- Cases List -->
         <CaseList
@@ -238,6 +241,16 @@ async function handleCaseSubmit(caseData) {
 function handleCaseCancel() {
   showCreateCaseDialog.value = false
   caseFormRef.value?.resetForm()
+}
+
+function handleClientUpdated(updatedClient) {
+  // Update the local client data with the updated information
+  if (updatedClient) {
+    client.value = updatedClient
+  } else {
+    // Fallback: reload client details
+    loadClientDetails()
+  }
 }
 
 onMounted(() => {

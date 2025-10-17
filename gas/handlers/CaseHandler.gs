@@ -96,6 +96,28 @@ const CaseHandler = {
       // Build folder path
       const folderPath = `cases/${clientFolder.getName()}/${caseId}`;
 
+      // Get current user's full name for metadata
+      const currentUser = context.user || {};
+      const createdBy = currentUser.fullName || currentUser.email || 'Unknown';
+
+      // Create metadata entry in the metadata sheet
+      const now = DateUtil.getCurrentTimestamp();
+      const clientName = `${client.firstName} ${client.lastName}`;
+      const caseMetadata = {
+        caseId: caseId,
+        caseName: caseId,  // Using caseId as caseName initially
+        clientName: clientName,
+        assignedTo: '',
+        caseType: '',
+        status: '',
+        notes: '',
+        createdBy: createdBy,
+        createdAt: now
+      };
+
+      // Save case metadata to the metadata sheet
+      SheetsService.createCase(caseMetadata, createdBy);
+
       return {
         status: 200,
         msgKey: 'case.create.success',

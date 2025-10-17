@@ -205,7 +205,12 @@ const SecurityInterceptor = {
     const missingFields = [];
 
     requiredFields.forEach(function(field) {
-      if (!data[field] || data[field].toString().trim() === '') {
+      // Check if field is undefined or null (not just falsy, to allow 0, false, empty string as valid values)
+      if (data[field] === undefined || data[field] === null) {
+        missingFields.push(field);
+      }
+      // For string values, also check if empty after trimming
+      else if (typeof data[field] === 'string' && data[field].trim() === '') {
         missingFields.push(field);
       }
     });

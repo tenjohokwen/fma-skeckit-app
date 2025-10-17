@@ -112,7 +112,7 @@ const recentFolder = ref(null)
 // Check admin permission
 if (!authStore.isAdmin) {
   notifyError('Admin role required')
-  router.push({ name: 'Search' })
+  router.push({ name: 'search' })
 }
 
 /**
@@ -155,7 +155,7 @@ function handleCopyFolderId(folderId) {
  * Navigates back to search page
  */
 function handleBack() {
-  router.push({ name: 'Search' })
+  router.push({ name: 'search' })
 }
 
 // Lifecycle

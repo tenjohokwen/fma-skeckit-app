@@ -5,11 +5,9 @@
  * Interacts with 'metadata' and 'clients' sheets in Google Sheets.
  *
  * Metadata Schema:
- * A: clientFirstName, B: clientLastName, C: clientEmail, D: clientPhoneNumber,
- * E: amountPaid, F: paymentStatus, G: folderName, H: folderPath,
- * I: assignedTo, J: assignedAt, K: lastUpdatedBy, L: lastUpdatedAt,
- * M: tasksRemaining, N: nextAction, O: comment, P: dueDate,
- * Q: status, R: caseId, S: version
+ * A: caseId, B: caseName, C: clientName, D: assignedTo, E: caseType,
+ * F: status, G: notes, H: createdBy, I: createdAt, J: assignedAt,
+ * K: lastUpdatedBy, L: lastUpdatedAt, M: version
  *
  * Clients Schema:
  * A: clientId (UUID), B: firstName, C: lastName, D: nationalId (unique),
@@ -68,28 +66,22 @@ const SheetsService = {
    */
   parseRow: function(row, rowIndex, includeSystemFields) {
     const caseData = {
-      caseId: row[17],
-      clientFirstName: row[0],
-      clientLastName: row[1],
-      clientEmail: row[2],
-      clientPhoneNumber: row[3],
-      amountPaid: row[4],
-      paymentStatus: row[5],
-      folderName: row[6],
-      folderPath: row[7],
-      assignedTo: row[8],
-      tasksRemaining: row[12],
-      nextAction: row[13],
-      comment: row[14],
-      dueDate: row[15],
-      status: row[16]
+      caseId: row[0],          // A: caseId
+      caseName: row[1],        // B: caseName
+      clientName: row[2],      // C: clientName
+      assignedTo: row[3],      // D: assignedTo
+      caseType: row[4],        // E: caseType
+      status: row[5],          // F: status
+      notes: row[6]            // G: notes
     };
 
     if (includeSystemFields) {
-      caseData.assignedAt = row[9];
-      caseData.lastUpdatedBy = row[10];
-      caseData.lastUpdatedAt = row[11];
-      caseData.version = row[18];
+      caseData.createdBy = row[7];          // H: createdBy
+      caseData.createdAt = row[8];          // I: createdAt
+      caseData.assignedAt = row[9];         // J: assignedAt
+      caseData.lastUpdatedBy = row[10];     // K: lastUpdatedBy
+      caseData.lastUpdatedAt = row[11];     // L: lastUpdatedAt
+      caseData.version = row[12];           // M: version
       caseData.rowIndex = rowIndex;
     }
 
@@ -97,7 +89,7 @@ const SheetsService = {
   },
 
   /**
-   * Searches for cases by client first name and/or last name
+   * Searches for cases by client name (combined search of firstName and lastName)
    * @param {string} firstName - Client first name (optional, partial match)
    * @param {string} lastName - Client last name (optional, partial match)
    * @returns {Array} Array of matching case objects
@@ -114,20 +106,19 @@ const SheetsService = {
     // Skip header row
     for (let i = 1; i < data.length; i++) {
       const row = data[i];
-      const rowFirstName = (row[0] || '').toLowerCase();
-      const rowLastName = (row[1] || '').toLowerCase();
+      const clientName = (row[2] || '').toLowerCase(); // C: clientName
 
       let matches = false;
 
       if (searchFirst && searchLast) {
-        // Both names provided - both must match
-        matches = rowFirstName.includes(searchFirst) && rowLastName.includes(searchLast);
+        // Both names provided - check if both appear in clientName
+        matches = clientName.includes(searchFirst) && clientName.includes(searchLast);
       } else if (searchFirst) {
         // Only first name provided
-        matches = rowFirstName.includes(searchFirst);
+        matches = clientName.includes(searchFirst);
       } else if (searchLast) {
         // Only last name provided
-        matches = rowLastName.includes(searchLast);
+        matches = clientName.includes(searchLast);
       }
 
       if (matches) {
@@ -151,7 +142,7 @@ const SheetsService = {
     // Skip header row
     for (let i = 1; i < data.length; i++) {
       const row = data[i];
-      if (row[17] === caseId) {
+      if (row[0] === caseId) { // A: caseId
         // Exclude system-generated fields for search results
         return this.parseRow(row, i + 1, false);
       }
@@ -172,7 +163,7 @@ const SheetsService = {
     // Skip header row
     for (let i = 1; i < data.length; i++) {
       const row = data[i];
-      if (row[17] === caseId) {
+      if (row[0] === caseId) { // A: caseId
         // Include system-generated fields for editing
         return this.parseRow(row, i + 1, true);
       }
@@ -199,30 +190,25 @@ const SheetsService = {
       );
     }
 
-    const now = DateUtil.getCurrentTimestamp();
+    const now = caseData.createdAt || DateUtil.getCurrentTimestamp();
     const assignedAt = caseData.assignedTo ? now : '';
+    const createdBy = caseData.createdBy || currentUser;
 
     // Create case row
     const row = [
-      caseData.clientFirstName,              // A: clientFirstName
-      caseData.clientLastName,               // B: clientLastName
-      caseData.clientEmail || '',            // C: clientEmail
-      caseData.clientPhoneNumber || '',      // D: clientPhoneNumber
-      caseData.amountPaid || 0,              // E: amountPaid
-      caseData.paymentStatus || '',          // F: paymentStatus
-      caseData.folderName,                   // G: folderName
-      caseData.folderPath,                   // H: folderPath
-      caseData.assignedTo || '',             // I: assignedTo
+      caseData.caseId,                       // A: caseId
+      caseData.caseName || '',               // B: caseName
+      caseData.clientName || '',             // C: clientName
+      caseData.assignedTo || '',             // D: assignedTo
+      caseData.caseType || '',               // E: caseType
+      caseData.status || '',                 // F: status
+      caseData.notes || '',                  // G: notes
+      createdBy,                             // H: createdBy
+      now,                                   // I: createdAt
       assignedAt,                            // J: assignedAt
       currentUser,                           // K: lastUpdatedBy
       now,                                   // L: lastUpdatedAt
-      caseData.tasksRemaining || '',         // M: tasksRemaining
-      caseData.nextAction || '',             // N: nextAction
-      caseData.comment || '',                // O: comment
-      caseData.dueDate || '',                // P: dueDate
-      caseData.status || '',                 // Q: status
-      caseData.caseId,                       // R: caseId
-      1                                      // S: version
+      0                                      // M: version (start at 0 as per spec)
     ];
 
     sheet.appendRow(row);
@@ -269,48 +255,25 @@ const SheetsService = {
     const assignedToChanged = updates.assignedTo !== undefined &&
                               updates.assignedTo !== currentCase.assignedTo;
 
-    // Update editable fields
-    if (updates.clientFirstName !== undefined) {
-      sheet.getRange(row, 1).setValue(updates.clientFirstName);
+    // Update editable fields (based on new schema)
+    // A: caseId - not editable
+    if (updates.caseName !== undefined) {
+      sheet.getRange(row, 2).setValue(updates.caseName); // B: caseName
     }
-    if (updates.clientLastName !== undefined) {
-      sheet.getRange(row, 2).setValue(updates.clientLastName);
-    }
-    if (updates.clientEmail !== undefined) {
-      sheet.getRange(row, 3).setValue(updates.clientEmail);
-    }
-    if (updates.clientPhoneNumber !== undefined) {
-      sheet.getRange(row, 4).setValue(updates.clientPhoneNumber);
-    }
-    if (updates.amountPaid !== undefined) {
-      sheet.getRange(row, 5).setValue(updates.amountPaid);
-    }
-    if (updates.paymentStatus !== undefined) {
-      sheet.getRange(row, 6).setValue(updates.paymentStatus);
-    }
-    if (updates.folderName !== undefined) {
-      sheet.getRange(row, 7).setValue(updates.folderName);
-    }
-    if (updates.folderPath !== undefined) {
-      sheet.getRange(row, 8).setValue(updates.folderPath);
+    if (updates.clientName !== undefined) {
+      sheet.getRange(row, 3).setValue(updates.clientName); // C: clientName
     }
     if (updates.assignedTo !== undefined) {
-      sheet.getRange(row, 9).setValue(updates.assignedTo);
+      sheet.getRange(row, 4).setValue(updates.assignedTo); // D: assignedTo
     }
-    if (updates.tasksRemaining !== undefined) {
-      sheet.getRange(row, 13).setValue(updates.tasksRemaining);
-    }
-    if (updates.nextAction !== undefined) {
-      sheet.getRange(row, 14).setValue(updates.nextAction);
-    }
-    if (updates.comment !== undefined) {
-      sheet.getRange(row, 15).setValue(updates.comment);
-    }
-    if (updates.dueDate !== undefined) {
-      sheet.getRange(row, 16).setValue(updates.dueDate);
+    if (updates.caseType !== undefined) {
+      sheet.getRange(row, 5).setValue(updates.caseType); // E: caseType
     }
     if (updates.status !== undefined) {
-      sheet.getRange(row, 17).setValue(updates.status);
+      sheet.getRange(row, 6).setValue(updates.status); // F: status
+    }
+    if (updates.notes !== undefined) {
+      sheet.getRange(row, 7).setValue(updates.notes); // G: notes
     }
 
     // Auto-update system fields
@@ -319,7 +282,7 @@ const SheetsService = {
     }
     sheet.getRange(row, 11).setValue(currentUser);         // K: lastUpdatedBy
     sheet.getRange(row, 12).setValue(now);                 // L: lastUpdatedAt
-    sheet.getRange(row, 19).setValue(expectedVersion + 1); // S: version
+    sheet.getRange(row, 13).setValue(expectedVersion + 1); // M: version
 
     // Return updated case
     return this.getCaseById(caseId);

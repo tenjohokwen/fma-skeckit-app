@@ -11,7 +11,9 @@ export default {
     next: "Suivant",
     submit: "Soumettre",
     close: "Fermer",
+    clear: "Effacer",
     confirm: "Confirmer",
+    retry: "Réessayer",
     yes: "Oui",
     no: "Non",
     error: "Erreur",
@@ -73,6 +75,7 @@ export default {
   },
   validation: {
     required: "Ce champ est requis",
+    maxLength: "Maximum {max} caractères autorisés",
     email: {
       invalid: "Veuillez entrer une adresse email valide",
       required: "L'email est requis"
@@ -93,10 +96,7 @@ export default {
     network: "Erreur réseau. Veuillez vérifier votre connexion.",
     server: "Erreur serveur. Veuillez réessayer plus tard.",
     unauthorized: "Non autorisé. Veuillez vous reconnecter.",
-    forbidden: {
-      default: "Vous n'avez pas la permission d'effectuer cette action.",
-      adminOnly: "Rôle d'administrateur requis"
-    },
+    forbidden: "Vous n'avez pas la permission d'effectuer cette action.",
     notFound: "Ressource non trouvée.",
     conflict: "Cette ressource existe déjà.",
     validation: "Veuillez vérifier votre saisie et réessayer.",
@@ -117,8 +117,12 @@ export default {
     }
   },
   search: {
-    pageTitle: "Rechercher des Dossiers",
-    pageSubtitle: "Rechercher des dossiers clients par nom ou ID de dossier",
+    pageTitle: "Rechercher",
+    pageSubtitle: "Rechercher des clients et des dossiers",
+    tabs: {
+      clients: "Clients",
+      cases: "Dossiers"
+    },
     title: "Rechercher des Dossiers",
     byName: "Par Nom",
     byCaseId: "Par ID de Dossier",
@@ -144,6 +148,9 @@ export default {
     clientName: "Nom du Client",
     clientEmail: "Email",
     clientPhone: "Numéro de Téléphone",
+    caseInfo: "Informations du Dossier",
+    caseType: "Type de Dossier",
+    notes: "Notes",
     paymentInfo: "Informations de Paiement",
     amountPaid: "Montant Payé",
     paymentStatus: "Statut du Paiement",
@@ -241,9 +248,23 @@ export default {
     },
     create: {
       title: "Créer un Dossier",
+      caseId: "ID du Dossier",
+      caseIdHint: "Caractères alphanumériques, tirets et traits de soulignement uniquement (1-100 caractères)",
+      createButton: "Créer le Dossier",
       submit: "Créer le Dossier",
-      success: "Dossier créé avec succès"
+      success: "Dossier créé avec succès",
+      validation: {
+        length: "L'ID du dossier doit contenir entre 1 et 100 caractères",
+        format: "L'ID du dossier ne peut contenir que des lettres, chiffres, tirets et traits de soulignement"
+      }
     }
+  },
+  success: {
+    caseCreated: "Dossier créé avec succès",
+    caseUpdated: "Dossier mis à jour avec succès",
+    clientUpdated: "Informations du client mises à jour avec succès",
+    fileUploaded: "Fichier téléchargé avec succès",
+    filesRefreshed: "Fichiers actualisés"
   },
   files: {
     case: {
@@ -427,12 +448,24 @@ export default {
       clearButton: "Effacer",
       searching: "Recherche en cours...",
       noResults: "Aucun client trouvé",
+      noResultsHint: "Essayez d'ajuster vos critères de recherche ou créez un nouveau client",
       createNew: "Créer un Nouveau Client",
-      results: "{count} client(s) trouvé(s)"
+      results: "{count} client(s) trouvé(s)",
+      error: {
+        missingCriteria: "Veuillez entrer au moins un critère de recherche",
+        generic: "Échec de la recherche de clients. Veuillez réessayer."
+      }
+    },
+    view: {
+      tooltip: "Voir les détails du client"
+    },
+    createCase: {
+      tooltip: "Créer un nouveau dossier pour ce client"
     },
     create: {
       title: "Créer un Nouveau Client",
       subtitle: "Ajouter un nouveau client au système",
+      comingSoon: "Le formulaire de création de client sera disponible dans la Phase 4",
       firstName: "Prénom",
       lastName: "Nom de Famille",
       nationalId: "Numéro d'Identité Nationale",
@@ -517,9 +550,12 @@ export default {
     newName: "Nouveau Nom",
     renameButton: "Renommer",
     renaming: "Renommage en cours...",
+    hint: "Caractères invalides: < > : \" / \\ | ? *",
     success: "Fichier renommé avec succès",
     error: {
+      required: "Le nom du fichier est requis",
       invalidChars: "Le nom du fichier contient des caractères invalides",
+      sameAsOld: "Le nouveau nom doit être différent du nom actuel",
       generic: "Échec du renommage du fichier"
     }
   },

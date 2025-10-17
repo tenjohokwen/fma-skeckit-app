@@ -179,6 +179,7 @@
 
 import { ref, onMounted } from 'vue'
 import { useRouter } from 'vue-router'
+import { useI18n } from 'vue-i18n'
 import { useAuthStore } from 'src/stores/authStore'
 import { useNotifications } from 'src/composables/useNotifications'
 import { copyToClipboard } from 'quasar'
@@ -188,6 +189,7 @@ import FileConflictDialog from 'src/components/files/FileConflictDialog.vue'
 import FolderNavigator from 'src/components/files/FolderNavigator.vue'
 
 const router = useRouter()
+const { t } = useI18n()
 const authStore = useAuthStore()
 const { notifySuccess, notifyError } = useNotifications()
 
@@ -214,7 +216,7 @@ if (!authStore.isAdmin) {
  */
 function handleUploadSuccess(fileData) {
   recentUpload.value = fileData
-  notifySuccess('File uploaded successfully')
+  notifySuccess(t('success.fileUploaded'))
 }
 
 /**

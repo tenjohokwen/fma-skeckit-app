@@ -367,15 +367,14 @@ function handleCancelCreate() {
 }
 
 // Case search methods
-function handleViewCase(caseId) {
-  // Navigate to case detail page (to be implemented in US4/later)
-  notifyInfo('Case detail view coming soon')
-  console.log('View case:', caseId)
+async function handleViewCase(caseId) {
+  // Navigate to case view page (read-only mode)
+  router.push({ name: 'CaseEdit', params: { caseId }, query: { mode: 'view' } })
 }
 
 function handleEditCase(caseId) {
-  // Navigate to case edit page (admin only, US4)
-  router.push({ name: 'CaseEdit', params: { caseId } })
+  // Navigate to case edit page (admin only, edit mode)
+  router.push({ name: 'CaseEdit', params: { caseId }, query: { mode: 'edit' } })
 }
 
 onMounted(() => {

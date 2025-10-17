@@ -252,5 +252,77 @@ const ClientHandler = {
         'client.get.error.server'
       );
     }
+  },
+
+  /**
+   * Update client information
+   * @param {Object} context - Request context from Router
+   * @param {Object} context.data - Request data
+   * @param {string} context.data.clientId - Client ID
+   * @param {Object} context.data.updates - Fields to update
+   * @param {Object} context.user - Current user
+   * @returns {Object} Response with updated client
+   */
+  update: function(context) {
+    try {
+      const { clientId, updates } = context.data;
+
+      if (!clientId) {
+        throw ResponseHandler.validationError(
+          'Client ID is required',
+          'client.update.error.missingId'
+        );
+      }
+
+      if (!updates || Object.keys(updates).length === 0) {
+        throw ResponseHandler.validationError(
+          'No updates provided',
+          'client.update.error.noUpdates'
+        );
+      }
+
+      // Validate firstName and lastName are not empty if provided
+      if (updates.firstName !== undefined && !updates.firstName.trim()) {
+        throw ResponseHandler.validationError(
+          'First name cannot be empty',
+          'client.update.error.emptyFirstName'
+        );
+      }
+
+      if (updates.lastName !== undefined && !updates.lastName.trim()) {
+        throw ResponseHandler.validationError(
+          'Last name cannot be empty',
+          'client.update.error.emptyLastName'
+        );
+      }
+
+      // Update client in Sheets
+      const updatedClient = SheetsService.updateClient(clientId, updates);
+
+      if (!updatedClient) {
+        throw ResponseHandler.notFoundError(
+          'Client not found',
+          'client.update.error.notFound'
+        );
+      }
+
+      return {
+        status: 200,
+        msgKey: 'client.update.success',
+        message: 'Client updated successfully',
+        data: {
+          client: updatedClient
+        }
+      };
+
+    } catch (error) {
+      if (error.status) {
+        throw error;
+      }
+      throw ResponseHandler.serverError(
+        'Failed to update client: ' + error.toString(),
+        'client.update.error.server'
+      );
+    }
   }
 };

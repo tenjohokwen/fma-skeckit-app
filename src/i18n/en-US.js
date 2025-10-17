@@ -148,6 +148,9 @@ export default {
     "clientName": "Client Name",
     "clientEmail": "Email",
     "clientPhone": "Phone Number",
+    "caseInfo": "Case Information",
+    "caseType": "Case Type",
+    "notes": "Notes",
     "paymentInfo": "Payment Information",
     "amountPaid": "Amount Paid",
     "paymentStatus": "Payment Status",
@@ -255,6 +258,13 @@ export default {
         "format": "Case ID can only contain letters, numbers, hyphens, and underscores"
       }
     }
+  },
+  "success": {
+    "caseCreated": "Case created successfully",
+    "caseUpdated": "Case updated successfully",
+    "clientUpdated": "Client information updated successfully",
+    "fileUploaded": "File uploaded successfully",
+    "filesRefreshed": "Files refreshed"
   },
   "files": {
     "case": {

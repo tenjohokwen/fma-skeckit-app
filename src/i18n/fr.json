@@ -11,13 +11,18 @@
     "next": "Suivant",
     "submit": "Soumettre",
     "close": "Fermer",
+    "clear": "Effacer",
     "confirm": "Confirmer",
+    "retry": "Réessayer",
     "yes": "Oui",
     "no": "Non",
     "error": "Erreur",
     "success": "Succès",
     "required": "Requis",
-    "optional": "Optionnel"
+    "optional": "Optionnel",
+    "createdAt": "Créé le",
+    "updatedAt": "Mis à jour le",
+    "lastModified": "Dernière modification"
   },
   "auth": {
     "signup": {
@@ -70,6 +75,7 @@
   },
   "validation": {
     "required": "Ce champ est requis",
+    "maxLength": "Maximum {max} caractères autorisés",
     "email": {
       "invalid": "Veuillez entrer une adresse email valide",
       "required": "L'email est requis"
@@ -111,8 +117,12 @@
     }
   },
   "search": {
-    "pageTitle": "Rechercher des Dossiers",
-    "pageSubtitle": "Rechercher des dossiers clients par nom ou ID de dossier",
+    "pageTitle": "Rechercher",
+    "pageSubtitle": "Rechercher des clients et des dossiers",
+    "tabs": {
+      "clients": "Clients",
+      "cases": "Dossiers"
+    },
     "title": "Rechercher des Dossiers",
     "byName": "Par Nom",
     "byCaseId": "Par ID de Dossier",
@@ -138,6 +148,9 @@
     "clientName": "Nom du Client",
     "clientEmail": "Email",
     "clientPhone": "Numéro de Téléphone",
+    "caseInfo": "Informations du Dossier",
+    "caseType": "Type de Dossier",
+    "notes": "Notes",
     "paymentInfo": "Informations de Paiement",
     "amountPaid": "Montant Payé",
     "paymentStatus": "Statut du Paiement",
@@ -148,7 +161,24 @@
     "nextAction": "Prochaine Action",
     "comments": "Commentaires",
     "viewDetails": "Voir les Détails",
-    "edit": "Modifier le Dossier"
+    "edit": "Modifier le Dossier",
+    "create": {
+      "title": "Créer un Nouveau Dossier",
+      "caseId": "ID du Dossier",
+      "caseIdHint": "Caractères alphanumériques, traits d'union et traits de soulignement uniquement (1-100 caractères)",
+      "createButton": "Créer le Dossier",
+      "creating": "Création...",
+      "success": "Dossier créé avec succès",
+      "validation": {
+        "length": "L'ID du dossier doit contenir 1 à 100 caractères",
+        "format": "L'ID du dossier ne peut contenir que des lettres, des chiffres, des traits d'union et des traits de soulignement"
+      },
+      "error": {
+        "duplicate": "Un dossier avec cet ID existe déjà pour ce client",
+        "missingFields": "L'ID du dossier est requis",
+        "invalidFormat": "L'ID du dossier doit contenir 1 à 100 caractères et ne contenir que des lettres, des chiffres, des traits d'union et des traits de soulignement"
+      }
+    }
   },
   "edit": {
     "pageTitle": "Modifier le Dossier",
@@ -218,11 +248,38 @@
     },
     "create": {
       "title": "Créer un Dossier",
+      "caseId": "ID du Dossier",
+      "caseIdHint": "Caractères alphanumériques, traits d'union et traits de soulignement uniquement (1-100 caractères)",
+      "createButton": "Créer le Dossier",
       "submit": "Créer le Dossier",
-      "success": "Dossier créé avec succès"
+      "success": "Dossier créé avec succès",
+      "validation": {
+        "length": "L'ID du dossier doit contenir 1 à 100 caractères",
+        "format": "L'ID du dossier ne peut contenir que des lettres, des chiffres, des traits d'union et des traits de soulignement"
+      }
     }
   },
+  "success": {
+    "caseCreated": "Dossier créé avec succès",
+    "caseUpdated": "Dossier mis à jour avec succès",
+    "clientUpdated": "Informations client mises à jour avec succès",
+    "fileUploaded": "Fichier téléchargé avec succès",
+    "filesRefreshed": "Fichiers actualisés"
+  },
   "files": {
+    "case": {
+      "title": "Fichiers du Dossier",
+      "subtitle": "Gérer les fichiers de ce dossier"
+    },
+    "browse": {
+      "title": "Fichiers",
+      "empty": "Aucun fichier dans ce dossier",
+      "emptyHint": "Téléchargez des fichiers en utilisant le formulaire ci-dessus"
+    },
+    "rename": {
+      "success": "Fichier renommé avec succès",
+      "error": "Échec du renommage du fichier"
+    },
     "management": {
       "pageTitle": "Gestion des Fichiers",
       "pageSubtitle": "Télécharger des fichiers, créer des dossiers de cas et gérer les opérations de fichiers",
@@ -338,7 +395,10 @@
         "message": "Un dossier client avec ce nom existe déjà. Veuillez d'abord le rechercher ou utiliser des informations client différentes."
       }
     },
-    "download": "Télécharger",
+    "download": {
+      "success": "Téléchargement de {fileName}...",
+      "error": "Échec du téléchargement du fichier"
+    },
     "delete": {
       "title": "Supprimer le Fichier",
       "confirm": "Êtes-vous sûr de vouloir supprimer ce fichier? Cette action ne peut pas être annulée.",
@@ -354,14 +414,11 @@
       "error": "Échec du chargement du contenu du dossier",
       "summary": "{folders} dossiers, {files} fichiers",
       "empty": "Ce dossier est vide"
-    },
-    "download": {
-      "success": "Téléchargement de {fileName}...",
-      "error": "Échec du téléchargement du fichier"
     }
   },
   "navigation": {
     "home": "Accueil",
+    "root": "Racine",
     "search": "Rechercher",
     "cases": "Dossiers",
     "files": "Fichiers",
@@ -372,5 +429,159 @@
     "switch": "Changer de Langue",
     "en": "English",
     "fr": "Français"
+  },
+  "dashboard": {
+    "welcome": "Bienvenue au Tableau de Bord",
+    "successLogin": "Vous êtes connecté avec succès!",
+    "user": "Utilisateur",
+    "role": "Rôle"
+  },
+  "client": {
+    "search": {
+      "title": "Rechercher des Clients",
+      "subtitle": "Trouver des clients existants ou en créer de nouveaux",
+      "firstName": "Prénom",
+      "lastName": "Nom de Famille",
+      "nationalId": "Identifiant National",
+      "searchButton": "Rechercher",
+      "clearButton": "Effacer",
+      "searching": "Recherche en cours...",
+      "noResults": "Aucun client trouvé",
+      "noResultsHint": "Essayez d'ajuster vos critères de recherche ou créez un nouveau client",
+      "createNew": "Créer un Nouveau Client",
+      "results": "{count} client(s) trouvé(s)",
+      "error": {
+        "missingCriteria": "Veuillez entrer au moins un critère de recherche",
+        "generic": "Échec de la recherche de clients. Veuillez réessayer."
+      }
+    },
+    "view": {
+      "tooltip": "Voir les détails du client"
+    },
+    "createCase": {
+      "tooltip": "Créer un nouveau dossier pour ce client"
+    },
+    "create": {
+      "title": "Créer un Nouveau Client",
+      "subtitle": "Ajouter un nouveau client au système",
+      "comingSoon": "Le formulaire de création de client sera disponible dans la Phase 4",
+      "firstName": "Prénom",
+      "lastName": "Nom de Famille",
+      "nationalId": "Identifiant National",
+      "telephone": "Téléphone",
+      "email": "Adresse Email",
+      "createButton": "Créer le Client",
+      "creating": "Création...",
+      "success": "Client créé avec succès",
+      "error": {
+        "duplicate": "Un client avec cet identifiant national existe déjà",
+        "missingFields": "Le prénom, le nom de famille et l'identifiant national sont requis"
+      }
+    },
+    "details": {
+      "title": "Détails du Client",
+      "subtitle": "Voir et gérer les informations du client",
+      "notFound": "Client non trouvé",
+      "personalInfo": "Informations Personnelles",
+      "firstName": "Prénom",
+      "lastName": "Nom de Famille",
+      "nationalId": "Identifiant National",
+      "telephone": "Téléphone",
+      "email": "Email",
+      "folderId": "ID du Dossier",
+      "cases": "Dossiers",
+      "noCases": "Aucun dossier trouvé pour ce client",
+      "createCase": "Créer un Nouveau Dossier",
+      "caseId": "ID du Dossier",
+      "fileCount": "{count} fichier(s)"
+    }
+  },
+  "caseFolder": {
+    "create": {
+      "title": "Créer un Nouveau Dossier",
+      "caseId": "ID du Dossier",
+      "createButton": "Créer le Dossier",
+      "creating": "Création...",
+      "success": "Dossier créé avec succès",
+      "error": {
+        "duplicate": "Un dossier avec cet ID existe déjà pour ce client",
+        "missingFields": "L'ID du dossier est requis"
+      }
+    }
+  },
+  "fileUpload": {
+    "title": "Télécharger des Fichiers",
+    "selectFiles": "Sélectionner des Fichiers",
+    "dragDrop": "Glissez-déposez les fichiers ici",
+    "or": "ou",
+    "browse": "Parcourir",
+    "displayName": "Nom d'affichage (optionnel)",
+    "uploadButton": "Télécharger",
+    "uploading": "Téléchargement {current} sur {total}...",
+    "progress": "{percent}%",
+    "success": "Fichier téléchargé avec succès",
+    "allSuccess": "Tous les fichiers téléchargés avec succès",
+    "someSuccess": "{count} sur {total} fichiers téléchargés avec succès",
+    "error": {
+      "size": "Le fichier dépasse la taille maximale de 10 Mo",
+      "filename": "Le nom du fichier contient des caractères invalides",
+      "generic": "Échec du téléchargement du fichier"
+    }
+  },
+  "fileDownload": {
+    "button": "Télécharger",
+    "downloading": "Téléchargement de {fileName}...",
+    "success": "Fichier téléchargé avec succès",
+    "error": "Échec du téléchargement du fichier"
+  },
+  "fileDelete": {
+    "button": "Supprimer",
+    "confirm": "Êtes-vous sûr de vouloir supprimer ce fichier?",
+    "confirmTitle": "Supprimer le Fichier",
+    "confirmMessage": "Cette action ne peut pas être annulée. Le fichier sera définitivement supprimé.",
+    "deleting": "Suppression...",
+    "success": "Fichier supprimé avec succès",
+    "error": "Échec de la suppression du fichier"
+  },
+  "fileRename": {
+    "button": "Renommer",
+    "title": "Renommer le Fichier",
+    "newName": "Nouveau Nom",
+    "renameButton": "Renommer",
+    "renaming": "Renommage...",
+    "hint": "Caractères invalides: < > : \" / \\ | ? *",
+    "success": "Fichier renommé avec succès",
+    "error": {
+      "required": "Le nom du fichier est requis",
+      "invalidChars": "Le nom du fichier contient des caractères invalides",
+      "sameAsOld": "Le nouveau nom doit être différent du nom actuel",
+      "generic": "Échec du renommage du fichier"
+    }
+  },
+  "fileList": {
+    "loading": "Chargement...",
+    "empty": "Ce dossier est vide",
+    "filesLabel": "Fichiers",
+    "foldersLabel": "Dossiers",
+    "itemCount": "{count} élément(s)",
+    "lastModified": "Dernière modification",
+    "size": "Taille",
+    "name": "Nom",
+    "type": "Type"
+  },
+  "folderDelete": {
+    "button": "Supprimer le Dossier",
+    "confirm": "Tapez DELETE pour confirmer",
+    "confirmTitle": "Supprimer le Dossier",
+    "confirmMessage": "Cela supprimera définitivement le dossier et tout son contenu. Cette action ne peut pas être annulée.",
+    "typeDelete": "Tapez DELETE pour confirmer:",
+    "invalidConfirmation": "Vous devez taper DELETE pour confirmer la suppression",
+    "deleting": "Suppression...",
+    "success": "Dossier supprimé avec succès",
+    "error": "Échec de la suppression du dossier"
+  },
+  "breadcrumb": {
+    "home": "Accueil",
+    "cases": "Dossiers"
   }
 }

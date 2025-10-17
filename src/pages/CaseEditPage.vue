@@ -5,14 +5,14 @@
       <div class="page-header q-mb-lg">
         <div class="row items-center">
           <div class="col">
-            <h1 class="text-h4 q-mb-xs">{{ $t('edit.pageTitle') }}</h1>
-            <p class="text-body2 text-grey-7">{{ $t('edit.pageSubtitle') }}</p>
+            <h1 class="text-h4 q-mb-xs">{{ pageTitle }}</h1>
+            <p class="text-body2 text-grey-7">{{ pageSubtitle }}</p>
           </div>
           <div class="col-auto">
             <q-btn
               flat
               icon="arrow_back"
-              :label="$t('common.back')"
+              label="Back"
               @click="handleBack"
             />
           </div>
@@ -21,20 +21,31 @@
 
       <!-- Loading State -->
       <div v-if="isLoading" class="text-center q-mt-lg">
-        <LoadingIndicator :message="$t('edit.loading')" />
+        <q-spinner-dots color="primary" size="50px" />
+        <div class="text-body2 text-grey-7 q-mt-md">Loading case details...</div>
       </div>
 
       <!-- Error State -->
       <div v-else-if="error && !caseData" class="q-mt-lg">
-        <ErrorDisplay
-          type="error"
-          :title="$t('edit.error.title')"
-          :message="error.message || $t('edit.error.generic')"
+        <q-banner dense rounded class="bg-negative text-white">
+          <template #avatar>
+            <q-icon name="error" />
+          </template>
+          {{ error.message || 'Failed to load case' }}
+        </q-banner>
+      </div>
+
+      <!-- Viewer (Read-only) -->
+      <div v-else-if="caseData && isViewMode">
+        <CaseViewer
+          :case-data="caseData"
+          @back="handleBack"
+          @edit="switchToEditMode"
         />
       </div>
 
       <!-- Editor -->
-      <div v-else-if="caseData">
+      <div v-else-if="caseData && !isViewMode">
         <CaseEditor
           :case-data="caseData"
           :is-saving="isSaving"
@@ -58,14 +69,13 @@
  * Per constitution: Vue 3 Composition API with <script setup>
  */
 
-import { onMounted, computed } from 'vue'
+import { onMounted, computed, ref } from 'vue'
 import { useRoute, useRouter } from 'vue-router'
 import { useAuthStore } from 'src/stores/authStore'
 import { useMetadata } from 'src/composables/useMetadata'
 import { useNotifications } from 'src/composables/useNotifications'
 import CaseEditor from 'src/components/metadata/CaseEditor.vue'
-import LoadingIndicator from 'src/components/shared/LoadingIndicator.vue'
-import ErrorDisplay from 'src/components/shared/ErrorDisplay.vue'
+import CaseViewer from 'src/components/metadata/CaseViewer.vue'
 
 const route = useRoute()
 const router = useRouter()
@@ -83,14 +93,29 @@ const {
   refreshCase
 } = useMetadata()
 
-// Check admin permission
-if (!authStore.isAdmin) {
-  notifyError('Admin role required')
-  router.push({ name: 'Search' })
-}
+// Local state for view mode
+const isViewMode = ref(false)
 
 // Computed
 const caseId = computed(() => route.params.caseId)
+const mode = computed(() => route.query.mode || 'edit')
+
+// Initialize view mode based on query parameter
+isViewMode.value = mode.value === 'view'
+
+// Check if user can edit (admin only)
+const canEdit = computed(() => authStore.isAdmin)
+
+// Page title based on mode
+const pageTitle = computed(() => {
+  return isViewMode.value ? 'Case Details' : 'Edit Case'
+})
+
+const pageSubtitle = computed(() => {
+  return isViewMode.value
+    ? 'View case information'
+    : 'Update case metadata and details'
+})
 
 // Methods
 async function loadCase() {
@@ -100,10 +125,10 @@ async function loadCase() {
     console.error('Failed to load case:', err)
     if (err.status === 403) {
       notifyError('Admin role required')
-      router.push({ name: 'Search' })
+      router.push({ name: 'search' })
     } else if (err.status === 404) {
       notifyError('Case not found')
-      router.push({ name: 'Search' })
+      router.push({ name: 'search' })
     } else {
       notifyError(err.message || 'Failed to load case')
     }
@@ -114,7 +139,7 @@ async function handleSave(updates) {
   try {
     await updateCase(caseId.value, updates, caseData.value.version)
     notifySuccess('Case updated successfully')
-    router.push({ name: 'Search' })
+    router.push({ name: 'search' })
   } catch (err) {
     console.error('Failed to save case:', err)
     if (!versionConflict.value) {
@@ -124,7 +149,7 @@ async function handleSave(updates) {
 }
 
 function handleCancel() {
-  router.push({ name: 'Search' })
+  router.push({ name: 'search' })
 }
 
 async function handleRefresh() {
@@ -138,7 +163,25 @@ async function handleRefresh() {
 }
 
 function handleBack() {
-  router.push({ name: 'Search' })
+  router.push({ name: 'search' })
+}
+
+function switchToEditMode() {
+  // Check if user has admin rights
+  if (!canEdit.value) {
+    notifyError('Admin role required to edit cases')
+    return
+  }
+
+  // Switch to edit mode
+  isViewMode.value = false
+
+  // Update URL to reflect edit mode
+  router.replace({
+    name: 'CaseEdit',
+    params: { caseId: caseId.value },
+    query: { mode: 'edit' }
+  })
 }
 
 // Lifecycle
@@ -147,7 +190,7 @@ onMounted(() => {
     loadCase()
   } else {
     notifyError('Case ID is required')
-    router.push({ name: 'Search' })
+    router.push({ name: 'search' })
   }
 })
 </script>
