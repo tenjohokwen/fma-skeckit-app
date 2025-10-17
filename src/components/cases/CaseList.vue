@@ -4,6 +4,7 @@
       <div class="row items-center justify-between">
         <div class="text-h6">{{ $t('client.details.cases') }}</div>
         <q-btn
+          v-if="canCreate"
           color="primary"
           :label="$t('client.details.createCase')"
           icon="add"
@@ -23,6 +24,7 @@
           {{ $t('client.details.noCases') }}
         </div>
         <q-btn
+          v-if="canCreate"
           color="primary"
           :label="$t('client.details.createCase')"
           icon="add"
@@ -85,6 +87,7 @@
 import { computed } from 'vue'
 import { date } from 'quasar'
 import { useI18n } from 'vue-i18n'
+import { useRoleAccess } from 'src/composables/useRoleAccess'
 
 // Props
 const props = defineProps({
@@ -99,6 +102,7 @@ defineEmits(['case-click', 'create-case'])
 
 // Composables
 const { t } = useI18n()
+const { canCreate } = useRoleAccess()
 
 // Computed
 const sortedCases = computed(() => {

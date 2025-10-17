@@ -19,6 +19,14 @@ const CaseHandler = {
    */
   create: function(context) {
     try {
+      // Admin-only authorization check
+      if (!context.user || context.user.role !== 'ROLE_ADMIN') {
+        throw ResponseHandler.forbiddenError(
+          'Admin access required to create cases',
+          'error.forbidden'
+        );
+      }
+
       const { clientId, caseId } = context.data;
 
       // Validate required fields

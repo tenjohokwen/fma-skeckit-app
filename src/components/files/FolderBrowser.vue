@@ -44,6 +44,7 @@
               </q-chip>
 
               <q-btn
+                v-if="canDelete"
                 flat
                 dense
                 round
@@ -101,6 +102,7 @@
           <q-item-section side>
             <div class="row q-gutter-xs">
               <q-btn
+                v-if="canDownload"
                 flat
                 dense
                 round
@@ -113,6 +115,7 @@
               </q-btn>
 
               <q-btn
+                v-if="canRename"
                 flat
                 dense
                 round
@@ -125,6 +128,7 @@
               </q-btn>
 
               <q-btn
+                v-if="canDelete"
                 flat
                 dense
                 round
@@ -156,6 +160,7 @@
 <script setup>
 import { computed } from 'vue'
 import { useFileIcons } from 'src/composables/useFileIcons'
+import { useRoleAccess } from 'src/composables/useRoleAccess'
 
 // Props
 // eslint-disable-next-line no-unused-vars
@@ -179,6 +184,7 @@ const emit = defineEmits(['folderClick', 'fileClick', 'download', 'rename', 'del
 
 // Composables
 const { getIconForFile } = useFileIcons()
+const { canDelete, canDownload, canRename } = useRoleAccess()
 
 // Computed
 const folderIcon = computed(() => 'folder')

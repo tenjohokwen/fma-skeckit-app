@@ -98,6 +98,14 @@ const ClientHandler = {
    */
   create: function(context) {
     try {
+      // Admin-only authorization check
+      if (!context.user || context.user.role !== 'ROLE_ADMIN') {
+        throw ResponseHandler.forbiddenError(
+          'Admin access required to create clients',
+          'error.forbidden'
+        );
+      }
+
       const { firstName, lastName, nationalId, telephone, email } = context.data;
 
       // Validate required fields

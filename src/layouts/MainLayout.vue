@@ -19,6 +19,17 @@
           {{ $t('common.appName') }}
         </q-toolbar-title>
 
+        <!-- View Only Badge (for non-admin users) -->
+        <q-badge
+          v-if="isViewOnly"
+          color="blue-grey-6"
+          text-color="white"
+          class="q-mr-md"
+          :label="$t('common.viewOnly')"
+        >
+          <q-tooltip>{{ $t('common.viewOnlyTooltip') }}</q-tooltip>
+        </q-badge>
+
         <!-- Language Switcher -->
         <language-switcher />
 
@@ -149,11 +160,13 @@ import { ref } from 'vue'
 import { useRouter } from 'vue-router'
 import { useAuthStore } from 'src/stores/authStore'
 import { useI18n } from 'vue-i18n'
+import { useRoleAccess } from 'src/composables/useRoleAccess'
 import LanguageSwitcher from 'components/LanguageSwitcher.vue'
 
 const router = useRouter()
 const authStore = useAuthStore()
 const { t: $t } = useI18n()
+const { isViewOnly } = useRoleAccess()
 
 const leftDrawerOpen = ref(false)
 

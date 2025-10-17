@@ -66,7 +66,8 @@ const routes = [
         path: 'case/:caseId/edit',
         name: 'CaseEdit',
         component: () => import('pages/CaseEditPage.vue'),
-        meta: { requiresAuth: true, requiresAdmin: true }
+        meta: { requiresAuth: true }
+        // Note: Page handles read-only mode for non-admin users via query.mode parameter
       },
       {
         path: 'case/:folderId/files',

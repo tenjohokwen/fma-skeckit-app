@@ -780,6 +780,14 @@ const FileHandler = {
    */
   downloadFile: function(context) {
     try {
+      // Admin-only authorization check
+      if (!context.user || context.user.role !== 'ROLE_ADMIN') {
+        throw ResponseHandler.forbiddenError(
+          'Admin access required to download files',
+          'error.forbidden'
+        );
+      }
+
       // Validate required fields
       const { fileId } = context.data;
 

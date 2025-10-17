@@ -39,8 +39,8 @@
 
       <!-- File Management Content -->
       <div v-else-if="caseFolderId" class="q-gutter-lg">
-        <!-- File Upload Section -->
-        <q-card flat bordered>
+        <!-- File Upload Section (Admin Only) -->
+        <q-card v-if="canUpload" flat bordered>
           <q-card-section>
             <div class="text-h6 q-mb-md">
               <q-icon name="cloud_upload" class="q-mr-sm" />
@@ -180,6 +180,7 @@ import { useI18n } from 'vue-i18n'
 import { useFileOperations } from 'src/composables/useFileOperations'
 import { useFilesStore } from 'src/stores/files'
 import { useNotifications } from 'src/composables/useNotifications'
+import { useRoleAccess } from 'src/composables/useRoleAccess'
 import FileUploader from 'src/components/files/FileUploader.vue'
 import FolderBrowser from 'src/components/files/FolderBrowser.vue'
 import FileConflictDialog from 'src/components/files/FileConflictDialog.vue'
@@ -191,6 +192,7 @@ const { t } = useI18n()
 const { listFolderContents } = useFileOperations()
 const filesStore = useFilesStore()
 const { notifySuccess, notifyError } = useNotifications()
+const { canUpload } = useRoleAccess()
 
 // State
 const loading = ref(false)

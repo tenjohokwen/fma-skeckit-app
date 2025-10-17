@@ -77,22 +77,18 @@ const MetadataHandler = {
   },
 
   /**
-   * Get case for editing (Admin only - US4)
+   * Get case for viewing/editing
    * Retrieves case with version number for optimistic locking
+   * Available to all authenticated users (read-only for non-admin)
    *
    * @param {Object} context - Request context
    * @param {Object} context.data - { caseId }
-   * @param {Object} context.user - Authenticated user object (must be admin)
+   * @param {Object} context.user - Authenticated user object
    * @returns {Object} Response with full case data including version
    */
   getCaseForEdit: function(context) {
-    // Check admin role
-    if (context.user.role !== 'ROLE_ADMIN') {
-      throw ResponseHandler.forbiddenError(
-        'Admin role required',
-        'metadata.edit.error.forbidden'
-      );
-    }
+    // No admin check here - viewing case details is allowed for all authenticated users
+    // Admin-only restriction is enforced in updateCaseMetadata for write operations
 
     const { caseId } = context.data;
     SecurityInterceptor.validateRequiredFields(context.data, ['caseId']);

@@ -22,7 +22,9 @@ export default {
     optional: "Optionnel",
     createdAt: "Créé le",
     updatedAt: "Mis à jour le",
-    lastModified: "Dernière modification"
+    lastModified: "Dernière modification",
+    viewOnly: "Lecture Seule",
+    viewOnlyTooltip: "Vous avez un accès en lecture seule. Contactez un administrateur pour créer, modifier ou supprimer du contenu."
   },
   auth: {
     signup: {

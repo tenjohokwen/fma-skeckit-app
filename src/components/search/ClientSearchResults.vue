@@ -6,7 +6,7 @@
           {{ $t('client.search.results', { count: results.length }) }}
         </div>
         <q-btn
-          v-if="showCreateButton"
+          v-if="showCreateButton && canCreate"
           color="primary"
           :label="$t('client.search.createNew')"
           icon="add"
@@ -36,6 +36,7 @@
           {{ $t('client.search.noResultsHint') }}
         </div>
         <q-btn
+          v-if="canCreate"
           color="primary"
           :label="$t('client.search.createNew')"
           icon="add"
@@ -94,6 +95,7 @@
               <q-tooltip>{{ $t('client.view.tooltip') }}</q-tooltip>
             </q-btn>
             <q-btn
+              v-if="canCreate"
               flat
               dense
               round
@@ -112,6 +114,11 @@
 </template>
 
 <script setup>
+import { useRoleAccess } from 'src/composables/useRoleAccess'
+
+// Role-based access control
+const { canCreate } = useRoleAccess()
+
 // Props
 defineProps({
   results: {
