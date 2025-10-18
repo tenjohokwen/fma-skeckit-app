@@ -4,10 +4,10 @@
  * Provides database operations for case metadata and client management.
  * Interacts with 'metadata' and 'clients' sheets in Google Sheets.
  *
- * Metadata Schema:
- * A: caseId, B: caseName, C: clientName, D: assignedTo, E: caseType,
- * F: status, G: notes, H: createdBy, I: createdAt, J: assignedAt,
- * K: lastUpdatedBy, L: lastUpdatedAt, M: version
+ * Metadata Schema (Updated for Feature 006):
+ * A: caseId, B: caseName, C: clientId (UUID), D: clientName, E: assignedTo,
+ * F: caseType, G: status, H: notes, I: createdBy, J: createdAt,
+ * K: assignedAt, L: lastUpdatedBy, M: lastUpdatedAt, N: version
  *
  * Clients Schema:
  * A: clientId (UUID), B: firstName, C: lastName, D: nationalId (unique),
@@ -15,6 +15,22 @@
  */
 
 const SheetsService = {
+  // ==================== VALIDATION HELPERS ====================
+
+  /**
+   * Validates if a string is a valid UUID format
+   * @param {string} uuid - The UUID to validate
+   * @returns {boolean} True if valid UUID format
+   */
+  isValidUUID: function(uuid) {
+    if (!uuid || typeof uuid !== 'string') {
+      return false;
+    }
+    const uuidRegex = /^[0-9a-f]{8}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{12}$/i;
+    return uuidRegex.test(uuid);
+  },
+
+  // ==================== SHEET ACCESS METHODS ====================
   /**
    * Gets the metadata sheet
    * @returns {GoogleAppsScript.Spreadsheet.Sheet} Metadata sheet
@@ -68,20 +84,21 @@ const SheetsService = {
     const caseData = {
       caseId: row[0],          // A: caseId
       caseName: row[1],        // B: caseName
-      clientName: row[2],      // C: clientName
-      assignedTo: row[3],      // D: assignedTo
-      caseType: row[4],        // E: caseType
-      status: row[5],          // F: status
-      notes: row[6]            // G: notes
+      clientId: row[2],        // C: clientId (UUID) ← NEW
+      clientName: row[3],      // D: clientName (shifted from C)
+      assignedTo: row[4],      // E: assignedTo (shifted from D)
+      caseType: row[5],        // F: caseType (shifted from E)
+      status: row[6],          // G: status (shifted from F)
+      notes: row[7]            // H: notes (shifted from G)
     };
 
     if (includeSystemFields) {
-      caseData.createdBy = row[7];          // H: createdBy
-      caseData.createdAt = row[8];          // I: createdAt
-      caseData.assignedAt = row[9];         // J: assignedAt
-      caseData.lastUpdatedBy = row[10];     // K: lastUpdatedBy
-      caseData.lastUpdatedAt = row[11];     // L: lastUpdatedAt
-      caseData.version = row[12];           // M: version
+      caseData.createdBy = row[8];          // I: createdBy (shifted from H)
+      caseData.createdAt = row[9];          // J: createdAt (shifted from I)
+      caseData.assignedAt = row[10];        // K: assignedAt (shifted from J)
+      caseData.lastUpdatedBy = row[11];     // L: lastUpdatedBy (shifted from K)
+      caseData.lastUpdatedAt = row[12];     // M: lastUpdatedAt (shifted from L)
+      caseData.version = row[13];           // N: version (shifted from M)
       caseData.rowIndex = rowIndex;
     }
 
@@ -106,7 +123,7 @@ const SheetsService = {
     // Skip header row
     for (let i = 1; i < data.length; i++) {
       const row = data[i];
-      const clientName = (row[2] || '').toLowerCase(); // C: clientName
+      const clientName = (row[3] || '').toLowerCase(); // D: clientName (shifted from C)
 
       let matches = false;
 
@@ -181,6 +198,37 @@ const SheetsService = {
   createCase: function(caseData, currentUser) {
     const sheet = this.getMetadataSheet();
 
+    // ========================================
+    // VALIDATION: clientId is required
+    // ========================================
+    if (!caseData.clientId) {
+      throw ResponseHandler.validationError(
+        'clientId is required for case creation',
+        'metadata.create.error.clientIdRequired'
+      );
+    }
+
+    // ========================================
+    // VALIDATION: clientId must be valid UUID
+    // ========================================
+    if (!this.isValidUUID(caseData.clientId)) {
+      throw ResponseHandler.validationError(
+        'clientId must be a valid UUID format',
+        'metadata.create.error.invalidClientId'
+      );
+    }
+
+    // ========================================
+    // VALIDATION: clientId must exist in clients sheet
+    // ========================================
+    const client = this.getClientById(caseData.clientId);
+    if (!client) {
+      throw ResponseHandler.validationError(
+        `Client with ID ${caseData.clientId} not found in clients sheet`,
+        'metadata.create.error.clientNotFound'
+      );
+    }
+
     // Check if case ID already exists
     const existing = this.getCaseById(caseData.caseId);
     if (existing) {
@@ -194,21 +242,24 @@ const SheetsService = {
     const assignedAt = caseData.assignedTo ? now : '';
     const createdBy = caseData.createdBy || currentUser;
 
-    // Create case row
+    // ========================================
+    // ROW DATA: Include clientId in Column C
+    // ========================================
     const row = [
       caseData.caseId,                       // A: caseId
       caseData.caseName || '',               // B: caseName
-      caseData.clientName || '',             // C: clientName
-      caseData.assignedTo || '',             // D: assignedTo
-      caseData.caseType || '',               // E: caseType
-      caseData.status || '',                 // F: status
-      caseData.notes || '',                  // G: notes
-      createdBy,                             // H: createdBy
-      now,                                   // I: createdAt
-      assignedAt,                            // J: assignedAt
-      currentUser,                           // K: lastUpdatedBy
-      now,                                   // L: lastUpdatedAt
-      0                                      // M: version (start at 0 as per spec)
+      caseData.clientId,                     // C: clientId (UUID) ← NEW
+      caseData.clientName || '',             // D: clientName (shifted from C)
+      caseData.assignedTo || '',             // E: assignedTo (shifted from D)
+      caseData.caseType || '',               // F: caseType (shifted from E)
+      caseData.status || '',                 // G: status (shifted from F)
+      caseData.notes || '',                  // H: notes (shifted from G)
+      createdBy,                             // I: createdBy (shifted from H)
+      now,                                   // J: createdAt (shifted from I)
+      assignedAt,                            // K: assignedAt (shifted from J)
+      currentUser,                           // L: lastUpdatedBy (shifted from K)
+      now,                                   // M: lastUpdatedAt (shifted from L)
+      0                                      // N: version (shifted from M)
     ];
 
     sheet.appendRow(row);
@@ -226,6 +277,16 @@ const SheetsService = {
    * @returns {Object} Updated case object
    */
   updateCase: function(caseId, updates, expectedVersion, currentUser) {
+    // ========================================
+    // VALIDATION: Reject clientId updates
+    // ========================================
+    if (updates.hasOwnProperty('clientId')) {
+      throw ResponseHandler.validationError(
+        'clientId is immutable and cannot be updated',
+        'metadata.update.error.clientIdImmutable'
+      );
+    }
+
     const currentCase = this.getCaseById(caseId);
     if (!currentCase) {
       throw ResponseHandler.notFoundError(
@@ -255,34 +316,39 @@ const SheetsService = {
     const assignedToChanged = updates.assignedTo !== undefined &&
                               updates.assignedTo !== currentCase.assignedTo;
 
-    // Update editable fields (based on new schema)
+    // ========================================
+    // Update editable fields (adjusted for new schema)
+    // ========================================
     // A: caseId - not editable
     if (updates.caseName !== undefined) {
       sheet.getRange(row, 2).setValue(updates.caseName); // B: caseName
     }
+    // C: clientId - NOT EDITABLE (system-managed)
     if (updates.clientName !== undefined) {
-      sheet.getRange(row, 3).setValue(updates.clientName); // C: clientName
+      sheet.getRange(row, 4).setValue(updates.clientName); // D: clientName (shifted from C)
     }
     if (updates.assignedTo !== undefined) {
-      sheet.getRange(row, 4).setValue(updates.assignedTo); // D: assignedTo
+      sheet.getRange(row, 5).setValue(updates.assignedTo); // E: assignedTo (shifted from D)
     }
     if (updates.caseType !== undefined) {
-      sheet.getRange(row, 5).setValue(updates.caseType); // E: caseType
+      sheet.getRange(row, 6).setValue(updates.caseType); // F: caseType (shifted from E)
     }
     if (updates.status !== undefined) {
-      sheet.getRange(row, 6).setValue(updates.status); // F: status
+      sheet.getRange(row, 7).setValue(updates.status); // G: status (shifted from F)
     }
     if (updates.notes !== undefined) {
-      sheet.getRange(row, 7).setValue(updates.notes); // G: notes
+      sheet.getRange(row, 8).setValue(updates.notes); // H: notes (shifted from G)
     }
 
-    // Auto-update system fields
+    // ========================================
+    // Auto-update system fields (adjusted indices)
+    // ========================================
     if (assignedToChanged) {
-      sheet.getRange(row, 10).setValue(now); // J: assignedAt
+      sheet.getRange(row, 11).setValue(now); // K: assignedAt (shifted from J)
     }
-    sheet.getRange(row, 11).setValue(currentUser);         // K: lastUpdatedBy
-    sheet.getRange(row, 12).setValue(now);                 // L: lastUpdatedAt
-    sheet.getRange(row, 13).setValue(expectedVersion + 1); // M: version
+    sheet.getRange(row, 12).setValue(currentUser);         // L: lastUpdatedBy (shifted from K)
+    sheet.getRange(row, 13).setValue(now);                 // M: lastUpdatedAt (shifted from L)
+    sheet.getRange(row, 14).setValue(expectedVersion + 1); // N: version (shifted from M)
 
     // Return updated case
     return this.getCaseById(caseId);

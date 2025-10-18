@@ -114,6 +114,7 @@ const CaseHandler = {
       const caseMetadata = {
         caseId: caseId,
         caseName: caseId,  // Using caseId as caseName initially
+        clientId: clientId,         // ← NEW: Feature 006 - Required field
         clientName: clientName,
         assignedTo: '',
         caseType: '',
@@ -124,6 +125,7 @@ const CaseHandler = {
       };
 
       // Save case metadata to the metadata sheet
+      // SheetsService.createCase() will validate clientId exists (already verified above)
       SheetsService.createCase(caseMetadata, createdBy);
 
       // Generate new token to extend session

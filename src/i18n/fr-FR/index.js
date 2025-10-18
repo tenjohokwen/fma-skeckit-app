@@ -246,7 +246,11 @@ export default {
       title: "Modifier le Dossier",
       save: "Enregistrer les Modifications",
       success: "Dossier mis à jour avec succès",
-      conflict: "Ce dossier a été modifié par quelqu'un d'autre. Veuillez actualiser et réessayer."
+      conflict: "Ce dossier a été modifié par quelqu'un d'autre. Veuillez actualiser et réessayer.",
+      error: {
+        notfound: "Dossier introuvable",
+        forbidden: "Vous n'avez pas la permission de modifier les dossiers"
+      }
     },
     create: {
       title: "Créer un Dossier",
@@ -258,6 +262,25 @@ export default {
       validation: {
         length: "L'ID du dossier doit contenir entre 1 et 100 caractères",
         format: "L'ID du dossier ne peut contenir que des lettres, chiffres, tirets et traits de soulignement"
+      },
+      error: {
+        clientIdRequired: "L'identifiant client est requis pour la création du dossier",
+        invalidClientId: "Format d'identifiant client invalide",
+        clientNotFound: "Client introuvable dans le système",
+        duplicate: "Un dossier avec cet ID existe déjà",
+        forbidden: "Vous n'avez pas la permission de créer des dossiers",
+        failed: "Échec de la création du dossier"
+      }
+    },
+    update: {
+      success: "Dossier mis à jour avec succès",
+      error: {
+        clientIdImmutable: "Le client ne peut pas être modifié après la création du dossier",
+        notfound: "Dossier introuvable",
+        conflict: "Le dossier a été modifié par un autre utilisateur. Veuillez actualiser et réessayer.",
+        invalidVersion: "Numéro de version invalide",
+        forbidden: "Vous n'avez pas la permission de mettre à jour les dossiers",
+        failed: "Échec de la mise à jour du dossier"
       }
     }
   },

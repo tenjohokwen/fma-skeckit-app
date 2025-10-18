@@ -129,6 +129,8 @@ const MetadataHandler = {
    * Update case metadata (Admin only - US4)
    * Updates case fields with automatic metadata tracking
    *
+   * Feature 006: clientId is immutable and cannot be updated
+   *
    * @param {Object} context - Request context
    * @param {Object} context.data - { caseId, version, updates }
    * @param {Object} context.user - Authenticated user object (must be admin)
@@ -147,6 +149,16 @@ const MetadataHandler = {
 
     SecurityInterceptor.validateRequiredFields(context.data, ['caseId', 'version', 'updates']);
 
+    // ========================================
+    // VALIDATION: Reject clientId in updates
+    // ========================================
+    if (updates.hasOwnProperty('clientId')) {
+      throw ResponseHandler.validationError(
+        'clientId is system-managed and cannot be updated',
+        'metadata.update.error.clientIdImmutable'
+      );
+    }
+
     // Validate version is a number
     if (typeof version !== 'number') {
       throw ResponseHandler.validationError(
@@ -155,7 +167,7 @@ const MetadataHandler = {
       );
     }
 
-    // Update case
+    // Update case (will also validate clientId immutability)
     const updatedCase = SheetsService.updateCase(
       caseId,
       updates,
@@ -170,7 +182,7 @@ const MetadataHandler = {
       'metadata.update.success',
       'Case updated successfully',
       {
-        case: updatedCase
+        case: updatedCase  // Includes clientId (unchanged)
       },
       context.user,
       newToken.value
@@ -180,6 +192,8 @@ const MetadataHandler = {
   /**
    * Create case metadata (Admin only)
    * Creates a new case metadata entry
+   *
+   * Feature 006: Now requires clientId (UUID) to establish proper foreign key relationship
    *
    * @param {Object} context - Request context
    * @param {Object} context.data - Case data object
@@ -197,15 +211,42 @@ const MetadataHandler = {
 
     const caseData = context.data;
 
+    // ========================================
+    // VALIDATION: Required fields including clientId
+    // ========================================
     SecurityInterceptor.validateRequiredFields(caseData, [
       'caseId',
+      'clientId',           // ← NEW: Required field (Feature 006)
       'clientFirstName',
       'clientLastName',
       'folderName',
       'folderPath'
     ]);
 
-    // Create case
+    // ========================================
+    // VALIDATION: clientId format (UUID)
+    // ========================================
+    if (!this._isValidUUID(caseData.clientId)) {
+      throw ResponseHandler.validationError(
+        'clientId must be a valid UUID',
+        'metadata.create.error.invalidClientId'
+      );
+    }
+
+    // ========================================
+    // VALIDATION: clientId exists in clients sheet
+    // ========================================
+    // Note: SheetsService.createCase() will also validate this,
+    // but we check here for better error messaging
+    const client = SheetsService.getClientById(caseData.clientId);
+    if (!client) {
+      throw ResponseHandler.validationError(
+        `Client with ID ${caseData.clientId} not found`,
+        'metadata.create.error.clientNotFound'
+      );
+    }
+
+    // Create case (will perform additional validation)
     const createdCase = SheetsService.createCase(caseData, context.user.email);
 
     // Generate new token to extend session
@@ -215,10 +256,26 @@ const MetadataHandler = {
       'metadata.create.success',
       'Case created successfully',
       {
-        case: createdCase
+        case: createdCase  // Includes clientId
       },
       context.user,
       newToken.value
     );
+  },
+
+  // ==================== HELPER METHODS ====================
+
+  /**
+   * Helper: Validate UUID format
+   * @param {string} uuid - UUID to validate
+   * @returns {boolean} True if valid
+   * @private
+   */
+  _isValidUUID: function(uuid) {
+    if (!uuid || typeof uuid !== 'string') {
+      return false;
+    }
+    const uuidRegex = /^[0-9a-f]{8}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{12}$/i;
+    return uuidRegex.test(uuid);
   }
 };

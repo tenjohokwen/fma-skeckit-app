@@ -246,7 +246,11 @@ export default {
       "title": "Edit Case",
       "save": "Save Changes",
       "success": "Case updated successfully",
-      "conflict": "This case was updated by someone else. Please refresh and try again."
+      "conflict": "This case was updated by someone else. Please refresh and try again.",
+      "error": {
+        "notfound": "Case not found",
+        "forbidden": "You do not have permission to edit cases"
+      }
     },
     "create": {
       "title": "Create Case",
@@ -258,6 +262,25 @@ export default {
       "validation": {
         "length": "Case ID must be 1-100 characters long",
         "format": "Case ID can only contain letters, numbers, hyphens, and underscores"
+      },
+      "error": {
+        "clientIdRequired": "Client identifier is required for case creation",
+        "invalidClientId": "Invalid client identifier format",
+        "clientNotFound": "Client not found in system",
+        "duplicate": "A case with this ID already exists",
+        "forbidden": "You do not have permission to create cases",
+        "failed": "Failed to create case"
+      }
+    },
+    "update": {
+      "success": "Case updated successfully",
+      "error": {
+        "clientIdImmutable": "Client cannot be changed after case creation",
+        "notfound": "Case not found",
+        "conflict": "Case was modified by another user. Please refresh and try again.",
+        "invalidVersion": "Invalid version number",
+        "forbidden": "You do not have permission to update cases",
+        "failed": "Failed to update case"
       }
     }
   },
