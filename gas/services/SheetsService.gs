@@ -107,44 +107,54 @@ const SheetsService = {
 
   /**
    * Searches for cases by client name (combined search of firstName and lastName)
+   * Feature 007: Search clients sheet first, then find cases by clientId
    * @param {string} firstName - Client first name (optional, partial match)
    * @param {string} lastName - Client last name (optional, partial match)
    * @returns {Array} Array of matching case objects
    */
   searchCasesByName: function(firstName, lastName) {
-    const sheet = this.getMetadataSheet();
-    const data = sheet.getDataRange().getValues();
-    const results = [];
-
     // Normalize search terms (case-insensitive)
     const searchFirst = firstName ? firstName.toLowerCase().trim() : null;
     const searchLast = lastName ? lastName.toLowerCase().trim() : null;
 
-    // Skip header row
-    for (let i = 1; i < data.length; i++) {
-      const row = data[i];
-      const clientName = (row[3] || '').toLowerCase(); // D: clientName (shifted from C)
+    // Step 1: Find matching clients
+    const clients = this.getAllClients();
+    const matchingClientIds = [];
+
+    clients.forEach(client => {
+      const clientFirstName = (client.firstName || '').toLowerCase();
+      const clientLastName = (client.lastName || '').toLowerCase();
 
       let matches = false;
-
       if (searchFirst && searchLast) {
-        // Both names provided - check if both appear in clientName
-        matches = clientName.includes(searchFirst) && clientName.includes(searchLast);
+        matches = clientFirstName.includes(searchFirst) && clientLastName.includes(searchLast);
       } else if (searchFirst) {
-        // Only first name provided
-        matches = clientName.includes(searchFirst);
+        matches = clientFirstName.includes(searchFirst);
       } else if (searchLast) {
-        // Only last name provided
-        matches = clientName.includes(searchLast);
+        matches = clientLastName.includes(searchLast);
       }
 
       if (matches) {
-        // Exclude system-generated fields for search results
+        matchingClientIds.push(client.clientId);
+      }
+    });
+
+    // Step 2: Find cases for matching clients
+    const sheet = this.getMetadataSheet();
+    const data = sheet.getDataRange().getValues();
+    const results = [];
+
+    for (let i = 1; i < data.length; i++) {
+      const row = data[i];
+      const clientId = row[2]; // Column C: clientId
+
+      if (matchingClientIds.includes(clientId)) {
         results.push(this.parseRow(row, i + 1, false));
       }
     }
 
-    return results;
+    // Step 3: Enrich with client names
+    return this.enrichCasesWithClientNames(results);
   },
 
   /**
@@ -182,7 +192,10 @@ const SheetsService = {
       const row = data[i];
       if (row[0] === caseId) { // A: caseId
         // Include system-generated fields for editing
-        return this.parseRow(row, i + 1, true);
+        const caseData = this.parseRow(row, i + 1, true);
+
+        // Feature 007: Enrich with client name from clients sheet
+        return this.enrichCaseWithClientName(caseData);
       }
     }
 
@@ -244,27 +257,29 @@ const SheetsService = {
 
     // ========================================
     // ROW DATA: Include clientId in Column C
+    // Feature 007: clientName still stored temporarily (will be removed in Phase 5)
     // ========================================
     const row = [
       caseData.caseId,                       // A: caseId
       caseData.caseName || '',               // B: caseName
-      caseData.clientId,                     // C: clientId (UUID) ← NEW
-      caseData.clientName || '',             // D: clientName (shifted from C)
-      caseData.assignedTo || '',             // E: assignedTo (shifted from D)
-      caseData.caseType || '',               // F: caseType (shifted from E)
-      caseData.status || '',                 // G: status (shifted from F)
-      caseData.notes || '',                  // H: notes (shifted from G)
-      createdBy,                             // I: createdBy (shifted from H)
-      now,                                   // J: createdAt (shifted from I)
-      assignedAt,                            // K: assignedAt (shifted from J)
-      currentUser,                           // L: lastUpdatedBy (shifted from K)
-      now,                                   // M: lastUpdatedAt (shifted from L)
-      0                                      // N: version (shifted from M)
+      caseData.clientId,                     // C: clientId (UUID)
+      caseData.clientName || '',             // D: clientName (still stored, will be removed)
+      caseData.assignedTo || '',             // E: assignedTo
+      caseData.caseType || '',               // F: caseType
+      caseData.status || '',                 // G: status
+      caseData.notes || '',                  // H: notes
+      createdBy,                             // I: createdBy
+      now,                                   // J: createdAt
+      assignedAt,                            // K: assignedAt
+      currentUser,                           // L: lastUpdatedBy
+      now,                                   // M: lastUpdatedAt
+      0                                      // N: version
     ];
 
     sheet.appendRow(row);
 
-    // Return created case
+    // Return created case with dynamically enriched client name
+    // Feature 007: getCaseById() already enriches with client name
     return this.getCaseById(caseData.caseId);
   },
 
@@ -284,6 +299,16 @@ const SheetsService = {
       throw ResponseHandler.validationError(
         'clientId is immutable and cannot be updated',
         'metadata.update.error.clientIdImmutable'
+      );
+    }
+
+    // ========================================
+    // VALIDATION: Feature 007 - Reject clientName updates
+    // ========================================
+    if (updates.hasOwnProperty('clientName')) {
+      throw ResponseHandler.validationError(
+        'clientName cannot be updated from case details. Update client information from Client Details page.',
+        'metadata.update.error.clientNameImmutable'
       );
     }
 
@@ -531,5 +556,81 @@ const SheetsService = {
 
     // Return updated client
     return this.getClientById(clientId);
+  },
+
+  // ==================== CLIENT NAME ENRICHMENT ====================
+
+  /**
+   * Enriches case data with client name from clients sheet
+   * Feature 007: Dynamic client name lookup for data consistency
+   *
+   * @param {Object} caseData - Case data object
+   * @returns {Object} Case data with clientName added
+   */
+  enrichCaseWithClientName: function(caseData) {
+    if (!caseData) {
+      return caseData;
+    }
+
+    if (caseData.clientId) {
+      try {
+        const client = this.getClientById(caseData.clientId);
+        if (client) {
+          caseData.clientName = `${client.firstName} ${client.lastName}`;
+        } else {
+          caseData.clientName = '[Client Not Found]';
+          Logger.log(`WARNING: Client not found for clientId: ${caseData.clientId} in case: ${caseData.caseId}`);
+        }
+      } catch (error) {
+        caseData.clientName = '[Error Loading Client]';
+        Logger.log(`ERROR: Failed to fetch client ${caseData.clientId}: ${error.message}`);
+      }
+    } else {
+      caseData.clientName = '[No Client]';
+      Logger.log(`WARNING: Case ${caseData.caseId} has no clientId`);
+    }
+
+    return caseData;
+  },
+
+  /**
+   * Enriches multiple cases with client names (optimized batch lookup)
+   * Feature 007: Batch processing for performance
+   *
+   * @param {Array} cases - Array of case data objects
+   * @returns {Array} Cases with clientNames added
+   */
+  enrichCasesWithClientNames: function(cases) {
+    if (!Array.isArray(cases) || cases.length === 0) {
+      return cases;
+    }
+
+    // Extract unique clientIds
+    const clientIds = [...new Set(cases.map(c => c.clientId).filter(Boolean))];
+
+    // Build client lookup map for efficiency
+    const clientMap = {};
+    clientIds.forEach(clientId => {
+      try {
+        const client = this.getClientById(clientId);
+        if (client) {
+          clientMap[clientId] = `${client.firstName} ${client.lastName}`;
+        }
+      } catch (error) {
+        Logger.log(`ERROR: Failed to fetch client ${clientId}: ${error.message}`);
+      }
+    });
+
+    // Enrich each case
+    return cases.map(caseData => {
+      if (caseData.clientId && clientMap[caseData.clientId]) {
+        caseData.clientName = clientMap[caseData.clientId];
+      } else if (caseData.clientId) {
+        caseData.clientName = '[Client Not Found]';
+      } else {
+        caseData.clientName = '[No Client]';
+      }
+      return caseData;
+    });
   }
 };

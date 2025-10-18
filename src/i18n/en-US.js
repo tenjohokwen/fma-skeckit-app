@@ -276,6 +276,7 @@ export default {
       "success": "Case updated successfully",
       "error": {
         "clientIdImmutable": "Client cannot be changed after case creation",
+        "clientNameImmutable": "Client name cannot be updated from case details. Please update client information from the Client Details page.",
         "notfound": "Case not found",
         "conflict": "Case was modified by another user. Please refresh and try again.",
         "invalidVersion": "Invalid version number",

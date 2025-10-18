@@ -678,5 +678,49 @@ const DriveService = {
       parentFolderId: parentFolderId,
       deleted: true
     };
+  },
+
+  /**
+   * Renames a folder in Google Drive
+   * Feature 007: Support automatic folder renaming on client updates
+   *
+   * @param {string} folderId - Folder ID to rename
+   * @param {string} newName - New folder name
+   * @returns {Object} Updated folder info
+   * @throws {Error} If folder not found or rename fails
+   */
+  renameFolder: function(folderId, newName) {
+    try {
+      const folder = DriveApp.getFolderById(folderId);
+      const oldName = folder.getName();
+
+      // Check if name is already correct
+      if (oldName === newName) {
+        Logger.log(`Folder already has name "${newName}", no rename needed`);
+        return {
+          folderId: folderId,
+          oldName: oldName,
+          newName: newName,
+          renamed: false,
+          folderUrl: folder.getUrl()
+        };
+      }
+
+      // Rename the folder
+      folder.setName(newName);
+
+      Logger.log(`✅ Folder renamed: "${oldName}" → "${newName}"`);
+
+      return {
+        folderId: folderId,
+        oldName: oldName,
+        newName: newName,
+        renamed: true,
+        folderUrl: folder.getUrl()
+      };
+    } catch (error) {
+      Logger.log(`❌ Failed to rename folder ${folderId}: ${error.message}`);
+      throw new Error(`Failed to rename folder: ${error.message}`);
+    }
   }
 };

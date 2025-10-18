@@ -316,14 +316,55 @@ const ClientHandler = {
         );
       }
 
-      // Update client in Sheets
-      const updatedClient = SheetsService.updateClient(clientId, updates);
-
-      if (!updatedClient) {
+      // ========================================
+      // Feature 007: Get current client for comparison
+      // ========================================
+      const currentClient = SheetsService.getClientById(clientId);
+      if (!currentClient) {
         throw ResponseHandler.notFoundError(
           'Client not found',
           'client.update.error.notFound'
         );
+      }
+
+      // ========================================
+      // Feature 007: Check if folder rename is needed
+      // ========================================
+      const needsFolderRename = (
+        (updates.firstName && updates.firstName !== currentClient.firstName) ||
+        (updates.lastName && updates.lastName !== currentClient.lastName) ||
+        (updates.nationalId && updates.nationalId !== currentClient.nationalId)
+      );
+
+      // Update client in Sheets
+      const updatedClient = SheetsService.updateClient(clientId, updates);
+
+      // ========================================
+      // Feature 007: Rename folder if needed
+      // ========================================
+      if (needsFolderRename && updatedClient.folderId) {
+        try {
+          const newFolderName = this._buildFolderName(
+            updatedClient.firstName,
+            updatedClient.lastName,
+            updatedClient.nationalId
+          );
+
+          const renameResult = DriveService.renameFolder(updatedClient.folderId, newFolderName);
+
+          if (renameResult.renamed) {
+            Logger.log(`✅ Client folder renamed for ${updatedClient.firstName} ${updatedClient.lastName}`);
+            Logger.log(`   Old: ${renameResult.oldName}`);
+            Logger.log(`   New: ${renameResult.newName}`);
+          }
+        } catch (error) {
+          // Log error but don't fail the client update
+          Logger.log(`⚠️  WARNING: Client updated but folder rename failed`);
+          Logger.log(`   Client: ${updatedClient.firstName} ${updatedClient.lastName}`);
+          Logger.log(`   Error: ${error.message}`);
+          Logger.log(`   Action: Manual folder rename may be needed`);
+          // Continue - client data is already updated
+        }
       }
 
       // Generate new token to extend session
@@ -348,5 +389,19 @@ const ClientHandler = {
         'client.update.error.server'
       );
     }
+  },
+
+  /**
+   * Helper: Build folder name from client data
+   * Feature 007: Consistent folder naming
+   *
+   * @param {string} firstName
+   * @param {string} lastName
+   * @param {string} nationalId
+   * @returns {string} Folder name in format: firstName_lastName_nationalId
+   * @private
+   */
+  _buildFolderName: function(firstName, lastName, nationalId) {
+    return `${firstName}_${lastName}_${nationalId}`;
   }
 };

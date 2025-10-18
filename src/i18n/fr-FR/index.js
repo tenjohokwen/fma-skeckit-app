@@ -276,6 +276,7 @@ export default {
       success: "Dossier mis à jour avec succès",
       error: {
         clientIdImmutable: "Le client ne peut pas être modifié après la création du dossier",
+        clientNameImmutable: "Le nom du client ne peut pas être modifié depuis les détails du dossier. Veuillez mettre à jour les informations du client depuis la page Détails du Client.",
         notfound: "Dossier introuvable",
         conflict: "Le dossier a été modifié par un autre utilisateur. Veuillez actualiser et réessayer.",
         invalidVersion: "Numéro de version invalide",

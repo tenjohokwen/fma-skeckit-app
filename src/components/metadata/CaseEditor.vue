@@ -29,12 +29,16 @@
               />
             </div>
             <div class="col-12">
+              <!-- Feature 007: Client name read-only, editable only from client details -->
               <FieldInput
                 v-model="formData.clientName"
                 type="text"
                 label="Client Name"
                 icon="person"
-                :disable="isSaving"
+                :disable="true"
+                readonly
+                filled
+                hint="Client name can only be edited from the Client Details page"
               />
             </div>
             <div class="col-12 col-sm-6">
@@ -232,8 +236,10 @@ const hasChanges = computed(() => {
 // Methods
 function handleSave() {
   // Only send changed fields
+  // Feature 007: Exclude clientName from updates (not editable from case details)
   const updates = {}
   for (const key in formData.value) {
+    if (key === 'clientName') continue // Feature 007: Skip clientName
     if (formData.value[key] !== originalData.value[key]) {
       updates[key] = formData.value[key]
     }
