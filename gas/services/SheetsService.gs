@@ -203,6 +203,27 @@ const SheetsService = {
   },
 
   /**
+   * Gets all cases from metadata sheet (for dashboard analytics)
+   * Feature 008: Dashboard Analytics
+   * @returns {Array} Array of all case objects
+   */
+  getAllCases: function() {
+    const sheet = this.getMetadataSheet();
+    const data = sheet.getDataRange().getValues();
+    const cases = [];
+
+    // Skip header row
+    for (let i = 1; i < data.length; i++) {
+      const row = data[i];
+      if (row[0]) { // Only include rows with caseId
+        cases.push(this.parseRow(row, i + 1, true));
+      }
+    }
+
+    return cases;
+  },
+
+  /**
    * Creates a new case metadata entry
    * @param {Object} caseData - Case data object
    * @param {string} currentUser - Email of user creating the case

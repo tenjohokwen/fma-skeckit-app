@@ -73,7 +73,8 @@ const Router = {
       'file': FileHandler,
       'client': ClientHandler,
       'case': CaseHandler,
-      'folder': FolderHandler
+      'folder': FolderHandler,
+      'dashboard': DashboardHandler
     };
 
     return handlers[handlerName] || null;
@@ -128,7 +129,10 @@ const Router = {
       'file.deleteFile': 'Delete a file from Drive (admin only)',
       'file.renameFile': 'Rename a file in Drive (admin only)',
       'file.getCaseFolderStructure': 'Get folder structure for a case',
-      'file.searchFiles': 'Search files by name or metadata'
+      'file.searchFiles': 'Search files by name or metadata',
+
+      // Dashboard routes
+      'dashboard.getMetrics': 'Get all dashboard analytics metrics (role-based filtering)'
     };
   }
 };

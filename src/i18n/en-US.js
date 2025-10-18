@@ -460,7 +460,57 @@ export default {
     "welcome": "Welcome to Dashboard",
     "successLogin": "You are successfully logged in!",
     "user": "User",
-    "role": "Role"
+    "role": "Role",
+    "analytics": {
+      "title": "Business Insights",
+      "subtitle": "Real-time analytics from your cases",
+      "refresh": "Refresh",
+      "autoRefresh": "Auto-refresh",
+      "lastUpdated": "Last updated",
+      "loading": "Loading analytics...",
+      "error": "Failed to load analytics",
+      "activeCases": {
+        "title": "Total Active Cases",
+        "trend": {
+          "up": "increase",
+          "down": "decrease",
+          "neutral": "no change",
+          "vsLastMonth": "vs. last month"
+        }
+      },
+      "casesByStatus": {
+        "title": "Cases by Status",
+        "noData": "No data available"
+      },
+      "casesByType": {
+        "title": "Cases by Type",
+        "noData": "No data available"
+      },
+      "casesPerAttorney": {
+        "title": "Cases per Attorney",
+        "noData": "No attorneys assigned",
+        "unassigned": "Unassigned",
+        "workload": {
+          "low": "Low workload",
+          "medium": "Medium workload",
+          "high": "High workload",
+          "overloaded": "Overloaded"
+        },
+        "idealLine": "Ideal workload (20 cases)"
+      },
+      "resolutionTime": {
+        "title": "Case Resolution Time (Days)",
+        "noData": "No closed cases yet",
+        "metrics": {
+          "average": "Average",
+          "median": "Median",
+          "percentile75": "75th %ile",
+          "percentile90": "90th %ile",
+          "max": "Max"
+        },
+        "unit": "days"
+      }
+    }
   },
   "client": {
     "search": {

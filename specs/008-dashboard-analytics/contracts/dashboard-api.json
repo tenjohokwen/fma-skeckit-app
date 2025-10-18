@@ -1,0 +1,523 @@
+{
+  "openapi": "3.0.0",
+  "info": {
+    "title": "Dashboard Analytics API",
+    "description": "API contract for dashboard analytics endpoints. Provides aggregated metrics and statistics for case management dashboard.",
+    "version": "1.0.0",
+    "contact": {
+      "name": "FMA Skeckit Development Team"
+    }
+  },
+  "servers": [
+    {
+      "url": "https://script.google.com/macros/s/{deploymentId}/exec",
+      "description": "Google Apps Script Web App Deployment"
+    }
+  ],
+  "paths": {
+    "/": {
+      "post": {
+        "summary": "Get Dashboard Metrics",
+        "description": "Fetches aggregated analytics metrics for the dashboard. Returns role-based filtered data (admins see all cases, users see only their assigned cases). Response is cached for 5 minutes.",
+        "operationId": "getDashboardMetrics",
+        "tags": ["Dashboard"],
+        "security": [
+          {
+            "BearerAuth": []
+          }
+        ],
+        "requestBody": {
+          "required": true,
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/DashboardMetricsRequest"
+              },
+              "examples": {
+                "getDashboardMetrics": {
+                  "summary": "Get all dashboard metrics",
+                  "value": {
+                    "action": "dashboard.getMetrics",
+                    "data": {}
+                  }
+                }
+              }
+            }
+          }
+        },
+        "responses": {
+          "200": {
+            "description": "Successfully retrieved dashboard metrics",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/DashboardMetricsResponse"
+                },
+                "examples": {
+                  "success": {
+                    "summary": "Successful response with metrics",
+                    "value": {
+                      "success": true,
+                      "message": "Dashboard metrics retrieved successfully",
+                      "msgKey": "dashboard.metrics.success",
+                      "data": {
+                        "metrics": {
+                          "activeCases": {
+                            "count": 142,
+                            "trend": {
+                              "direction": "up",
+                              "percentage": 12,
+                              "change": 15
+                            }
+                          },
+                          "casesByStatus": [
+                            {
+                              "status": "Open",
+                              "count": 45,
+                              "percentage": 32
+                            },
+                            {
+                              "status": "Pending",
+                              "count": 32,
+                              "percentage": 23
+                            },
+                            {
+                              "status": "In Progress",
+                              "count": 35,
+                              "percentage": 25
+                            },
+                            {
+                              "status": "Closed",
+                              "count": 30,
+                              "percentage": 21
+                            }
+                          ],
+                          "casesByType": [
+                            {
+                              "type": "Immigration",
+                              "count": 45,
+                              "percentage": 32
+                            },
+                            {
+                              "type": "Family Law",
+                              "count": 32,
+                              "percentage": 23
+                            },
+                            {
+                              "type": "Criminal",
+                              "count": 20,
+                              "percentage": 14
+                            },
+                            {
+                              "type": "Other",
+                              "count": 10,
+                              "percentage": 7
+                            }
+                          ],
+                          "casesPerAttorney": [
+                            {
+                              "attorney": "john@example.com",
+                              "count": 28,
+                              "level": "high"
+                            },
+                            {
+                              "attorney": "jane@example.com",
+                              "count": 22,
+                              "level": "medium"
+                            },
+                            {
+                              "attorney": "bob@example.com",
+                              "count": 15,
+                              "level": "medium"
+                            },
+                            {
+                              "attorney": "Unassigned",
+                              "count": 8,
+                              "level": "low"
+                            }
+                          ],
+                          "resolutionTime": {
+                            "average": 32,
+                            "median": 28,
+                            "min": 5,
+                            "max": 120,
+                            "percentile75": 45,
+                            "percentile90": 67,
+                            "count": 87
+                          },
+                          "lastUpdated": "2025-10-18T10:30:00Z"
+                        }
+                      },
+                      "user": {
+                        "email": "admin@example.com",
+                        "role": "ROLE_ADMIN"
+                      },
+                      "token": "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9..."
+                    }
+                  },
+                  "emptyDataset": {
+                    "summary": "Response when no cases exist",
+                    "value": {
+                      "success": true,
+                      "message": "Dashboard metrics retrieved successfully",
+                      "msgKey": "dashboard.metrics.success",
+                      "data": {
+                        "metrics": {
+                          "activeCases": {
+                            "count": 0,
+                            "trend": {
+                              "direction": "neutral",
+                              "percentage": 0,
+                              "change": 0
+                            }
+                          },
+                          "casesByStatus": [],
+                          "casesByType": [],
+                          "casesPerAttorney": [],
+                          "resolutionTime": {
+                            "average": 0,
+                            "median": 0,
+                            "min": 0,
+                            "max": 0,
+                            "percentile75": 0,
+                            "percentile90": 0,
+                            "count": 0
+                          },
+                          "lastUpdated": "2025-10-18T10:30:00Z"
+                        }
+                      },
+                      "user": {
+                        "email": "user@example.com",
+                        "role": "ROLE_USER"
+                      },
+                      "token": "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9..."
+                    }
+                  }
+                }
+              }
+            }
+          },
+          "401": {
+            "description": "Unauthorized - Invalid or expired token",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ErrorResponse"
+                },
+                "examples": {
+                  "unauthorized": {
+                    "summary": "Token validation failed",
+                    "value": {
+                      "success": false,
+                      "message": "Invalid or expired token",
+                      "msgKey": "auth.error.invalidToken",
+                      "data": null
+                    }
+                  }
+                }
+              }
+            }
+          },
+          "500": {
+            "description": "Server error - Failed to fetch metrics",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ErrorResponse"
+                },
+                "examples": {
+                  "serverError": {
+                    "summary": "Server error during metrics calculation",
+                    "value": {
+                      "success": false,
+                      "message": "Failed to fetch dashboard metrics: Unable to access spreadsheet",
+                      "msgKey": "dashboard.metrics.error.server",
+                      "data": null
+                    }
+                  }
+                }
+              }
+            }
+          }
+        }
+      }
+    }
+  },
+  "components": {
+    "securitySchemes": {
+      "BearerAuth": {
+        "type": "http",
+        "scheme": "bearer",
+        "bearerFormat": "JWT",
+        "description": "JWT token obtained from authentication endpoint. Include in Authorization header as 'Bearer {token}'"
+      }
+    },
+    "schemas": {
+      "DashboardMetricsRequest": {
+        "type": "object",
+        "required": ["action", "data"],
+        "properties": {
+          "action": {
+            "type": "string",
+            "enum": ["dashboard.getMetrics"],
+            "description": "Action identifier for routing"
+          },
+          "data": {
+            "type": "object",
+            "description": "Request payload (empty for getDashboardMetrics)"
+          }
+        }
+      },
+      "DashboardMetricsResponse": {
+        "type": "object",
+        "required": ["success", "message", "msgKey", "data", "user", "token"],
+        "properties": {
+          "success": {
+            "type": "boolean",
+            "description": "Indicates if request was successful"
+          },
+          "message": {
+            "type": "string",
+            "description": "Human-readable message in English"
+          },
+          "msgKey": {
+            "type": "string",
+            "description": "i18n key for message localization"
+          },
+          "data": {
+            "type": "object",
+            "required": ["metrics"],
+            "properties": {
+              "metrics": {
+                "$ref": "#/components/schemas/DashboardMetrics"
+              }
+            }
+          },
+          "user": {
+            "$ref": "#/components/schemas/UserContext"
+          },
+          "token": {
+            "type": "string",
+            "description": "Refreshed JWT token (15-minute TTL)"
+          }
+        }
+      },
+      "DashboardMetrics": {
+        "type": "object",
+        "required": ["activeCases", "casesByStatus", "casesByType", "casesPerAttorney", "resolutionTime", "lastUpdated"],
+        "properties": {
+          "activeCases": {
+            "$ref": "#/components/schemas/ActiveCasesMetric"
+          },
+          "casesByStatus": {
+            "type": "array",
+            "items": {
+              "$ref": "#/components/schemas/StatusMetric"
+            },
+            "description": "Array of case counts by status"
+          },
+          "casesByType": {
+            "type": "array",
+            "items": {
+              "$ref": "#/components/schemas/TypeMetric"
+            },
+            "description": "Array of case counts by type (practice area), sorted by count descending, max 11 items (top 10 + Other)"
+          },
+          "casesPerAttorney": {
+            "type": "array",
+            "items": {
+              "$ref": "#/components/schemas/AttorneyMetric"
+            },
+            "description": "Array of active case counts per attorney, sorted by count descending"
+          },
+          "resolutionTime": {
+            "$ref": "#/components/schemas/ResolutionMetric"
+          },
+          "lastUpdated": {
+            "type": "string",
+            "format": "date-time",
+            "description": "ISO 8601 timestamp of when metrics were calculated"
+          }
+        }
+      },
+      "ActiveCasesMetric": {
+        "type": "object",
+        "required": ["count", "trend"],
+        "properties": {
+          "count": {
+            "type": "integer",
+            "minimum": 0,
+            "description": "Current number of active cases (status ≠ 'Closed')"
+          },
+          "trend": {
+            "type": "object",
+            "required": ["direction", "percentage", "change"],
+            "properties": {
+              "direction": {
+                "type": "string",
+                "enum": ["up", "down", "neutral"],
+                "description": "Trend direction compared to 30 days ago"
+              },
+              "percentage": {
+                "type": "integer",
+                "description": "Percentage change from previous period (can be negative)"
+              },
+              "change": {
+                "type": "integer",
+                "description": "Absolute change in case count (can be negative)"
+              }
+            }
+          }
+        }
+      },
+      "StatusMetric": {
+        "type": "object",
+        "required": ["status", "count", "percentage"],
+        "properties": {
+          "status": {
+            "type": "string",
+            "description": "Status name (e.g., 'Open', 'Pending', 'Closed')"
+          },
+          "count": {
+            "type": "integer",
+            "minimum": 0,
+            "description": "Number of cases with this status"
+          },
+          "percentage": {
+            "type": "integer",
+            "minimum": 0,
+            "maximum": 100,
+            "description": "Percentage of total cases (rounded to nearest integer)"
+          }
+        }
+      },
+      "TypeMetric": {
+        "type": "object",
+        "required": ["type", "count", "percentage"],
+        "properties": {
+          "type": {
+            "type": "string",
+            "description": "Case type name (e.g., 'Immigration', 'Family Law', 'Other')"
+          },
+          "count": {
+            "type": "integer",
+            "minimum": 0,
+            "description": "Number of cases of this type"
+          },
+          "percentage": {
+            "type": "integer",
+            "minimum": 0,
+            "maximum": 100,
+            "description": "Percentage of total cases (rounded to nearest integer)"
+          }
+        }
+      },
+      "AttorneyMetric": {
+        "type": "object",
+        "required": ["attorney", "count", "level"],
+        "properties": {
+          "attorney": {
+            "type": "string",
+            "description": "Attorney email or 'Unassigned' for unassigned cases"
+          },
+          "count": {
+            "type": "integer",
+            "minimum": 0,
+            "description": "Number of active cases assigned to this attorney"
+          },
+          "level": {
+            "type": "string",
+            "enum": ["low", "medium", "high", "overloaded"],
+            "description": "Workload level: low (0-10), medium (11-20), high (21-30), overloaded (31+)"
+          }
+        }
+      },
+      "ResolutionMetric": {
+        "type": "object",
+        "required": ["average", "median", "min", "max", "percentile75", "percentile90", "count"],
+        "properties": {
+          "average": {
+            "type": "integer",
+            "minimum": 0,
+            "description": "Average days to close (mean)"
+          },
+          "median": {
+            "type": "integer",
+            "minimum": 0,
+            "description": "Median days to close"
+          },
+          "min": {
+            "type": "integer",
+            "minimum": 0,
+            "description": "Fastest case closure (days)"
+          },
+          "max": {
+            "type": "integer",
+            "minimum": 0,
+            "description": "Slowest case closure (days)"
+          },
+          "percentile75": {
+            "type": "integer",
+            "minimum": 0,
+            "description": "75th percentile resolution time (days)"
+          },
+          "percentile90": {
+            "type": "integer",
+            "minimum": 0,
+            "description": "90th percentile resolution time (days)"
+          },
+          "count": {
+            "type": "integer",
+            "minimum": 0,
+            "description": "Number of closed cases analyzed"
+          }
+        }
+      },
+      "UserContext": {
+        "type": "object",
+        "required": ["email", "role"],
+        "properties": {
+          "email": {
+            "type": "string",
+            "format": "email",
+            "description": "User's email address"
+          },
+          "role": {
+            "type": "string",
+            "enum": ["ROLE_ADMIN", "ROLE_USER"],
+            "description": "User's role (determines data filtering)"
+          }
+        }
+      },
+      "ErrorResponse": {
+        "type": "object",
+        "required": ["success", "message", "msgKey", "data"],
+        "properties": {
+          "success": {
+            "type": "boolean",
+            "enum": [false],
+            "description": "Always false for error responses"
+          },
+          "message": {
+            "type": "string",
+            "description": "Error message in English"
+          },
+          "msgKey": {
+            "type": "string",
+            "description": "i18n key for error message localization"
+          },
+          "data": {
+            "type": "null",
+            "description": "Always null for error responses"
+          }
+        }
+      }
+    }
+  },
+  "tags": [
+    {
+      "name": "Dashboard",
+      "description": "Dashboard analytics and metrics endpoints"
+    }
+  ]
+}

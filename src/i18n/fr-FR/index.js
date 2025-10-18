@@ -456,7 +456,57 @@ export default {
     welcome: "Bienvenue au Tableau de Bord",
     successLogin: "Vous êtes connecté avec succès!",
     user: "Utilisateur",
-    role: "Rôle"
+    role: "Rôle",
+    analytics: {
+      title: "Indicateurs de Gestion",
+      subtitle: "Analyses en temps réel de vos dossiers",
+      refresh: "Actualiser",
+      autoRefresh: "Actualisation automatique",
+      lastUpdated: "Dernière mise à jour",
+      loading: "Chargement des analyses...",
+      error: "Échec du chargement des analyses",
+      activeCases: {
+        title: "Dossiers Actifs Totaux",
+        trend: {
+          up: "augmentation",
+          down: "diminution",
+          neutral: "aucun changement",
+          vsLastMonth: "vs. mois dernier"
+        }
+      },
+      casesByStatus: {
+        title: "Dossiers par Statut",
+        noData: "Aucune donnée disponible"
+      },
+      casesByType: {
+        title: "Dossiers par Type",
+        noData: "Aucune donnée disponible"
+      },
+      casesPerAttorney: {
+        title: "Dossiers par Avocat",
+        noData: "Aucun avocat assigné",
+        unassigned: "Non assigné",
+        workload: {
+          low: "Charge faible",
+          medium: "Charge moyenne",
+          high: "Charge élevée",
+          overloaded: "Surchargé"
+        },
+        idealLine: "Charge idéale (20 dossiers)"
+      },
+      resolutionTime: {
+        title: "Temps de Résolution des Dossiers (Jours)",
+        noData: "Aucun dossier fermé",
+        metrics: {
+          average: "Moyenne",
+          median: "Médiane",
+          percentile75: "75e %ile",
+          percentile90: "90e %ile",
+          max: "Max"
+        },
+        unit: "jours"
+      }
+    }
   },
   language: {
     switch: "Changer de Langue",

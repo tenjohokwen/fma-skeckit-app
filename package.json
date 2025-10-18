@@ -23,6 +23,7 @@
     "@vue/test-utils": "^2.4.6",
     "@vuelidate/core": "^2.0.3",
     "@vuelidate/validators": "^2.0.4",
+    "apexcharts": "^5.3.5",
     "axios": "^1.2.1",
     "fuse.js": "^7.1.0",
     "happy-dom": "^20.0.0",
@@ -31,7 +32,8 @@
     "vitest": "^3.2.4",
     "vue": "3.5.20",
     "vue-i18n": "^11.0.0",
-    "vue-router": "^4.0.0"
+    "vue-router": "^4.0.0",
+    "vue3-apexcharts": "^1.9.0"
   },
   "devDependencies": {
     "@eslint/js": "^9.14.0",
