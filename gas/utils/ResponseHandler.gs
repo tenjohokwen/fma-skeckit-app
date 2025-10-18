@@ -198,5 +198,30 @@ const ResponseHandler = {
       msgKey: msgKey,
       message: message
     };
+  },
+
+  /**
+   * Creates success response with token refresh
+   * Use for authenticated endpoints to automatically extend session
+   *
+   * @param {string} msgKey - i18n message key
+   * @param {string} message - Human-readable message
+   * @param {Object} data - Response data payload
+   * @param {Object} user - User object {email, role, status}
+   * @param {string} tokenValue - Encrypted JWT token value
+   * @returns {Object} Response object with token
+   */
+  successWithToken: function(msgKey, message, data, user, tokenValue) {
+    return {
+      status: 200,
+      msgKey: msgKey,
+      message: message,
+      data: data || null,
+      token: {
+        value: tokenValue,
+        ttl: Date.now() + (15 * 60 * 1000), // 15 minutes from now
+        username: user.email
+      }
+    };
   }
 };

@@ -82,19 +82,23 @@ const FolderHandler = {
 
       const now = DateUtil.getCurrentTimestamp();
 
-      return {
-        status: 200,
-        msgKey: 'folder.delete.success',
-        message: `Folder "${folderName}" and ${itemsCount} item(s) deleted successfully`,
-        data: {
+      // Generate new token to extend session
+      const newToken = TokenManager.generateToken(context.user.email);
+
+      return ResponseHandler.successWithToken(
+        'folder.delete.success',
+        `Folder "${folderName}" and ${itemsCount} item(s) deleted successfully`,
+        {
           folderId: folderId,
           folderName: folderName,
           parentFolderId: parentFolderId,
           itemsDeleted: itemsCount,
           deletedAt: now,
           deletedBy: context.user.email
-        }
-      };
+        },
+        context.user,
+        newToken.value
+      );
 
     } catch (error) {
       Logger.log('Error in FolderHandler.deleteFolder: ' + error.toString());

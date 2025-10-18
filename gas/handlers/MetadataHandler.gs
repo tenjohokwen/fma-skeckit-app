@@ -31,15 +31,19 @@ const MetadataHandler = {
     // Search cases
     const cases = SheetsService.searchCasesByName(firstName, lastName);
 
-    return {
-      status: 200,
-      msgKey: 'metadata.search.success',
-      message: 'Search completed successfully',
-      data: {
+    // Generate new token to extend session
+    const newToken = TokenManager.generateToken(context.user.email);
+
+    return ResponseHandler.successWithToken(
+      'metadata.search.success',
+      'Search completed successfully',
+      {
         cases: cases,
         count: cases.length
-      }
-    };
+      },
+      context.user,
+      newToken.value
+    );
   },
 
   /**
@@ -66,14 +70,18 @@ const MetadataHandler = {
       );
     }
 
-    return {
-      status: 200,
-      msgKey: 'metadata.search.success',
-      message: 'Case found',
-      data: {
+    // Generate new token to extend session
+    const newToken = TokenManager.generateToken(context.user.email);
+
+    return ResponseHandler.successWithToken(
+      'metadata.search.success',
+      'Case found',
+      {
         case: caseData
-      }
-    };
+      },
+      context.user,
+      newToken.value
+    );
   },
 
   /**
@@ -103,14 +111,18 @@ const MetadataHandler = {
       );
     }
 
-    return {
-      status: 200,
-      msgKey: 'metadata.edit.fetch.success',
-      message: 'Case retrieved for editing',
-      data: {
+    // Generate new token to extend session
+    const newToken = TokenManager.generateToken(context.user.email);
+
+    return ResponseHandler.successWithToken(
+      'metadata.edit.fetch.success',
+      'Case retrieved for editing',
+      {
         case: caseData
-      }
-    };
+      },
+      context.user,
+      newToken.value
+    );
   },
 
   /**
@@ -151,14 +163,18 @@ const MetadataHandler = {
       context.user.email
     );
 
-    return {
-      status: 200,
-      msgKey: 'metadata.update.success',
-      message: 'Case updated successfully',
-      data: {
+    // Generate new token to extend session
+    const newToken = TokenManager.generateToken(context.user.email);
+
+    return ResponseHandler.successWithToken(
+      'metadata.update.success',
+      'Case updated successfully',
+      {
         case: updatedCase
-      }
-    };
+      },
+      context.user,
+      newToken.value
+    );
   },
 
   /**
@@ -192,13 +208,17 @@ const MetadataHandler = {
     // Create case
     const createdCase = SheetsService.createCase(caseData, context.user.email);
 
-    return {
-      status: 200,
-      msgKey: 'metadata.create.success',
-      message: 'Case created successfully',
-      data: {
+    // Generate new token to extend session
+    const newToken = TokenManager.generateToken(context.user.email);
+
+    return ResponseHandler.successWithToken(
+      'metadata.create.success',
+      'Case created successfully',
+      {
         case: createdCase
-      }
-    };
+      },
+      context.user,
+      newToken.value
+    );
   }
 };

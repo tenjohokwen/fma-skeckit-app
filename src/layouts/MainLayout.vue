@@ -143,6 +143,15 @@
     <q-page-container>
       <router-view />
     </q-page-container>
+
+    <!-- Session Expiration Warning Dialog -->
+    <SessionExpirationDialog
+      :show="isWarningVisible"
+      :time-remaining="timeRemaining"
+      :is-extending="isExtending"
+      @extend="handleExtendSession"
+      @logout="handleLogoutFromDialog"
+    />
   </q-layout>
 </template>
 
@@ -161,12 +170,24 @@ import { useRouter } from 'vue-router'
 import { useAuthStore } from 'src/stores/authStore'
 import { useI18n } from 'vue-i18n'
 import { useRoleAccess } from 'src/composables/useRoleAccess'
+import { useSessionMonitor } from 'src/composables/useSessionMonitor'
+import { useNotifications } from 'src/composables/useNotifications'
 import LanguageSwitcher from 'components/LanguageSwitcher.vue'
+import SessionExpirationDialog from 'src/components/auth/SessionExpirationDialog.vue'
 
 const router = useRouter()
 const authStore = useAuthStore()
 const { t: $t } = useI18n()
 const { isViewOnly } = useRoleAccess()
+const { notifySuccess, notifyError } = useNotifications()
+
+// Session monitoring
+const {
+  isWarningVisible,
+  timeRemaining,
+  isExtending,
+  extendSession
+} = useSessionMonitor()
 
 const leftDrawerOpen = ref(false)
 
@@ -177,6 +198,20 @@ function toggleLeftDrawer() {
 function handleLogout() {
   authStore.logout()
   router.push({ name: 'login' })
+}
+
+function handleLogoutFromDialog() {
+  handleLogout()
+}
+
+async function handleExtendSession() {
+  const result = await extendSession()
+
+  if (result.success) {
+    notifySuccess($t('session.extended.success'))
+  } else {
+    notifyError(result.error || $t('token.refresh.error'))
+  }
 }
 </script>
 

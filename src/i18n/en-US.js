@@ -115,7 +115,7 @@ export default {
     "token": {
       "missing": "Authentication token is missing",
       "invalid": "Invalid authentication token",
-      "expired": "Your session has expired. Please log in again"
+      "expired": "Your session has expired. Please log in again."
     }
   },
   "search": {
@@ -585,5 +585,30 @@ export default {
   "breadcrumb": {
     "home": "Home",
     "cases": "Cases"
+  },
+  "session": {
+    "expiring": {
+      "title": "Session Expiring Soon",
+      "message": "Your session will expire in {time}",
+      "countdown": "Time remaining",
+      "extendButton": "Extend Session",
+      "logoutButton": "Logout Now"
+    },
+    "expired": {
+      "title": "Session Expired",
+      "message": "Your session has expired. Please log in again.",
+      "loginButton": "Log In"
+    },
+    "extended": {
+      "success": "Session extended successfully",
+      "failure": "Failed to extend session"
+    }
+  },
+  "token": {
+    "refresh": {
+      "success": "Session extended",
+      "error": "Failed to extend session. Please try again.",
+      "rateLimit": "Too many requests. Please wait a moment."
+    }
   }
 }

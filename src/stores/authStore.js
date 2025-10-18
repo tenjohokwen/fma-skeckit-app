@@ -37,6 +37,10 @@ export const useAuthStore = defineStore('auth', () => {
     return user.value?.status === 'VERIFIED'
   })
 
+  const tokenTTL = computed(() => {
+    return tokenExpiry.value
+  })
+
   // Actions
 
   /**
@@ -240,6 +244,19 @@ export const useAuthStore = defineStore('auth', () => {
   }
 
   /**
+   * Update token after refresh (session extension)
+   * @param {Object} tokenData - Token object with { value, ttl }
+   */
+  function updateToken(tokenData) {
+    token.value = tokenData.value
+    tokenExpiry.value = tokenData.ttl
+
+    // Persist to localStorage
+    localStorage.setItem('auth_token', tokenData.value)
+    localStorage.setItem('auth_expiry', tokenData.ttl.toString())
+  }
+
+  /**
    * Clear authentication data
    */
   function clearAuth() {
@@ -306,6 +323,7 @@ export const useAuthStore = defineStore('auth', () => {
     isTokenValid,
     isAdmin,
     isVerified,
+    tokenTTL,
 
     // Actions
     signup,
@@ -317,6 +335,7 @@ export const useAuthStore = defineStore('auth', () => {
     resetPassword,
     logout,
     setAuth,
+    updateToken,
     clearAuth,
     checkAndRefreshToken
   }

@@ -58,11 +58,13 @@ const ClientHandler = {
         return matches;
       });
 
-      return {
-        status: 200,
-        msgKey: 'client.search.success',
-        message: `Found ${matchedClients.length} client(s)`,
-        data: {
+      // Generate new token to extend session
+      const newToken = TokenManager.generateToken(context.user.email);
+
+      return ResponseHandler.successWithToken(
+        'client.search.success',
+        `Found ${matchedClients.length} client(s)`,
+        {
           clients: matchedClients,
           count: matchedClients.length,
           searchCriteria: {
@@ -70,8 +72,10 @@ const ClientHandler = {
             lastName: lastName || '',
             nationalId: nationalId || ''
           }
-        }
-      };
+        },
+        context.user,
+        newToken.value
+      );
 
     } catch (error) {
       if (error.status) {
@@ -160,16 +164,20 @@ const ClientHandler = {
 
       const createdClient = SheetsService.createClient(clientData);
 
-      return {
-        status: 200,
-        msgKey: 'client.create.success',
-        message: 'Client created successfully',
-        data: {
+      // Generate new token to extend session
+      const newToken = TokenManager.generateToken(context.user.email);
+
+      return ResponseHandler.successWithToken(
+        'client.create.success',
+        'Client created successfully',
+        {
           client: createdClient,
           folderPath: `cases/${folderName}`,
           folderUrl: clientFolder.getUrl()
-        }
-      };
+        },
+        context.user,
+        newToken.value
+      );
 
     } catch (error) {
       if (error.status) {
@@ -240,16 +248,20 @@ const ClientHandler = {
         }
       }
 
-      return {
-        status: 200,
-        msgKey: 'client.get.success',
-        message: 'Client retrieved successfully',
-        data: {
+      // Generate new token to extend session
+      const newToken = TokenManager.generateToken(context.user.email);
+
+      return ResponseHandler.successWithToken(
+        'client.get.success',
+        'Client retrieved successfully',
+        {
           client: client,
           cases: cases,
           caseCount: caseCount
-        }
-      };
+        },
+        context.user,
+        newToken.value
+      );
 
     } catch (error) {
       if (error.status) {
@@ -314,14 +326,18 @@ const ClientHandler = {
         );
       }
 
-      return {
-        status: 200,
-        msgKey: 'client.update.success',
-        message: 'Client updated successfully',
-        data: {
+      // Generate new token to extend session
+      const newToken = TokenManager.generateToken(context.user.email);
+
+      return ResponseHandler.successWithToken(
+        'client.update.success',
+        'Client updated successfully',
+        {
           client: updatedClient
-        }
-      };
+        },
+        context.user,
+        newToken.value
+      );
 
     } catch (error) {
       if (error.status) {

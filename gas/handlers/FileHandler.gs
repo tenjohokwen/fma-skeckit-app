@@ -43,20 +43,25 @@ const FileHandler = {
       // Search for client folder
       const folderInfo = DriveService.searchClientFolder(firstName, lastName, idCardNo);
 
+      // Generate new token to extend session
+      const newToken = TokenManager.generateToken(context.user.email);
+
       if (folderInfo) {
-        return {
-          status: 200,
-          msgKey: 'file.folder.search.success',
-          message: 'Client folder found',
-          data: folderInfo
-        };
+        return ResponseHandler.successWithToken(
+          'file.folder.search.success',
+          'Client folder found',
+          folderInfo,
+          context.user,
+          newToken.value
+        );
       } else {
-        return {
-          status: 200,
-          msgKey: 'file.folder.search.notFound',
-          message: 'Client folder not found',
-          data: null
-        };
+        return ResponseHandler.successWithToken(
+          'file.folder.search.notFound',
+          'Client folder not found',
+          null,
+          context.user,
+          newToken.value
+        );
       }
 
     } catch (error) {
@@ -122,12 +127,16 @@ const FileHandler = {
       // Create client folder (DriveService handles duplicate check)
       const folderInfo = DriveService.createClientFolder(clientData, currentUser);
 
-      return {
-        status: 200,
-        msgKey: 'file.folder.create.success',
-        message: 'Client folder created successfully',
-        data: folderInfo
-      };
+      // Generate new token to extend session
+      const newToken = TokenManager.generateToken(context.user.email);
+
+      return ResponseHandler.successWithToken(
+        'file.folder.create.success',
+        'Client folder created successfully',
+        folderInfo,
+        context.user,
+        newToken.value
+      );
 
     } catch (error) {
       Logger.log('Error in FileHandler.createClientFolder: ' + error.toString());
@@ -184,12 +193,16 @@ const FileHandler = {
         currentUser
       );
 
-      return {
-        status: 200,
-        msgKey: 'file.casefolder.create.success',
-        message: 'Case folder created successfully',
-        data: folderInfo
-      };
+      // Generate new token to extend session
+      const newToken = TokenManager.generateToken(context.user.email);
+
+      return ResponseHandler.successWithToken(
+        'file.casefolder.create.success',
+        'Case folder created successfully',
+        folderInfo,
+        context.user,
+        newToken.value
+      );
 
     } catch (error) {
       Logger.log('Error in FileHandler.createCaseFolder: ' + error.toString());
@@ -238,15 +251,19 @@ const FileHandler = {
       // List folders (DriveService handles folder not found)
       const folders = DriveService.listFolders(folderId.trim());
 
-      return {
-        status: 200,
-        msgKey: 'file.folder.list.success',
-        message: 'Folders listed successfully',
-        data: {
+      // Generate new token to extend session
+      const newToken = TokenManager.generateToken(context.user.email);
+
+      return ResponseHandler.successWithToken(
+        'file.folder.list.success',
+        'Folders listed successfully',
+        {
           folders: folders,
           count: folders.length
-        }
-      };
+        },
+        context.user,
+        newToken.value
+      );
 
     } catch (error) {
       Logger.log('Error in FileHandler.listFolders: ' + error.toString());
@@ -305,30 +322,35 @@ const FileHandler = {
         currentUser
       );
 
+      // Generate new token to extend session
+      const newToken = TokenManager.generateToken(context.user.email);
+
       // Check if conflict detected
       if (result.conflict) {
-        return {
-          status: 200,
-          msgKey: 'file.upload.conflict',
-          message: 'File with this name already exists',
-          data: {
+        return ResponseHandler.successWithToken(
+          'file.upload.conflict',
+          'File with this name already exists',
+          {
             conflict: true,
             existingFileId: result.existingFileId,
             fileName: result.fileName
-          }
-        };
+          },
+          context.user,
+          newToken.value
+        );
       }
 
       // No conflict - file uploaded successfully
-      return {
-        status: 200,
-        msgKey: 'file.upload.success',
-        message: 'File uploaded successfully',
-        data: {
+      return ResponseHandler.successWithToken(
+        'file.upload.success',
+        'File uploaded successfully',
+        {
           file: result.file,
           conflict: false
-        }
-      };
+        },
+        context.user,
+        newToken.value
+      );
 
     } catch (error) {
       Logger.log('Error in FileHandler.uploadFile: ' + error.toString());
@@ -398,45 +420,51 @@ const FileHandler = {
         currentUser
       );
 
+      // Generate new token to extend session
+      const newToken = TokenManager.generateToken(context.user.email);
+
       // Handle cancel action
       if (result.action === 'cancel') {
-        return {
-          status: 200,
-          msgKey: 'file.conflict.cancel.success',
-          message: 'Upload cancelled by user',
-          data: {
+        return ResponseHandler.successWithToken(
+          'file.conflict.cancel.success',
+          'Upload cancelled by user',
+          {
             action: 'cancel',
             message: result.message
-          }
-        };
+          },
+          context.user,
+          newToken.value
+        );
       }
 
       // Handle overwrite action
       if (result.action === 'overwrite') {
-        return {
-          status: 200,
-          msgKey: 'file.conflict.overwrite.success',
-          message: 'File overwritten successfully',
-          data: {
+        return ResponseHandler.successWithToken(
+          'file.conflict.overwrite.success',
+          'File overwritten successfully',
+          {
             file: result.file,
             action: 'overwrite',
             previousFileDeleted: result.previousFileDeleted
-          }
-        };
+          },
+          context.user,
+          newToken.value
+        );
       }
 
       // Handle rename action
       if (result.action === 'rename') {
-        return {
-          status: 200,
-          msgKey: 'file.conflict.rename.success',
-          message: 'File uploaded with new name',
-          data: {
+        return ResponseHandler.successWithToken(
+          'file.conflict.rename.success',
+          'File uploaded with new name',
+          {
             file: result.file,
             action: 'rename',
             originalFileName: result.originalFileName
-          }
-        };
+          },
+          context.user,
+          newToken.value
+        );
       }
 
     } catch (error) {
@@ -486,15 +514,19 @@ const FileHandler = {
       // List files
       const files = DriveService.listFiles(folderId.trim());
 
-      return {
-        status: 200,
-        msgKey: 'file.list.success',
-        message: 'Files listed successfully',
-        data: {
+      // Generate new token to extend session
+      const newToken = TokenManager.generateToken(context.user.email);
+
+      return ResponseHandler.successWithToken(
+        'file.list.success',
+        'Files listed successfully',
+        {
           files: files,
           count: files.length
-        }
-      };
+        },
+        context.user,
+        newToken.value
+      );
 
     } catch (error) {
       Logger.log('Error in FileHandler.listFiles: ' + error.toString());
@@ -543,12 +575,16 @@ const FileHandler = {
       // Delete file
       const result = DriveService.deleteFile(fileId.trim());
 
-      return {
-        status: 200,
-        msgKey: 'file.delete.success',
-        message: 'File deleted successfully',
-        data: result
-      };
+      // Generate new token to extend session
+      const newToken = TokenManager.generateToken(context.user.email);
+
+      return ResponseHandler.successWithToken(
+        'file.delete.success',
+        'File deleted successfully',
+        result,
+        context.user,
+        newToken.value
+      );
 
     } catch (error) {
       Logger.log('Error in FileHandler.deleteFile: ' + error.toString());
@@ -589,12 +625,16 @@ const FileHandler = {
       // List folders and files using unified method
       const contents = DriveService.listFolderContents(folderId.trim());
 
-      return {
-        status: 200,
-        msgKey: 'file.folderContents.success',
-        message: 'Folder contents listed successfully',
-        data: contents
-      };
+      // Generate new token to extend session
+      const newToken = TokenManager.generateToken(context.user.email);
+
+      return ResponseHandler.successWithToken(
+        'file.folderContents.success',
+        'Folder contents listed successfully',
+        contents,
+        context.user,
+        newToken.value
+      );
 
     } catch (error) {
       Logger.log('Error in FileHandler.listFolderContents: ' + error.toString());
@@ -742,17 +782,21 @@ const FileHandler = {
         }
       }
 
-      return {
-        status: 200,
-        msgKey: 'file.upload.batch.complete',
-        message: `Uploaded ${successCount} of ${files.length} files successfully`,
-        data: {
+      // Generate new token to extend session
+      const newToken = TokenManager.generateToken(context.user.email);
+
+      return ResponseHandler.successWithToken(
+        'file.upload.batch.complete',
+        `Uploaded ${successCount} of ${files.length} files successfully`,
+        {
           results: results,
           successCount: successCount,
           failureCount: failureCount,
           totalCount: files.length
-        }
-      };
+        },
+        context.user,
+        newToken.value
+      );
 
     } catch (error) {
       Logger.log('Error in FileHandler.uploadBatch: ' + error.toString());
@@ -813,18 +857,22 @@ const FileHandler = {
       const blob = file.getBlob();
       const base64Content = Utilities.base64Encode(blob.getBytes());
 
-      return {
-        status: 200,
-        msgKey: 'file.download.success',
-        message: 'File content retrieved successfully',
-        data: {
+      // Generate new token to extend session
+      const newToken = TokenManager.generateToken(context.user.email);
+
+      return ResponseHandler.successWithToken(
+        'file.download.success',
+        'File content retrieved successfully',
+        {
           fileId: file.getId(),
           fileName: file.getName(),
           content: base64Content,
           mimeType: file.getMimeType(),
           size: file.getSize()
-        }
-      };
+        },
+        context.user,
+        newToken.value
+      );
 
     } catch (error) {
       Logger.log('Error in FileHandler.downloadFile: ' + error.toString());
@@ -881,18 +929,22 @@ const FileHandler = {
       // Rename file using DriveService
       const result = DriveService.renameFile(fileId.trim(), newName.trim());
 
-      return {
-        status: 200,
-        msgKey: 'file.rename.success',
-        message: `File renamed from "${result.oldName}" to "${result.newName}"`,
-        data: {
+      // Generate new token to extend session
+      const newToken = TokenManager.generateToken(context.user.email);
+
+      return ResponseHandler.successWithToken(
+        'file.rename.success',
+        `File renamed from "${result.oldName}" to "${result.newName}"`,
+        {
           fileId: result.fileId,
           oldName: result.oldName,
           newName: result.newName,
           renamedAt: DateUtil.getCurrentTimestamp(),
           renamedBy: context.user.email
-        }
-      };
+        },
+        context.user,
+        newToken.value
+      );
 
     } catch (error) {
       Logger.log('Error in FileHandler.renameFile: ' + error.toString());

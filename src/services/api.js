@@ -62,10 +62,18 @@ export const api = {
       // Handle token refresh from response (15-minute TTL)
       if (response.data.token && response.data.token.value) {
         localStorage.setItem('auth_token', response.data.token.value)
-        localStorage.setItem('auth_token_ttl', response.data.token.ttl)
+        localStorage.setItem('auth_expiry', response.data.token.ttl) // Use 'auth_expiry' to match authStore
         if (response.data.token.username) {
           localStorage.setItem('auth_username', response.data.token.username)
         }
+
+        // Dispatch event for session monitor
+        window.dispatchEvent(new CustomEvent('token-refreshed', {
+          detail: {
+            ttl: response.data.token.ttl,
+            value: response.data.token.value
+          }
+        }))
       }
 
       return response.data

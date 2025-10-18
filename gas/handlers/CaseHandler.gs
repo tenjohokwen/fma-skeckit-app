@@ -126,11 +126,13 @@ const CaseHandler = {
       // Save case metadata to the metadata sheet
       SheetsService.createCase(caseMetadata, createdBy);
 
-      return {
-        status: 200,
-        msgKey: 'case.create.success',
-        message: 'Case folder created successfully',
-        data: {
+      // Generate new token to extend session
+      const newToken = TokenManager.generateToken(context.user.email);
+
+      return ResponseHandler.successWithToken(
+        'case.create.success',
+        'Case folder created successfully',
+        {
           caseId: caseId,
           clientId: clientId,
           folderId: caseFolderId,
@@ -139,8 +141,10 @@ const CaseHandler = {
           fileCount: 0,
           createdAt: DateUtil.formatDate(caseFolder.getDateCreated()),
           lastModified: DateUtil.formatDate(caseFolder.getLastUpdated())
-        }
-      };
+        },
+        context.user,
+        newToken.value
+      );
 
     } catch (error) {
       if (error.status) {

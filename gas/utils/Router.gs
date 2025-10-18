@@ -90,6 +90,7 @@ const Router = {
       'auth.verifyEmail': 'Verify user email with token',
       'auth.resendVerification': 'Resend verification email',
       'auth.login': 'Authenticate user and get token',
+      'auth.ping': 'Extend session by refreshing token',
       'auth.requestPasswordReset': 'Request password reset OTP',
       'auth.verifyOTP': 'Verify OTP for password reset',
       'auth.resetPassword': 'Reset password with verified OTP',

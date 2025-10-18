@@ -83,15 +83,20 @@ const AuthHandler = {
 
     const updatedUser = UserService.verifyEmail(email, token);
 
-    return {
-      status: 200,
-      msgKey: 'auth.verify.success',
-      message: 'Email verified successfully. You can now log in.',
-      data: {
+    // Generate authentication token so user can log in immediately
+    const authToken = TokenManager.generateToken(updatedUser.email);
+
+    return ResponseHandler.successWithToken(
+      'auth.verify.success',
+      'Email verified successfully. You can now log in.',
+      {
         email: updatedUser.email,
+        role: updatedUser.role,
         status: updatedUser.status
-      }
-    };
+      },
+      updatedUser,
+      authToken.value
+    );
   },
 
   /**
@@ -194,17 +199,17 @@ const AuthHandler = {
     // Update last login timestamp
     UserService.updateLastLogin(user.email);
 
-    return {
-      status: 200,
-      msgKey: 'auth.login.success',
-      message: 'Login successful',
-      data: {
+    return ResponseHandler.successWithToken(
+      'auth.login.success',
+      'Login successful',
+      {
         email: user.email,
         role: user.role,
         status: user.status
       },
-      token: token
-    };
+      user,
+      token.value
+    );
   },
 
   /**
@@ -300,5 +305,34 @@ const AuthHandler = {
       message: 'Password reset successfully. You can now log in with your new password.',
       data: {}
     };
+  },
+
+  /**
+   * Ping endpoint to extend session
+   * Simply validates token and returns new one with extended TTL
+   * Used by frontend session monitor to extend user sessions
+   *
+   * @param {Object} context - Request context
+   * @param {Object} context.user - Authenticated user (validated by SecurityInterceptor)
+   * @returns {Object} Response with new token
+   */
+  ping: function(context) {
+    // User is already authenticated by SecurityInterceptor
+    // Just return success with new token to extend session
+
+    const user = context.user;
+    const newToken = TokenManager.generateToken(user.email);
+
+    return ResponseHandler.successWithToken(
+      'token.refresh.success',
+      'Session extended',
+      {
+        email: user.email,
+        role: user.role,
+        status: user.status
+      },
+      user,
+      newToken.value
+    );
   }
 };

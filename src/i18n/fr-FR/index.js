@@ -586,5 +586,30 @@ export default {
   breadcrumb: {
     home: "Accueil",
     cases: "Dossiers"
+  },
+  session: {
+    expiring: {
+      title: "Session Expirant Bientôt",
+      message: "Votre session expirera dans {time}",
+      countdown: "Temps restant",
+      extendButton: "Prolonger la Session",
+      logoutButton: "Se Déconnecter"
+    },
+    expired: {
+      title: "Session Expirée",
+      message: "Votre session a expiré. Veuillez vous reconnecter.",
+      loginButton: "Se Connecter"
+    },
+    extended: {
+      success: "Session prolongée avec succès",
+      failure: "Impossible de prolonger la session"
+    }
+  },
+  token: {
+    refresh: {
+      success: "Session prolongée",
+      error: "Impossible de prolonger la session. Veuillez réessayer.",
+      rateLimit: "Trop de requêtes. Veuillez patienter."
+    }
   }
 };
