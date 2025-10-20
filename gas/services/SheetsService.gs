@@ -4,10 +4,10 @@
  * Provides database operations for case metadata and client management.
  * Interacts with 'metadata' and 'clients' sheets in Google Sheets.
  *
- * Metadata Schema (Updated for Feature 006):
- * A: caseId, B: caseName, C: clientId (UUID), D: clientName, E: assignedTo,
- * F: caseType, G: status, H: notes, I: createdBy, J: createdAt,
- * K: assignedAt, L: lastUpdatedBy, M: lastUpdatedAt, N: version
+ * Metadata Schema (Updated for Feature 007 - clientName column removed):
+ * A: caseId, B: caseName, C: clientId (UUID), D: assignedTo,
+ * E: caseType, F: status, G: notes, H: createdBy, I: createdAt,
+ * J: assignedAt, K: lastUpdatedBy, L: lastUpdatedAt, M: version
  *
  * Clients Schema:
  * A: clientId (UUID), B: firstName, C: lastName, D: nationalId (unique),
@@ -84,21 +84,20 @@ const SheetsService = {
     const caseData = {
       caseId: row[0],          // A: caseId
       caseName: row[1],        // B: caseName
-      clientId: row[2],        // C: clientId (UUID) ← NEW
-      clientName: row[3],      // D: clientName (shifted from C)
-      assignedTo: row[4],      // E: assignedTo (shifted from D)
-      caseType: row[5],        // F: caseType (shifted from E)
-      status: row[6],          // G: status (shifted from F)
-      notes: row[7]            // H: notes (shifted from G)
+      clientId: row[2],        // C: clientId (UUID)
+      assignedTo: row[3],      // D: assignedTo
+      caseType: row[4],        // E: caseType
+      status: row[5],          // F: status
+      notes: row[6]            // G: notes
     };
 
     if (includeSystemFields) {
-      caseData.createdBy = row[8];          // I: createdBy (shifted from H)
-      caseData.createdAt = row[9];          // J: createdAt (shifted from I)
-      caseData.assignedAt = row[10];        // K: assignedAt (shifted from J)
-      caseData.lastUpdatedBy = row[11];     // L: lastUpdatedBy (shifted from K)
-      caseData.lastUpdatedAt = row[12];     // M: lastUpdatedAt (shifted from L)
-      caseData.version = row[13];           // N: version (shifted from M)
+      caseData.createdBy = row[7];          // H: createdBy
+      caseData.createdAt = row[8];          // I: createdAt
+      caseData.assignedAt = row[9];         // J: assignedAt
+      caseData.lastUpdatedBy = row[10];     // K: lastUpdatedBy
+      caseData.lastUpdatedAt = row[11];     // L: lastUpdatedAt
+      caseData.version = row[12];           // M: version
       caseData.rowIndex = rowIndex;
     }
 
@@ -278,23 +277,22 @@ const SheetsService = {
 
     // ========================================
     // ROW DATA: Include clientId in Column C
-    // Feature 007: clientName still stored temporarily (will be removed in Phase 5)
+    // Feature 007: clientName column removed from metadata sheet
     // ========================================
     const row = [
       caseData.caseId,                       // A: caseId
       caseData.caseName || '',               // B: caseName
       caseData.clientId,                     // C: clientId (UUID)
-      caseData.clientName || '',             // D: clientName (still stored, will be removed)
-      caseData.assignedTo || '',             // E: assignedTo
-      caseData.caseType || '',               // F: caseType
-      caseData.status || '',                 // G: status
-      caseData.notes || '',                  // H: notes
-      createdBy,                             // I: createdBy
-      now,                                   // J: createdAt
-      assignedAt,                            // K: assignedAt
-      currentUser,                           // L: lastUpdatedBy
-      now,                                   // M: lastUpdatedAt
-      0                                      // N: version
+      caseData.assignedTo || '',             // D: assignedTo
+      caseData.caseType || '',               // E: caseType
+      caseData.status || '',                 // F: status
+      caseData.notes || '',                  // G: notes
+      createdBy,                             // H: createdBy
+      now,                                   // I: createdAt
+      assignedAt,                            // J: assignedAt
+      currentUser,                           // K: lastUpdatedBy
+      now,                                   // L: lastUpdatedAt
+      0                                      // M: version
     ];
 
     sheet.appendRow(row);
@@ -324,12 +322,12 @@ const SheetsService = {
     }
 
     // ========================================
-    // VALIDATION: Feature 007 - Reject clientName updates
+    // VALIDATION: Feature 007 - Reject clientName updates (no longer stored in sheet)
     // ========================================
     if (updates.hasOwnProperty('clientName')) {
       throw ResponseHandler.validationError(
-        'clientName cannot be updated from case details. Update client information from Client Details page.',
-        'metadata.update.error.clientNameImmutable'
+        'clientName is not stored in the metadata sheet. Update client information from Client Details page.',
+        'metadata.update.error.clientNameNotStored'
       );
     }
 
@@ -363,38 +361,36 @@ const SheetsService = {
                               updates.assignedTo !== currentCase.assignedTo;
 
     // ========================================
-    // Update editable fields (adjusted for new schema)
+    // Update editable fields (Feature 007: clientName column removed)
     // ========================================
     // A: caseId - not editable
     if (updates.caseName !== undefined) {
       sheet.getRange(row, 2).setValue(updates.caseName); // B: caseName
     }
     // C: clientId - NOT EDITABLE (system-managed)
-    if (updates.clientName !== undefined) {
-      sheet.getRange(row, 4).setValue(updates.clientName); // D: clientName (shifted from C)
-    }
+    // D: clientName - REMOVED (no longer stored in sheet)
     if (updates.assignedTo !== undefined) {
-      sheet.getRange(row, 5).setValue(updates.assignedTo); // E: assignedTo (shifted from D)
+      sheet.getRange(row, 4).setValue(updates.assignedTo); // D: assignedTo
     }
     if (updates.caseType !== undefined) {
-      sheet.getRange(row, 6).setValue(updates.caseType); // F: caseType (shifted from E)
+      sheet.getRange(row, 5).setValue(updates.caseType); // E: caseType
     }
     if (updates.status !== undefined) {
-      sheet.getRange(row, 7).setValue(updates.status); // G: status (shifted from F)
+      sheet.getRange(row, 6).setValue(updates.status); // F: status
     }
     if (updates.notes !== undefined) {
-      sheet.getRange(row, 8).setValue(updates.notes); // H: notes (shifted from G)
+      sheet.getRange(row, 7).setValue(updates.notes); // G: notes
     }
 
     // ========================================
-    // Auto-update system fields (adjusted indices)
+    // Auto-update system fields
     // ========================================
     if (assignedToChanged) {
-      sheet.getRange(row, 11).setValue(now); // K: assignedAt (shifted from J)
+      sheet.getRange(row, 10).setValue(now); // J: assignedAt
     }
-    sheet.getRange(row, 12).setValue(currentUser);         // L: lastUpdatedBy (shifted from K)
-    sheet.getRange(row, 13).setValue(now);                 // M: lastUpdatedAt (shifted from L)
-    sheet.getRange(row, 14).setValue(expectedVersion + 1); // N: version (shifted from M)
+    sheet.getRange(row, 11).setValue(currentUser);         // K: lastUpdatedBy
+    sheet.getRange(row, 12).setValue(now);                 // L: lastUpdatedAt
+    sheet.getRange(row, 13).setValue(expectedVersion + 1); // M: version
 
     // Return updated case
     return this.getCaseById(caseId);

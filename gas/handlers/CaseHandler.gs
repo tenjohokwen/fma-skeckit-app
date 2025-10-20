@@ -109,13 +109,12 @@ const CaseHandler = {
       const createdBy = currentUser.fullName || currentUser.email || 'Unknown';
 
       // Create metadata entry in the metadata sheet
+      // Feature 007: clientName no longer stored in metadata sheet
       const now = DateUtil.getCurrentTimestamp();
-      const clientName = `${client.firstName} ${client.lastName}`;
       const caseMetadata = {
         caseId: caseId,
         caseName: caseId,  // Using caseId as caseName initially
-        clientId: clientId,         // ← NEW: Feature 006 - Required field
-        clientName: clientName,
+        clientId: clientId,         // Feature 006: Required field
         assignedTo: '',
         caseType: '',
         status: '',
