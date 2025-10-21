@@ -1,5 +1,4 @@
 import { config } from '@vue/test-utils'
-import { Quasar } from 'quasar'
 import { vi } from 'vitest'
 
 // Mock vue-i18n globally
@@ -10,10 +9,10 @@ vi.mock('vue-i18n', () => ({
   })
 }))
 
-// Configure Vue Test Utils with Quasar
-config.global.plugins = [[Quasar, {}]]
+// DON'T install Quasar globally - let each test configure it as needed
+// This prevents conflicts with test-specific configurations
 
-// Mock Quasar composables and i18n
+// Mock Quasar composables and i18n (these can still be global defaults)
 config.global.mocks = {
   $t: (key) => key,
   $q: {
@@ -22,7 +21,20 @@ config.global.mocks = {
       show: vi.fn(),
       hide: vi.fn()
     },
-    dialog: vi.fn()
+    dialog: vi.fn(),
+    platform: {
+      is: {
+        mobile: false,
+        desktop: true
+      }
+    },
+    screen: {
+      xs: false,
+      sm: false,
+      md: true,
+      lg: false,
+      xl: false
+    }
   }
 }
 
