@@ -150,5 +150,69 @@ const EmailService = {
       console.error('Failed to send notification email:', error);
       throw error;
     }
+  },
+
+  /**
+   * Feature 009: Sends case status update notification email to client
+   * @param {Object} params - Email parameters
+   * @param {string} params.clientEmail - Client email address
+   * @param {string} params.clientFirstName - Client first name
+   * @param {string} params.caseId - Case ID
+   * @param {string} params.oldStatus - Previous status
+   * @param {string} params.newStatus - New status
+   * @param {string} params.notes - Case notes/context
+   * @param {string} params.language - Language code ('en' or 'fr')
+   * @returns {Object} Result { success: boolean, error?: string }
+   */
+  sendCaseStatusEmail: function(params) {
+    try {
+      // Validate required parameters
+      if (!params.clientEmail || !params.clientFirstName || !params.caseId ||
+          !params.newStatus || !params.notes || !params.language) {
+        throw new Error('Missing required email parameters');
+      }
+
+      // Validate language
+      if (params.language !== 'en' && params.language !== 'fr') {
+        throw new Error('Invalid language. Must be "en" or "fr"');
+      }
+
+      // Get signature from PropertiesService
+      const props = PropertiesService.getScriptProperties();
+      const signature = props.getProperty('SIGNATURE') || 'File Management System Team';
+
+      // Generate email using emailTemplates (global function from emailTemplates.gs)
+      const emailContent = generateStatusNotificationEmail(
+        params.language,
+        {
+          caseName: params.caseId,
+          status: params.newStatus,
+          notes: params.notes
+        },
+        signature
+      );
+
+      // Send email
+      const appName = this.getAppName();
+      GmailApp.sendEmail(
+        params.clientEmail,
+        emailContent.subject,
+        emailContent.textBody,
+        {
+          htmlBody: emailContent.htmlBody,
+          name: appName
+        }
+      );
+
+      console.log('Case status email sent to:', params.clientEmail, 'Language:', params.language);
+      return { success: true };
+
+    } catch (error) {
+      console.error('Failed to send case status email:', error);
+      return {
+        success: false,
+        error: error.message || 'Failed to send email'
+      };
+    }
   }
 };

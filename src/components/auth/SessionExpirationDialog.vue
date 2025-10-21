@@ -11,19 +11,19 @@
       <!-- Header -->
       <q-card-section class="row items-center bg-warning text-white">
         <q-icon name="warning" size="md" class="q-mr-sm" />
-        <div class="text-h6">{{ $t('session.expiring.title') }}</div>
+        <div class="text-h6">{{ t('session.expiring.title') }}</div>
       </q-card-section>
 
       <!-- Content -->
       <q-card-section>
         <div class="text-body1 q-mb-md">
-          {{ $t('session.expiring.message', { time: formattedTime }) }}
+          {{ t('session.expiring.message', { time: formattedTime }) }}
         </div>
 
         <!-- Countdown Timer -->
         <div class="text-center q-pa-md bg-grey-2 rounded-borders">
           <div class="text-caption text-grey-7 q-mb-xs">
-            {{ $t('session.expiring.countdown') }}
+            {{ t('session.expiring.countdown') }}
           </div>
           <div class="text-h3 text-negative" :aria-live="'polite'" :aria-atomic="'true'">
             {{ formattedTime }}
@@ -57,7 +57,7 @@
       <q-card-actions align="right" class="q-pa-md">
         <q-btn
           flat
-          :label="$t('session.expiring.logoutButton')"
+          :label="t('session.expiring.logoutButton')"
           color="grey-7"
           icon="logout"
           @click="handleLogout"
@@ -65,7 +65,7 @@
         />
         <q-btn
           unelevated
-          :label="$t('session.expiring.extendButton')"
+          :label="t('session.expiring.extendButton')"
           color="primary"
           icon="refresh"
           :loading="isExtending"

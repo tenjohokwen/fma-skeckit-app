@@ -685,5 +685,20 @@ export default {
       error: "Impossible de prolonger la session. Veuillez réessayer.",
       rateLimit: "Trop de requêtes. Veuillez patienter."
     }
+  },
+  emailDialog: {
+    title: "Envoyer un courriel de mise à jour du statut?",
+    message: "Souhaitez-vous informer le client de ce changement de statut?",
+    languageLabel: "Langue du client:",
+    languageEnglish: "Anglais",
+    languageFrench: "Français",
+    notesRequired: "Veuillez mettre à jour le champ des notes pour fournir un contexte pour cette notification",
+    btnYes: "Oui, envoyer un courriel",
+    btnNo: "Non, mettre à jour le dossier uniquement",
+    btnCancel: "Annuler",
+    successSent: "Dossier mis à jour et notification envoyée",
+    successNoEmail: "Dossier mis à jour avec succès",
+    warnNoEmail: "Dossier mis à jour mais le client n'a pas d'adresse courriel",
+    errorEmailFailed: "Dossier mis à jour mais l'envoi de la notification a échoué"
   }
 };

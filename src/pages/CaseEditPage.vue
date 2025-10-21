@@ -137,8 +137,22 @@ async function loadCase() {
 
 async function handleSave(updates) {
   try {
-    await updateCase(caseId.value, updates, caseData.value.version)
-    notifySuccess('Case updated successfully')
+    const result = await updateCase(caseId.value, updates, caseData.value.version)
+
+    // Feature 009: Check email notification result
+    if (updates.sendEmail) {
+      if (result.data && result.data.emailSent) {
+        notifySuccess('Case updated and email notification sent successfully')
+      } else if (result.data && result.data.emailError) {
+        notifySuccess('Case updated successfully')
+        notifyError(`Email notification failed: ${result.data.emailError}`)
+      } else {
+        notifySuccess('Case updated successfully')
+      }
+    } else {
+      notifySuccess('Case updated successfully')
+    }
+
     router.push({ name: 'search' })
   } catch (err) {
     console.error('Failed to save case:', err)

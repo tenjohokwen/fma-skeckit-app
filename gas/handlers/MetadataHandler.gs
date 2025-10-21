@@ -130,9 +130,10 @@ const MetadataHandler = {
    * Updates case fields with automatic metadata tracking
    *
    * Feature 006: clientId is immutable and cannot be updated
+   * Feature 009: Sends email notification if status changed and sendEmail=true
    *
    * @param {Object} context - Request context
-   * @param {Object} context.data - { caseId, version, updates }
+   * @param {Object} context.data - { caseId, version, updates, sendEmail?, clientLanguage? }
    * @param {Object} context.user - Authenticated user object (must be admin)
    * @returns {Object} Response with updated case data
    */
@@ -167,23 +168,77 @@ const MetadataHandler = {
       );
     }
 
+    // Feature 009: Extract email parameters before updating
+    const sendEmail = updates.sendEmail === true;
+    const clientLanguage = updates.clientLanguage;
+    const statusChanged = updates.hasOwnProperty('status');
+
+    // Get current case data before update (for oldStatus)
+    const currentCase = SheetsService.getCaseById(caseId);
+    if (!currentCase) {
+      throw ResponseHandler.notFoundError(
+        'Case not found',
+        'metadata.update.error.notfound'
+      );
+    }
+
+    // Remove email parameters from updates (not stored in sheet)
+    const caseUpdates = Object.assign({}, updates);
+    delete caseUpdates.sendEmail;
+    delete caseUpdates.clientLanguage;
+
     // Update case (will also validate clientId immutability)
     const updatedCase = SheetsService.updateCase(
       caseId,
-      updates,
+      caseUpdates,
       version,
       context.user.email
     );
 
+    // Feature 009: Send email notification if requested
+    let emailResult = null;
+    if (sendEmail && statusChanged) {
+      // Get client information
+      const client = SheetsService.getClientById(updatedCase.clientId);
+
+      if (client && client.email) {
+        emailResult = EmailService.sendCaseStatusEmail({
+          clientEmail: client.email,
+          clientFirstName: client.firstName,
+          caseId: updatedCase.caseId,
+          oldStatus: currentCase.status,
+          newStatus: updatedCase.status,
+          notes: updatedCase.notes || '',
+          language: clientLanguage || 'en'
+        });
+      } else {
+        emailResult = {
+          success: false,
+          error: 'Client email not found'
+        };
+      }
+    }
+
     // Generate new token to extend session
     const newToken = TokenManager.generateToken(context.user.email);
+
+    // Prepare response data
+    const responseData = {
+      case: updatedCase  // Includes clientId (unchanged)
+    };
+
+    // Include email result if email was attempted
+    if (emailResult !== null) {
+      responseData.emailSent = emailResult.success;
+      if (!emailResult.success) {
+        responseData.emailError = emailResult.error;
+      }
+    }
 
     return ResponseHandler.successWithToken(
       'metadata.update.success',
       'Case updated successfully',
-      {
-        case: updatedCase  // Includes clientId (unchanged)
-      },
+      responseData,
       context.user,
       newToken.value
     );

@@ -584,5 +584,34 @@ export default {
   breadcrumb: {
     home: "Home",
     cases: "Cases"
+  },
+  emailDialog: {
+    title: "Send Status Update Email?",
+    message: "Would you like to notify the client about this status change?",
+    languageLabel: "Client language:",
+    languageEnglish: "English",
+    languageFrench: "French",
+    notesRequired: "Please update the notes field to provide context for this notification",
+    btnYes: "Yes, send email",
+    btnNo: "No, update case only",
+    btnCancel: "Cancel",
+    successSent: "Case updated and email notification sent",
+    successNoEmail: "Case updated successfully",
+    warnNoEmail: "Case updated but client has no email address",
+    errorEmailFailed: "Case updated but email notification failed to send"
+  },
+  session: {
+    expiring: {
+      title: "Session Expiring Soon",
+      message: "Your session will expire in {time}. Would you like to extend it?",
+      countdown: "Time Remaining",
+      extendButton: "Extend Session",
+      logoutButton: "Logout Now"
+    }
+  },
+  token: {
+    refresh: {
+      error: "Failed to extend session. Please try again."
+    }
   }
 };

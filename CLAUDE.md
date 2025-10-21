@@ -7,6 +7,8 @@ Auto-generated from all feature plans. Last updated: 2025-10-18
 - JavaScript ES6+ (frontend), Google Apps Script JavaScript (backend) + Vue 3, Quasar 2, Vue Router, Pinia (state management), Vite (build tool), Fuse.js (fuzzy search) (002-improved-file-navigation)
 - Google Sheets (client metadata), Google Drive (file storage) (002-improved-file-navigation)
 - ApexCharts (data visualization) + Vue 3, Quasar 2 (008-dashboard-analytics)
+- JavaScript ES6+ (frontend), Google Apps Script JavaScript (backend) + Vue 3 (Composition API), Quasar 2, Pinia, Vue Router, Vite, Vitest, Vue Test Utils (009-in-the-ui)
+- Google Sheets (metadata), Google Drive (files), Script Properties (configuration) (009-in-the-ui)
 
 ## Project Structure
 ```
@@ -21,8 +23,68 @@ npm test [ONLY COMMANDS FOR ACTIVE TECHNOLOGIES][ONLY COMMANDS FOR ACTIVE TECHNO
 JavaScript ES6+ (frontend), Google Apps Script JavaScript (backend): Follow standard conventions
 
 ## Recent Changes
+- 009-in-the-ui: Email notification system for case status updates with bilingual support (English/French)
+  - EmailNotificationDialog component with language selection and notes validation
+  - Professional HTML email templates with signature support
+  - Complete i18n integration for bilingual UI
+  - Comprehensive test suite with 20+ test cases
 - 008-dashboard-analytics: Added ApexCharts (data visualization) + Vue 3, Quasar 2 for business insights dashboard with 6 analytical charts
 - 007-remove-client-name-from-metadata: Phases 1-3 complete (dynamic client name enrichment, folder renaming, read-only UI enforcement)
+
+## Feature: Email Notifications (009-in-the-ui)
+
+### Overview
+When case managers update a case status, the system prompts them to optionally send email notifications to clients in English or French.
+
+### Components
+- **EmailNotificationDialog.vue** (152 lines): Modal dialog for email notification prompt
+  - Language selection (English/French)
+  - Notes validation (requires note updates when sending email)
+  - Full i18n support with dynamic locale switching
+  - Located: `src/components/metadata/EmailNotificationDialog.vue`
+
+### Backend
+- **emailTemplates.gs** (317 lines): Email template generation
+  - Professional HTML templates for both languages
+  - Plain text fallbacks
+  - Signature injection from PropertiesService
+  - XSS protection with HTML escaping
+  - Located: `gas/utils/emailTemplates.gs`
+
+### Testing
+- **EmailNotificationDialog.test.js** (705 lines): Component tests
+  - 20+ test cases covering dialog behavior, validation, and i18n
+  - Tests for English and French rendering
+  - Locale switching validation
+  - Located: `tests/unit/components/metadata/EmailNotificationDialog.test.js`
+
+- **emailTemplates.test.gs** (500+ lines): Backend tests
+  - 21 automated test cases for template generation
+  - Tests for both languages, signature injection, validation
+  - Manual email formatting verification function
+  - Located: `gas/tests/emailTemplates.test.gs`
+
+### Configuration
+- **SIGNATURE Property**: Optional email signature in Google Apps Script PropertiesService
+  - See: `specs/009-in-the-ui/SIGNATURE_SETUP.md`
+- **i18n Translations**: English and French keys in `src/i18n/en-US/` and `src/i18n/fr-FR/`
+
+### Documentation
+- Implementation summary: `specs/009-in-the-ui/PHASE_6_SUMMARY.md`
+- Email templates testing: `specs/009-in-the-ui/EMAIL_TEMPLATES_TESTING.md`
+- CaseEditor integration guide: `specs/009-in-the-ui/CASEEDITOR_INTEGRATION.md`
+- Test client setup: `specs/009-in-the-ui/TEST_CLIENT_SETUP.md`
+
+### User Stories Implemented
+1. ✅ **US1 (P1)**: Core dialog with language selection (partial - dialog only, backend pending)
+2. ✅ **US2 (P2)**: Required notes field for email context
+3. ✅ **US3 (P2)**: Bilingual email templates with professional styling
+4. ✅ **US4 (P3)**: Bilingual dialog UI with complete i18n
+
+### Next Steps
+- Complete Phase 3 backend integration (CaseEditor, API, EmailService, MetadataHandler)
+- End-to-end testing with real email delivery
+- Performance optimization and accessibility testing
 
 <!-- MANUAL ADDITIONS START -->
 <!-- MANUAL ADDITIONS END -->

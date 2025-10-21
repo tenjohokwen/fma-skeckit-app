@@ -147,6 +147,15 @@
         </q-card-actions>
       </q-card>
     </q-dialog>
+
+    <!-- Email Notification Dialog (Feature 009) -->
+    <EmailNotificationDialog
+      v-model="showEmailDialog"
+      :original-notes="originalData.notes || ''"
+      :current-notes="formData.notes || ''"
+      @confirm="handleEmailDialogConfirm"
+      @cancel="handleEmailDialogCancel"
+    />
   </div>
 </template>
 
@@ -162,6 +171,7 @@
 
 import { ref, computed, watch } from 'vue'
 import FieldInput from './FieldInput.vue'
+import EmailNotificationDialog from './EmailNotificationDialog.vue'
 
 const props = defineProps({
   /**
@@ -193,6 +203,10 @@ const emit = defineEmits(['save', 'cancel', 'refresh'])
 const formData = ref({})
 const originalData = ref({})
 const showConflictDialog = ref(false)
+
+// Feature 009: Email notification dialog state
+const showEmailDialog = ref(false)
+const pendingUpdates = ref(null)
 
 // Initialize form data
 function initializeForm() {
@@ -238,14 +252,42 @@ function handleSave() {
   // Only send changed fields
   // Feature 007: Exclude clientName from updates (not editable from case details)
   const updates = {}
+  let statusChanged = false
+
   for (const key in formData.value) {
     if (key === 'clientName') continue // Feature 007: Skip clientName
     if (formData.value[key] !== originalData.value[key]) {
       updates[key] = formData.value[key]
+      if (key === 'status') statusChanged = true
     }
   }
 
+  // Feature 009: Show email dialog if status changed
+  if (statusChanged) {
+    pendingUpdates.value = updates
+    showEmailDialog.value = true
+  } else {
+    emit('save', updates)
+  }
+}
+
+// Feature 009: Email notification dialog handlers
+function handleEmailDialogConfirm(emailOptions) {
+  // emailOptions: { sendEmail: boolean, clientLanguage: 'en' | 'fr' }
+  const updates = {
+    ...pendingUpdates.value,
+    sendEmail: emailOptions.sendEmail,
+    clientLanguage: emailOptions.clientLanguage
+  }
+
+  showEmailDialog.value = false
+  pendingUpdates.value = null
   emit('save', updates)
+}
+
+function handleEmailDialogCancel() {
+  showEmailDialog.value = false
+  pendingUpdates.value = null
 }
 
 function handleConflictCancel() {
