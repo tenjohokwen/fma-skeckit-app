@@ -152,6 +152,15 @@
       @extend="handleExtendSession"
       @logout="handleLogoutFromDialog"
     />
+
+    <!-- Footer -->
+    <q-footer elevated class="bg-grey-2 text-grey-7">
+      <div class="row items-center justify-center q-pa-sm">
+        <span class="text-caption">
+          Powered by Virtues Cafe | Copyright © {{ currentYear }}
+        </span>
+      </div>
+    </q-footer>
   </q-layout>
 </template>
 
@@ -165,7 +174,7 @@
  * Per constitution: Vue 3 Composition API with <script setup>
  */
 
-import { ref } from 'vue'
+import { ref, computed } from 'vue'
 import { useRouter } from 'vue-router'
 import { useAuthStore } from 'src/stores/authStore'
 import { useI18n } from 'vue-i18n'
@@ -180,6 +189,9 @@ const authStore = useAuthStore()
 const { t: $t } = useI18n()
 const { isViewOnly } = useRoleAccess()
 const { notifySuccess, notifyError } = useNotifications()
+
+// Footer - current year for copyright
+const currentYear = computed(() => new Date().getFullYear())
 
 // Session monitoring
 const {

@@ -9,6 +9,8 @@ Auto-generated from all feature plans. Last updated: 2025-10-18
 - ApexCharts (data visualization) + Vue 3, Quasar 2 (008-dashboard-analytics)
 - JavaScript ES6+ (frontend), Google Apps Script JavaScript (backend) + Vue 3 (Composition API), Quasar 2, Pinia, Vue Router, Vite, Vitest, Vue Test Utils (009-in-the-ui)
 - Google Sheets (metadata), Google Drive (files), Script Properties (configuration) (009-in-the-ui)
+- JavaScript ES6+ (frontend), Vue 3 Composition API + Vue 3, Quasar 2, Vue Router (010-in-the-footer)
+- N/A (no data persistence required) (010-in-the-footer)
 
 ## Project Structure
 ```
@@ -23,13 +25,17 @@ npm test [ONLY COMMANDS FOR ACTIVE TECHNOLOGIES][ONLY COMMANDS FOR ACTIVE TECHNO
 JavaScript ES6+ (frontend), Google Apps Script JavaScript (backend): Follow standard conventions
 
 ## Recent Changes
+- 010-in-the-footer: Footer branding and copyright added to all pages
+  - "Powered by Virtues Cafe | Copyright © [year]" displays on all pages
+  - Automatic year updates via computed property
+  - Responsive design meeting WCAG AA contrast requirements
+  - Minimal implementation (12 lines per layout)
 - 009-in-the-ui: Email notification system for case status updates with bilingual support (English/French)
   - EmailNotificationDialog component with language selection and notes validation
   - Professional HTML email templates with signature support
   - Complete i18n integration for bilingual UI
   - Comprehensive test suite with 20+ test cases
 - 008-dashboard-analytics: Added ApexCharts (data visualization) + Vue 3, Quasar 2 for business insights dashboard with 6 analytical charts
-- 007-remove-client-name-from-metadata: Phases 1-3 complete (dynamic client name enrichment, folder renaming, read-only UI enforcement)
 
 ## Feature: Email Notifications (009-in-the-ui)
 
