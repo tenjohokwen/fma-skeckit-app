@@ -11,6 +11,8 @@ Auto-generated from all feature plans. Last updated: 2025-10-18
 - Google Sheets (metadata), Google Drive (files), Script Properties (configuration) (009-in-the-ui)
 - JavaScript ES6+ (frontend), Vue 3 Composition API + Vue 3, Quasar 2, Vue Router (010-in-the-footer)
 - N/A (no data persistence required) (010-in-the-footer)
+- JavaScript ES6+ (frontend), Vue 3.5.20 with Composition API + Vue 3, Quasar 2.16.0, Vue Router 4, Pinia 3, vue-i18n 11, Vite (build) (011-as-a-user)
+- N/A (no data model changes - frontend only) (011-as-a-user)
 
 ## Project Structure
 ```
@@ -25,6 +27,13 @@ npm test [ONLY COMMANDS FOR ACTIVE TECHNOLOGIES][ONLY COMMANDS FOR ACTIVE TECHNO
 JavaScript ES6+ (frontend), Google Apps Script JavaScript (backend): Follow standard conventions
 
 ## Recent Changes
+- 011-as-a-user: UI simplified by removing FileManagementPage and ClientManagementPage
+  - Navigation menu streamlined (2 fewer items: "Files" and "Clients" removed)
+  - Routes cleaned up (/files and /clients removed, catch-all handles gracefully)
+  - Bundle size reduced via Vite tree-shaking (FileManagementPage and ClientManagementPage excluded from build)
+  - All core functionality preserved (Dashboard, Search, Profile, case management, auth flows)
+  - MainLayout.vue reduced to 201 lines (from 233 lines)
+  - Shared file components preserved (FileUploader, CaseFolderCreator used by CaseFilesPage)
 - 010-in-the-footer: Footer branding and copyright added to all pages
   - "Powered by Virtues Cafe | Copyright © [year]" displays on all pages
   - Automatic year updates via computed property
@@ -35,7 +44,6 @@ JavaScript ES6+ (frontend), Google Apps Script JavaScript (backend): Follow stan
   - Professional HTML email templates with signature support
   - Complete i18n integration for bilingual UI
   - Comprehensive test suite with 20+ test cases
-- 008-dashboard-analytics: Added ApexCharts (data visualization) + Vue 3, Quasar 2 for business insights dashboard with 6 analytical charts
 
 ## Feature: Email Notifications (009-in-the-ui)
 

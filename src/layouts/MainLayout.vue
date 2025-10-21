@@ -104,38 +104,7 @@
           </q-item-section>
         </q-item>
 
-        <q-item
-          clickable
-          :to="{ name: 'files' }"
-        >
-          <q-item-section avatar>
-            <q-icon name="folder" />
-          </q-item-section>
-          <q-item-section>
-            <q-item-label>{{ $t('navigation.files') }}</q-item-label>
-          </q-item-section>
-        </q-item>
-
-        <!-- Admin only section -->
-        <template v-if="authStore.isAdmin">
-          <q-separator class="q-my-md" />
-
-          <q-item-label header class="text-grey-8">
-            {{ $t('navigation.admin') }}
-          </q-item-label>
-
-          <q-item
-            clickable
-            :to="{ name: 'clients' }"
-          >
-            <q-item-section avatar>
-              <q-icon name="people" />
-            </q-item-section>
-            <q-item-section>
-              <q-item-label>{{ $t('navigation.cases') }}</q-item-label>
-            </q-item-section>
-          </q-item>
-        </template>
+        <!-- Admin only section removed - no admin-specific navigation items remain -->
       </q-list>
     </q-drawer>
 

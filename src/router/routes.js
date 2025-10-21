@@ -76,18 +76,6 @@ const routes = [
         meta: { requiresAuth: true, title: 'Case Files' }
       },
       {
-        path: 'files/:pathMatch(.*)*',
-        name: 'files',
-        component: () => import('pages/FileManagementPage.vue'),
-        meta: { requiresAuth: true, title: 'File Management' }
-      },
-      {
-        path: 'clients',
-        name: 'clients',
-        component: () => import('pages/ClientManagementPage.vue'),
-        meta: { requiresAuth: true, requiresAdmin: true, title: 'Client Management' }
-      },
-      {
         path: 'profile',
         name: 'profile',
         component: () => import('pages/ProfilePage.vue'),
