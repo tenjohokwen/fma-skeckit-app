@@ -13,6 +13,8 @@ Auto-generated from all feature plans. Last updated: 2025-10-18
 - N/A (no data persistence required) (010-in-the-footer)
 - JavaScript ES6+ (frontend), Vue 3.5.20 with Composition API + Vue 3, Quasar 2.16.0, Vue Router 4, Pinia 3, vue-i18n 11, Vite (build) (011-as-a-user)
 - N/A (no data model changes - frontend only) (011-as-a-user)
+- Markdown (documentation format) + None (plain text editing of existing documentation file) (012-functionality-has-been)
+- Local filesystem (`/docs/user-guide.md`) (012-functionality-has-been)
 
 ## Project Structure
 ```
@@ -27,6 +29,7 @@ npm test [ONLY COMMANDS FOR ACTIVE TECHNOLOGIES][ONLY COMMANDS FOR ACTIVE TECHNO
 JavaScript ES6+ (frontend), Google Apps Script JavaScript (backend): Follow standard conventions
 
 ## Recent Changes
+- 012-functionality-has-been: Added Markdown (documentation format) + None (plain text editing of existing documentation file)
 - 011-as-a-user: UI simplified by removing FileManagementPage and ClientManagementPage
   - Navigation menu streamlined (2 fewer items: "Files" and "Clients" removed)
   - Routes cleaned up (/files and /clients removed, catch-all handles gracefully)
@@ -39,7 +42,6 @@ JavaScript ES6+ (frontend), Google Apps Script JavaScript (backend): Follow stan
   - Automatic year updates via computed property
   - Responsive design meeting WCAG AA contrast requirements
   - Minimal implementation (12 lines per layout)
-- 009-in-the-ui: Email notification system for case status updates with bilingual support (English/French)
   - EmailNotificationDialog component with language selection and notes validation
   - Professional HTML email templates with signature support
   - Complete i18n integration for bilingual UI

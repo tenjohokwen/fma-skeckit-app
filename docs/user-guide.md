@@ -1,7 +1,7 @@
 # FMA Skeckit App - User Guide
 
-**Version:** 1.0
-**Last Updated:** October 14, 2025
+**Version:** 1.1
+**Last Updated:** October 21, 2025
 **Application:** File Management Application with User Authentication
 
 ---
@@ -10,18 +10,18 @@
 
 1. [Introduction](#introduction)
 2. [Getting Started](#getting-started)
-3. [User Registration & Account Setup](#user-registration--account-setup)
-4. [Login & Password Management](#login--password-management)
-5. [Searching for Client Cases](#searching-for-client-cases)
-6. [Viewing Case Information](#viewing-case-information)
-7. [Admin Features](#admin-features)
+3. [Navigation](#navigation)
+4. [User Registration & Account Setup](#user-registration--account-setup)
+5. [Login & Password Management](#login--password-management)
+6. [Searching for Client Cases](#searching-for-client-cases)
+7. [Viewing Case Information](#viewing-case-information)
+8. [Dashboard](#dashboard)
+9. [Admin Features](#admin-features)
    - [Editing Case Information](#editing-case-information)
-   - [Creating Client Folders](#creating-client-folders)
    - [Managing Case Folders & Files](#managing-case-folders--files)
-   - [File Operations](#file-operations)
-8. [Language & Accessibility](#language--accessibility)
-9. [Troubleshooting](#troubleshooting)
-10. [FAQ](#faq)
+10. [Language & Accessibility](#language--accessibility)
+11. [Troubleshooting](#troubleshooting)
+12. [FAQ](#faq)
 
 ---
 
@@ -59,6 +59,25 @@ The **FMA Skeckit App** is a comprehensive file management application designed 
 1. Navigate to the application URL provided by your administrator
 2. You'll see the landing page with options to **Create Account** or **Log In**
 3. Choose your preferred language using the language switcher in the top corner
+
+---
+
+## Navigation
+
+The application features a simplified navigation menu with three main sections:
+
+### Main Menu Items
+
+- **Dashboard**: View analytics, charts, and business insights about your cases
+- **Search**: Search for clients and cases, view case details
+- **Profile**: Manage your account settings and preferences
+
+### Accessing Menu
+
+- **Desktop**: The navigation menu appears as a sidebar or top navigation bar
+- **Mobile**: Tap the hamburger menu icon (≡) to open the navigation drawer
+
+**Note**: Additional administrative functions may appear for admin users based on their permissions and role.
 
 ---
 
@@ -174,7 +193,7 @@ If you've forgotten your password:
 
 ## Searching for Client Cases
 
-Once logged in, all users can search for client cases.
+Once logged in, all users can search for client cases. Admin users can also use the Search page to find, create, and manage client folders.
 
 ### Search by Client Name
 
@@ -255,6 +274,47 @@ Standard users **cannot**:
 
 ---
 
+## Dashboard
+
+The Dashboard provides a comprehensive overview of your cases with powerful analytics and business insights through interactive charts and visualizations.
+
+### Dashboard Analytics
+
+The Dashboard includes six analytical charts to help you understand and manage your caseload effectively:
+
+#### Cases by Status
+
+A donut chart showing the distribution of cases across different status categories (e.g., Open, In Progress, Closed, Pending). Each segment represents a status with the count displayed. Hover over segments to see detailed counts and percentages of your total caseload.
+
+#### Monthly Case Trends
+
+An area chart displaying case volume over time with a trend line. This visualization helps identify busy periods, seasonal patterns, and overall case flow trends. Use this to forecast resource needs and identify periods requiring additional support.
+
+#### Cases by Country
+
+A bar chart showing the geographic distribution of cases across different countries. See at a glance which countries have the highest case volume, helping you understand your international caseload distribution and allocate resources accordingly.
+
+#### Average Case Duration
+
+A bar chart displaying the average time to close cases, broken down by status or type. This helps identify bottlenecks in your workflow and efficiency metrics. Use this chart to spot delays and improve case processing times.
+
+#### Client Activity
+
+A bar chart showing the number of cases per client, helping you identify your most active clients. This visualization is useful for resource planning, client relationship management, and understanding which clients require the most attention.
+
+#### Case Age Distribution
+
+A column chart displaying how long cases have been open, grouped into age ranges (e.g., 0-30 days, 31-60 days, 60+ days). This helps identify aging cases that may need attention and ensures no cases are overlooked or delayed excessively.
+
+### Using Dashboard Charts
+
+All charts are interactive:
+- **Hover** over data points to see detailed information
+- **Click** legend items to show/hide specific data series
+- Charts update automatically as your case data changes
+
+---
+
 ## Admin Features
 
 Administrators (ROLE_ADMIN) have full access to all features including editing, file management, and folder creation.
@@ -320,47 +380,9 @@ If another admin edits the same case while you're editing:
 
 ---
 
-### Creating Client Folders
-
-Admin users can create folders for new clients.
-
-#### Before Creating a Client Folder
-
-**Always search first** to ensure the client doesn't already exist:
-
-1. **Search by Name and ID**
-   - Enter the client's first name, last name, and national ID number
-   - Click **"Search Clients"**
-
-2. **Review Results**
-   - If a client exists, their folder information will be displayed
-   - Do not create a duplicate
-
-#### Creating a New Client Folder
-
-1. **Access Client Creation Form**
-   - After searching and finding no results
-   - Click **"Create New Client"**
-
-2. **Fill Out Required Fields**
-   - **First Name**: Client's first name
-   - **Last Name**: Client's last name
-   - **Telephone**: Client's phone number
-   - **National ID Number**: Client's ID card number
-   - **Email**: Client's email address
-
-3. **Submit the Form**
-   - Click **"Create Client Folder"**
-   - The system creates a folder with the naming pattern: `firstName_lastName_idCardNo`
-   - Folder is created under the root folder called **"cases"**
-
-4. **Confirmation**
-   - You'll see a success message
-   - The client folder is now ready for case folders and files
-
----
-
 ### Managing Case Folders & Files
+
+Admin users can manage case folders and files within the application. Each case has a dedicated Files tab for uploading and managing case-specific documents.
 
 #### Creating a Case Folder
 
@@ -410,66 +432,6 @@ Admin users can create folders for new clients.
 - Maximum file size varies based on storage configuration
 - Typically 5-10MB per file
 - If you exceed the limit, you'll see an error message with the maximum allowed size
-
----
-
-### File Operations
-
-#### Browsing Folders
-
-1. **Navigate to "Files" Section**
-   - Select **"Files"** from the menu
-
-2. **Browse Hierarchy**
-   - Start from the **"cases"** root folder
-   - Click on client folders to expand
-   - Click on case folders to view files
-
-3. **View File Information**
-   - Each file displays:
-     - File name
-     - File type indicator (icon or extension)
-     - File size (if available)
-
-#### Downloading Files
-
-1. **Locate the File**
-   - Navigate to the case folder containing the file
-
-2. **Click "Download"**
-   - Click the download icon or **"Download"** button next to the file
-   - The file downloads at network speed
-
-3. **Save File**
-   - Choose where to save the file on your device
-   - Download completes without application bottleneck
-
-#### Deleting Files
-
-1. **Locate the File**
-   - Navigate to the case folder containing the file to delete
-
-2. **Click "Delete"**
-   - Click the delete icon or **"Delete"** button
-
-3. **Confirm Deletion**
-   - A confirmation dialog appears
-   - **Warning**: Deletion is permanent (no recycle bin)
-
-4. **Confirm**
-   - Click **"Yes, Delete"** to confirm
-   - Or **"Cancel"** to abort
-
-5. **File Removed**
-   - The file is permanently deleted from the folder
-   - You'll see a success message
-
-#### Deleting Folders
-
-- Folders containing files cannot be deleted directly
-- You must either:
-  - Delete all files first, then delete the folder
-  - Or receive a prompt to confirm deletion of folder and all contents
 
 ---
 
