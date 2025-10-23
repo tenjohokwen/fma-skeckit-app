@@ -15,7 +15,13 @@
     "dev": "quasar dev",
     "build": "quasar build",
     "postinstall": "quasar prepare",
-    "test:e2e": "mocha tests/e2e/**/*.selenium.spec.js"
+    "test:e2e": "mocha tests/e2e/**/*.selenium.spec.js",
+    "electron:dev": "npm run build && electron desktop/main.js",
+    "electron:build": "npm run build && cd desktop && electron-builder",
+    "electron:build:win": "npm run build && cd desktop && electron-builder --win",
+    "electron:build:mac": "npm run build && cd desktop && electron-builder --mac",
+    "electron:build:linux": "npm run build && cd desktop && electron-builder --linux",
+    "electron:build:all": "npm run build && cd desktop && electron-builder --win --mac --linux"
   },
   "dependencies": {
     "@pinia/testing": "^1.0.2",
@@ -43,6 +49,9 @@
     "@vue/eslint-config-prettier": "^10.1.0",
     "autoprefixer": "^10.4.2",
     "chai": "^6.2.0",
+    "concurrently": "^8.2.2",
+    "electron": "^28.3.3",
+    "electron-builder": "^24.13.3",
     "eslint": "^9.14.0",
     "eslint-plugin-vue": "^10.4.0",
     "globals": "^16.4.0",

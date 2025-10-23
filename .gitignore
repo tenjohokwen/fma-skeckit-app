@@ -55,3 +55,7 @@ Thumbs.db
 
 # Build artifacts
 *.tgz
+
+# Desktop packaging
+dist-desktop/
+desktop/node_modules/

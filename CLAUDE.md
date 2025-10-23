@@ -15,6 +15,8 @@ Auto-generated from all feature plans. Last updated: 2025-10-18
 - N/A (no data model changes - frontend only) (011-as-a-user)
 - Markdown (documentation format) + None (plain text editing of existing documentation file) (012-functionality-has-been)
 - Local filesystem (`/docs/user-guide.md`) (012-functionality-has-been)
+- JavaScript ES6+ (for desktop wrapper/main process), existing Vue 3 application unchanged (013-i-want-to)
+- Local filesystem using platform-appropriate directories (AppData on Windows, Application Support on macOS, ~/.config on Linux); existing backend API via HTTPS (no changes) (013-i-want-to)
 
 ## Project Structure
 ```
@@ -29,6 +31,7 @@ npm test [ONLY COMMANDS FOR ACTIVE TECHNOLOGIES][ONLY COMMANDS FOR ACTIVE TECHNO
 JavaScript ES6+ (frontend), Google Apps Script JavaScript (backend): Follow standard conventions
 
 ## Recent Changes
+- 013-i-want-to: Added JavaScript ES6+ (for desktop wrapper/main process), existing Vue 3 application unchanged
 - 012-functionality-has-been: Added Markdown (documentation format) + None (plain text editing of existing documentation file)
 - 011-as-a-user: UI simplified by removing FileManagementPage and ClientManagementPage
   - Navigation menu streamlined (2 fewer items: "Files" and "Clients" removed)
@@ -37,7 +40,6 @@ JavaScript ES6+ (frontend), Google Apps Script JavaScript (backend): Follow stan
   - All core functionality preserved (Dashboard, Search, Profile, case management, auth flows)
   - MainLayout.vue reduced to 201 lines (from 233 lines)
   - Shared file components preserved (FileUploader, CaseFolderCreator used by CaseFilesPage)
-- 010-in-the-footer: Footer branding and copyright added to all pages
   - "Powered by Virtues Cafe | Copyright © [year]" displays on all pages
   - Automatic year updates via computed property
   - Responsive design meeting WCAG AA contrast requirements

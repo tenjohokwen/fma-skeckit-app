@@ -1,0 +1,24 @@
+PLACEHOLDER ICON CREATED
+
+✅ A temporary placeholder icon (icon.png) has been created for development/testing purposes.
+
+The current icon is a simple solid blue square (1024x1024 PNG).
+
+**IMPORTANT**: Replace this with your actual branded icon before production distribution!
+
+To replace with your real icon:
+
+1. Create or obtain a 1024x1024 PNG image with your FMA Skeckit App logo
+2. Replace the existing: desktop/icons/icon.png
+3. Ensure it has a transparent background for best results
+4. Use professional design software (Figma, Photoshop, etc.) or an icon generator
+
+Suggested tools:
+- Design in Figma and export as 1024x1024 PNG
+- Use an online icon generator (e.g., https://www.favicon-generator.org/)
+- Professional icon design services
+
+The electron-builder will automatically convert your icon.png to all required formats:
+- Windows .ico (16x16, 32x32, 48x48, 256x256)
+- macOS .icns (16x16 to 512x512, plus @2x retina versions)
+- Linux .png (multiple sizes)

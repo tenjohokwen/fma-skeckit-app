@@ -1,0 +1,60 @@
+appId: com.fma.skeckit
+productName: FMA Skeckit App
+
+directories:
+  output: ../dist-desktop
+
+files:
+  - main.js
+  - preload.js
+  - package.json
+  - from: ../dist/spa
+    to: dist
+    filter:
+      - "**/*"
+
+protocols:
+  name: FMA Skeckit Protocol
+  schemes:
+    - fmaskeckit
+
+# Icon configuration (T016)
+# electron-builder will automatically generate platform-specific formats
+# from the source icon.png file (when provided)
+# Note: Actual icon.png file needs to be created before building
+icon: icons/icon.png
+
+# Platform-specific configurations
+
+# Windows configuration (T019, T020)
+win:
+  target:
+    - target: nsis
+      arch:
+        - x64
+    - target: msi
+      arch:
+        - x64
+  icon: icons/icon.png
+  artifactName: "${productName} Setup ${version}.${ext}"
+
+# NSIS installer options
+nsis:
+  oneClick: false
+  allowToChangeInstallationDirectory: true
+  createDesktopShortcut: true
+  createStartMenuShortcut: true
+  shortcutName: "${productName}"
+  perMachine: false
+  allowElevation: true
+
+# macOS configuration (T023, T024)
+mac:
+  target:
+    - target: dmg
+      arch:
+        - x64
+        - arm64
+  icon: icons/icon.png
+  category: public.app-category.business
+  artifactName: "${productName} ${version}.${ext}"
