@@ -66,6 +66,7 @@ jobs:
 
       - name: Pre-validate version fields (fail-fast)
         id: validate-versions
+        continue-on-error: true
         shell: bash
         run: |
           echo "Installing semver helper (no-save)..."
@@ -108,51 +109,82 @@ jobs:
         run: npm ci
 
       - name: Upload npm debug log on failure
-        if: steps.npm-ci.outcome == 'failure'
+        if: failure()
         uses: actions/upload-artifact@v4
         with:
           name: npm-debug-log-${{ matrix.platform }}
           path: |
             ~/.npm/_logs/*.log
+            $RUNNER_TEMP/npm-cache/_logs/*.log
+            $HOME/.npm/_logs/*.log
             C:\npm\cache\_logs\*.log
+            C:\Users\*\AppData\Roaming\npm-cache\_logs\*.log
+            C:\Users\*\AppData\Local\npm-cache\_logs\*.log
           if-no-files-found: warn
 
       - name: Display npm debug log on failure
-        if: steps.npm-ci.outcome == 'failure'
+        if: failure()
         shell: bash
         run: |
-          echo "=== NPM CI FAILED - Debug Log ==="
-          if [ -d ~/.npm/_logs ]; then
-            for log in ~/.npm/_logs/*.log; do
-              if [ -f "$log" ]; then
-                echo "=== Contents of $log ==="
-                cat "$log"
-              fi
+          echo "=== SEARCHING FOR NPM DEBUG LOGS ==="
+          found=0
+          # Common *nix / macOS logs
+          if [ -d "$HOME/.npm/_logs" ]; then
+            for log in "$HOME"/.npm/_logs/*.log; do
+              [ -f "$log" ] || continue
+              echo "=== Contents of $log ==="
+              sed -n '1,200p' "$log" || true
+              found=1
             done
           fi
-          if [ -d /c/npm/cache/_logs ]; then
-            for log in /c/npm/cache/_logs/*.log; do
-              if [ -f "$log" ]; then
-                echo "=== Contents of $log ==="
-                cat "$log"
-              fi
+          # AppData / npm-cache locations (Windows, Git Bash)
+          if [ -n "$APPDATA" ] && [ -d "$APPDATA/npm-cache/_logs" ]; then
+            for log in "$APPDATA"/npm-cache/_logs/*.log; do
+              [ -f "$log" ] || continue
+              echo "=== Contents of $log ==="
+              sed -n '1,200p' "$log" || true
+              found=1
             done
           fi
+          # Search common Windows-style paths exposed in Git Bash (e.g., /c/Users/...)
+          for d in /c/npm/cache/_logs /c/Users/*/AppData/Roaming/npm-cache/_logs /c/Users/*/AppData/Local/npm-cache/_logs; do
+            if [ -d "$d" ]; then
+              for log in "$d"/*.log; do
+                [ -f "$log" ] || continue
+                echo "=== Contents of $log ==="
+                sed -n '1,200p' "$log" || true
+                found=1
+              done
+            fi
+          done
+          if [ "$found" -eq 0 ]; then
+            echo "No npm debug logs found in common locations."
+          fi
+          # Fail the step so the job shows failure after printing logs
           exit 1
 
       - name: Dump npm debug log on failure (Windows PowerShell)
-        if: steps.npm-ci.outcome == 'failure'
+        if: failure()
         shell: pwsh
         run: |
-          $logDir = 'C:\npm\cache\_logs'
-          if (Test-Path $logDir) {
-            Get-ChildItem -Path $logDir -Filter '*.log' | Sort-Object LastWriteTime -Descending | ForEach-Object {
-              Write-Host "=== Showing $($_.FullName) ==="
-              Get-Content $_.FullName -Raw
+          Write-Host "=== Searching for npm debug logs (PowerShell) ==="
+          $candidates = @()
+          $candidates += 'C:\npm\cache\_logs'
+          if ($env:APPDATA) { $candidates += Join-Path $env:APPDATA 'npm-cache\_logs' }
+          if ($env:USERPROFILE) { $candidates += Join-Path $env:USERPROFILE 'AppData\Roaming\npm-cache\_logs' }
+          $candidates += 'C:\Users\*\AppData\Roaming\npm-cache\_logs'
+          $found = $false
+          foreach ($d in $candidates) {
+            $paths = Get-ChildItem -Path $d -Filter '*.log' -ErrorAction SilentlyContinue -Recurse:$false
+            if ($paths) {
+              foreach ($p in $paths) {
+                Write-Host "=== Showing $($p.FullName) ==="
+                Get-Content $p.FullName -Raw
+                $found = $true
+              }
             }
-          } else {
-            Write-Host "No Windows npm debug logs found at $logDir"
           }
+          if (-not $found) { Write-Host 'No Windows npm debug logs found in candidate locations.' }
 
       - name: Install desktop dependencies
         run: |
