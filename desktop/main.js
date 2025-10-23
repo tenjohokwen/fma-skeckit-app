@@ -1,11 +1,62 @@
 const { app, BrowserWindow, protocol, shell, Menu, dialog } = require('electron');
 const path = require('path');
+const fs = require('fs');
 const log = require('electron-log');
 const { autoUpdater } = require('electron-updater');
 
 // Enable logging
 log.transports.file.level = 'info';
 log.info('Application starting...');
+
+// Load client configuration (T020)
+let clientConfig = null;
+const clientConfigPath = path.join(__dirname, 'client-config.json');
+
+try {
+  if (fs.existsSync(clientConfigPath)) {
+    const configData = fs.readFileSync(clientConfigPath, 'utf8');
+    clientConfig = JSON.parse(configData);
+    log.info(`Loaded client configuration for: ${clientConfig.clientId}`);
+    log.info(`Client version: ${clientConfig.version.client}, Core version: ${clientConfig.version.core}`);
+  } else {
+    log.warn('No client configuration found, using defaults');
+    // Fallback to default configuration
+    clientConfig = {
+      clientId: 'default',
+      displayName: 'FMA Skeckit',
+      branding: {
+        appName: 'FMA Skeckit App',
+        primaryColor: '#1E3A8A',
+        secondaryColor: '#3B82F6'
+      },
+      features: {},
+      version: {
+        client: '1.0.0',
+        core: '1.0.0'
+      }
+    };
+  }
+} catch (error) {
+  log.error('Error loading client configuration:', error);
+  // Use default config on error
+  clientConfig = {
+    clientId: 'default',
+    displayName: 'FMA Skeckit',
+    branding: {
+      appName: 'FMA Skeckit App',
+      primaryColor: '#1E3A8A',
+      secondaryColor: '#3B82F6'
+    },
+    features: {},
+    version: {
+      client: '1.0.0',
+      core: '1.0.0'
+    }
+  };
+}
+
+// Make config globally accessible
+global.clientConfig = clientConfig;
 
 let mainWindow;
 
@@ -17,9 +68,19 @@ function createMenu() {
 
   const template = [
     {
-      label: app.name,
+      label: clientConfig.branding.appName || app.name,
       submenu: [
-        { role: 'about' },
+        {
+          label: `About ${clientConfig.branding.appName || app.name}`,
+          click: () => {
+            dialog.showMessageBox({
+              type: 'info',
+              title: `About ${clientConfig.branding.appName}`,
+              message: clientConfig.branding.appName,
+              detail: `Client: ${clientConfig.displayName}\nClient ID: ${clientConfig.clientId}\nClient Version: ${clientConfig.version.client}\nCore Version: ${clientConfig.version.core}\n\n© ${new Date().getFullYear()} FMA Team`
+            });
+          }
+        },
         { type: 'separator' },
         { role: 'services' },
         { type: 'separator' },
@@ -86,11 +147,15 @@ function createMenu() {
 }
 
 function createWindow() {
+  // Use client-specific title (T021)
+  const windowTitle = clientConfig.branding.appName || 'FMA Skeckit App';
+
   mainWindow = new BrowserWindow({
     width: 1400,
     height: 900,
     minWidth: 800,
     minHeight: 600,
+    title: windowTitle,
     webPreferences: {
       preload: path.join(__dirname, 'preload.js'),
       contextIsolation: true,

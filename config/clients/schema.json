@@ -1,0 +1,195 @@
+{
+  "$schema": "http://json-schema.org/draft-07/schema#",
+  "$id": "https://fmaskeckit.com/schemas/client-config.json",
+  "title": "Client Configuration Schema",
+  "description": "Schema for client-specific configuration files used in multi-client deployments",
+  "type": "object",
+  "required": ["clientId", "displayName", "branding", "version"],
+  "properties": {
+    "clientId": {
+      "type": "string",
+      "pattern": "^[a-z0-9]+$",
+      "description": "Unique identifier for the client (lowercase alphanumeric only, no spaces or special characters)",
+      "examples": ["clienta", "clientb", "clientc"],
+      "minLength": 3,
+      "maxLength": 20
+    },
+    "displayName": {
+      "type": "string",
+      "description": "Human-readable client name displayed in application",
+      "examples": ["Client A Financial Services", "Client B Corporation", "Client C Legal Group"],
+      "minLength": 1,
+      "maxLength": 100
+    },
+    "branding": {
+      "type": "object",
+      "required": ["appName", "logo", "primaryColor"],
+      "properties": {
+        "appName": {
+          "type": "string",
+          "description": "Application name shown in window title, about dialog, and desktop shortcuts",
+          "examples": ["FMA Skeckit - Client A", "FMA Client B Edition", "Skeckit for Client C"],
+          "minLength": 1,
+          "maxLength": 50
+        },
+        "logo": {
+          "type": "string",
+          "description": "Relative path to client logo PNG (from repository root)",
+          "examples": ["branding/clientA/logo.png", "branding/clientB/logo.png"],
+          "pattern": "^branding\\/[a-z0-9]+\\/logo\\.png$"
+        },
+        "icon": {
+          "type": "string",
+          "description": "Relative path to desktop icon PNG, must be 1024x1024 pixels (from repository root)",
+          "examples": ["branding/clientA/icons/icon.png", "branding/clientB/icons/icon.png"],
+          "pattern": "^branding\\/[a-z0-9]+\\/icons\\/icon\\.png$"
+        },
+        "primaryColor": {
+          "type": "string",
+          "pattern": "^#[0-9A-Fa-f]{6}$",
+          "description": "Primary brand color in hex format (#RRGGBB)",
+          "examples": ["#1E3A8A", "#DC2626", "#059669"]
+        },
+        "secondaryColor": {
+          "type": "string",
+          "pattern": "^#[0-9A-Fa-f]{6}$",
+          "description": "Secondary brand color in hex format (#RRGGBB)",
+          "examples": ["#3B82F6", "#F87171", "#10B981"]
+        },
+        "accentColor": {
+          "type": "string",
+          "pattern": "^#[0-9A-Fa-f]{6}$",
+          "description": "Accent color for highlights and interactive elements",
+          "examples": ["#F59E0B", "#8B5CF6", "#EC4899"]
+        }
+      }
+    },
+    "apiEndpoints": {
+      "type": "object",
+      "description": "Client-specific API endpoints and service URLs",
+      "properties": {
+        "baseUrl": {
+          "type": "string",
+          "format": "uri",
+          "description": "Base URL for client's primary API (must be HTTPS)",
+          "examples": ["https://api-clienta.fmaskeckit.com", "https://api.clientb.example.com"],
+          "pattern": "^https://"
+        },
+        "authUrl": {
+          "type": "string",
+          "format": "uri",
+          "description": "Authentication endpoint URL (must be HTTPS)",
+          "examples": ["https://auth-clienta.fmaskeckit.com", "https://auth.clientb.example.com"],
+          "pattern": "^https://"
+        },
+        "analyticsUrl": {
+          "type": "string",
+          "format": "uri",
+          "description": "Analytics service endpoint (optional)",
+          "examples": ["https://analytics-clienta.fmaskeckit.com"]
+        }
+      }
+    },
+    "features": {
+      "type": "object",
+      "description": "Feature flags to enable/disable functionality per client",
+      "additionalProperties": false,
+      "properties": {
+        "dashboard": {
+          "type": "boolean",
+          "description": "Enable main dashboard view",
+          "default": true
+        },
+        "advancedAnalytics": {
+          "type": "boolean",
+          "description": "Enable advanced analytics charts and insights",
+          "default": false
+        },
+        "clientSearch": {
+          "type": "boolean",
+          "description": "Enable client search functionality",
+          "default": true
+        },
+        "caseManagement": {
+          "type": "boolean",
+          "description": "Enable case management features",
+          "default": true
+        },
+        "documentManagement": {
+          "type": "boolean",
+          "description": "Enable document upload/download/management",
+          "default": true
+        },
+        "exportFeatures": {
+          "type": "boolean",
+          "description": "Enable export to Excel/PDF functionality",
+          "default": true
+        },
+        "multiLanguage": {
+          "type": "boolean",
+          "description": "Enable multi-language support (English/French)",
+          "default": true
+        },
+        "offlineMode": {
+          "type": "boolean",
+          "description": "Enable offline mode with local caching",
+          "default": false
+        }
+      }
+    },
+    "version": {
+      "type": "object",
+      "required": ["client", "core"],
+      "properties": {
+        "client": {
+          "type": "string",
+          "pattern": "^\\d+\\.\\d+\\.\\d+$",
+          "description": "Client-specific version following semantic versioning (MAJOR.MINOR.PATCH)",
+          "examples": ["1.0.0", "2.1.3", "0.5.0"]
+        },
+        "core": {
+          "type": "string",
+          "pattern": "^\\d+\\.\\d+\\.\\d+$",
+          "description": "Core application version this client configuration is based on",
+          "examples": ["1.5.0", "2.0.1", "1.3.0"]
+        }
+      }
+    },
+    "metadata": {
+      "type": "object",
+      "description": "Additional optional metadata about the client",
+      "properties": {
+        "contactEmail": {
+          "type": "string",
+          "format": "email",
+          "description": "Primary support contact email for this client",
+          "examples": ["support@clienta.example.com", "help@clientb.com"]
+        },
+        "region": {
+          "type": "string",
+          "description": "Geographic region or country code",
+          "examples": ["US", "CA", "EU", "UK", "AU"],
+          "pattern": "^[A-Z]{2,3}$"
+        },
+        "industry": {
+          "type": "string",
+          "description": "Client industry vertical or business domain",
+          "examples": ["Financial Services", "Healthcare", "Legal", "Real Estate", "Government"],
+          "enum": ["Financial Services", "Healthcare", "Legal", "Real Estate", "Government", "Education", "Technology", "Other"]
+        },
+        "timezone": {
+          "type": "string",
+          "description": "Default timezone for the client (IANA timezone)",
+          "examples": ["America/New_York", "Europe/London", "Asia/Tokyo"],
+          "pattern": "^[A-Za-z]+\\/[A-Za-z_]+$"
+        },
+        "locale": {
+          "type": "string",
+          "description": "Default locale/language code (ISO 639-1 + optional region)",
+          "examples": ["en-US", "fr-CA", "en-GB"],
+          "pattern": "^[a-z]{2}(-[A-Z]{2})?$"
+        }
+      }
+    }
+  }
+}

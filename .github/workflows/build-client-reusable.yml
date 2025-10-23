@@ -1,0 +1,95 @@
+name: Build Client Desktop Packages (Reusable)
+
+on:
+  workflow_call:
+    inputs:
+      client:
+        description: 'Client to build'
+        required: true
+        type: string
+      version:
+        description: 'Client version'
+        required: true
+        type: string
+      platforms:
+        description: 'Platforms to build (all, windows, macos, linux)'
+        required: false
+        type: string
+        default: 'all'
+
+jobs:
+  build:
+    name: Build for ${{ matrix.platform_name }}
+    runs-on: ${{ matrix.os }}
+
+    strategy:
+      fail-fast: false
+      matrix:
+        include:
+          - os: macos-latest
+            platform: mac
+            platform_name: macOS
+            build_command: 'npm run electron:build:mac'
+            artifact_pattern: 'dist-desktop/*.dmg'
+          - os: windows-latest
+            platform: win
+            platform_name: Windows
+            build_command: 'npm run electron:build:win'
+            artifact_pattern: 'dist-desktop/*.exe'
+          - os: ubuntu-latest
+            platform: linux
+            platform_name: Linux
+            build_command: 'npm run electron:build:linux'
+            artifact_pattern: 'dist-desktop/*.AppImage'
+
+    steps:
+      - name: Checkout client branch
+        uses: actions/checkout@v4
+        with:
+          ref: client/${{ inputs.client }}
+
+      - name: Setup Node.js
+        uses: actions/setup-node@v4
+        with:
+          node-version: '18'
+          cache: 'npm'
+
+      - name: Install root dependencies
+        run: npm ci
+
+      - name: Install desktop dependencies
+        run: |
+          cd desktop
+          npm ci
+          cd ..
+
+      - name: Validate client configuration
+        run: |
+          chmod +x scripts/validate-client-config.sh
+          ./scripts/validate-client-config.sh ${{ inputs.client }}
+
+      - name: Select client configuration
+        run: |
+          chmod +x scripts/select-client-config.sh
+          ./scripts/select-client-config.sh ${{ inputs.client }}
+
+      - name: Update desktop metadata
+        run: |
+          chmod +x scripts/update-desktop-metadata.sh
+          ./scripts/update-desktop-metadata.sh ${{ inputs.client }}
+
+      - name: Build web application
+        run: npm run build
+
+      - name: Build desktop app
+        if: inputs.platforms == 'all' || inputs.platforms == matrix.platform || (inputs.platforms == 'macos' && matrix.platform == 'mac')
+        run: ${{ matrix.build_command }}
+
+      - name: Upload artifacts
+        if: inputs.platforms == 'all' || inputs.platforms == matrix.platform || (inputs.platforms == 'macos' && matrix.platform == 'mac')
+        uses: actions/upload-artifact@v4
+        with:
+          name: ${{ inputs.client }}-${{ matrix.platform }}-v${{ inputs.version }}
+          path: ${{ matrix.artifact_pattern }}
+          retention-days: 30
+          if-no-files-found: error

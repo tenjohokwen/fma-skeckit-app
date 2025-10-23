@@ -59,3 +59,7 @@ Thumbs.db
 # Desktop packaging
 dist-desktop/
 desktop/node_modules/
+
+# Multi-client build-time generated files
+desktop/client-config.json
+desktop/branding/

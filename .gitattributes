@@ -1,0 +1,15 @@
+# Multi-Client Branching Strategy - Merge Strategies
+# These rules ensure client-specific files are preserved during merges from main
+
+# Client-specific config - always keep client version during merges
+config/clients/*.json merge=ours
+
+# Client-specific branding - never merge from core
+branding/** merge=ours
+
+# Desktop build-time config - always keep local version
+desktop/client-config.json merge=ours
+desktop/branding/** merge=ours
+
+# Application code - prefer core version in conflicts
+src/** merge=theirs

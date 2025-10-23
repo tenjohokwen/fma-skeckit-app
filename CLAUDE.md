@@ -17,6 +17,7 @@ Auto-generated from all feature plans. Last updated: 2025-10-18
 - Local filesystem (`/docs/user-guide.md`) (012-functionality-has-been)
 - **Electron v28+ (desktop framework), electron-builder v24+ (packaging), electron-updater (auto-update)** + JavaScript ES6+ (desktop wrapper), existing Vue 3 application unchanged (013-i-want-to)
 - Local filesystem using platform-appropriate directories (AppData on Windows, Application Support on macOS, ~/.config on Linux); existing backend API via HTTPS (no changes) (013-i-want-to)
+- YAML (GitHub Actions), Bash (scripts), JavaScript (configuration validation) (014-for-this-application)
 
 ## Project Structure
 ```
@@ -31,9 +32,9 @@ npm test [ONLY COMMANDS FOR ACTIVE TECHNOLOGIES][ONLY COMMANDS FOR ACTIVE TECHNO
 JavaScript ES6+ (frontend), Google Apps Script JavaScript (backend): Follow standard conventions
 
 ## Recent Changes
+- 014-for-this-application: Added YAML (GitHub Actions), Bash (scripts), JavaScript (configuration validation)
 - 013-i-want-to: Added JavaScript ES6+ (for desktop wrapper/main process), existing Vue 3 application unchanged
 - 012-functionality-has-been: Added Markdown (documentation format) + None (plain text editing of existing documentation file)
-- 011-as-a-user: UI simplified by removing FileManagementPage and ClientManagementPage
   - Navigation menu streamlined (2 fewer items: "Files" and "Clients" removed)
   - Routes cleaned up (/files and /clients removed, catch-all handles gracefully)
   - Bundle size reduced via Vite tree-shaking (FileManagementPage and ClientManagementPage excluded from build)

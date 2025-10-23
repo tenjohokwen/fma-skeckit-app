@@ -1,0 +1,115 @@
+name: Build Client Desktop Packages (Manual)
+
+on:
+  workflow_dispatch:
+    inputs:
+      client:
+        description: 'Client to build (e.g., bechem)'
+        required: true
+        type: string
+        default: 'bechem'
+      version:
+        description: 'Client version (e.g., 1.0.0)'
+        required: true
+        type: string
+      platforms:
+        description: 'Platforms to build'
+        required: false
+        type: choice
+        default: 'all'
+        options:
+          - all
+          - windows
+          - macos
+          - linux
+      release:
+        description: 'Create GitHub Release after successful build'
+        required: false
+        type: boolean
+        default: false
+
+jobs:
+  build:
+    name: Build ${{ inputs.client }} v${{ inputs.version }}
+    uses: ./.github/workflows/build-client-reusable.yml
+    with:
+      client: ${{ inputs.client }}
+      version: ${{ inputs.version }}
+      platforms: ${{ inputs.platforms }}
+
+  release:
+    name: Create GitHub Release
+    needs: build
+    runs-on: ubuntu-latest
+    if: inputs.release == true
+    permissions:
+      contents: write
+
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v4
+        with:
+          ref: client/${{ inputs.client }}
+
+      - name: Download all artifacts
+        uses: actions/download-artifact@v4
+        with:
+          path: release-artifacts
+
+      - name: Display artifact structure
+        run: |
+          echo "Artifact directory structure:"
+          ls -R release-artifacts/
+
+      - name: Create GitHub Release
+        uses: softprops/action-gh-release@v1
+        with:
+          tag_name: ${{ inputs.client }}/v${{ inputs.version }}
+          name: ${{ inputs.client }} v${{ inputs.version }}
+          draft: false
+          prerelease: false
+          files: release-artifacts/**/*
+          generate_release_notes: true
+          body: |
+            ## ${{ inputs.client }} v${{ inputs.version }}
+
+            Desktop packages for ${{ inputs.client }} client.
+
+            **Client Version**: ${{ inputs.version }}
+            **Build Date**: ${{ github.event.head_commit.timestamp }}
+            **Branch**: client/${{ inputs.client }}
+
+            ### Downloads
+
+            - **macOS**: Download the `.dmg` file
+            - **Windows**: Download the `.exe` file
+            - **Linux**: Download the `.AppImage` file
+
+            ### Installation
+
+            1. Download the appropriate file for your platform
+            2. Run the installer
+            3. Launch the application
+
+            ---
+
+            🤖 Generated with [GitHub Actions](https://github.com/features/actions)
+        env:
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+
+      - name: Update version matrix
+        if: success()
+        run: |
+          # Get core version from client config
+          CORE_VERSION=$(cat config/clients/${{ inputs.client }}.json | grep -o '"core"[[:space:]]*:[[:space:]]*"[^"]*"' | cut -d'"' -f4)
+
+          # Update version matrix
+          chmod +x scripts/update-version-matrix.sh
+          ./scripts/update-version-matrix.sh ${{ inputs.client }} ${{ inputs.version }} "$CORE_VERSION" Production "Release via GitHub Actions"
+
+          # Commit and push version matrix update
+          git config user.name "github-actions[bot]"
+          git config user.email "github-actions[bot]@users.noreply.github.com"
+          git add docs/version-matrix.md
+          git commit -m "Update version matrix: ${{ inputs.client }} v${{ inputs.version }}" || echo "No changes to commit"
+          git push origin client/${{ inputs.client }} || echo "No changes to push"
