@@ -54,18 +54,53 @@ jobs:
           node-version: '20'
           cache: 'npm'
 
-      - name: Validate package.json versions (diagnostic)
+      - name: Quick diagnostics
         run: |
-          echo "=== Checking package.json engines ==="
+          echo "=== Quick diagnostics ==="
+          echo "== engines in package.json =="
           cat package.json | grep -A4 '"engines"' || echo "No engines field found"
           echo ""
-          echo "=== Checking for empty version strings ==="
-          grep -n '"version".*:.*""' package.json package-lock.json || echo "No empty versions found"
-          echo ""
-          echo "=== Node.js version ==="
-          node --version
-          echo "=== npm version ==="
-          npm --version
+          echo "== Node/npm versions =="
+          node --version || true
+          npm --version || true
+
+      - name: Pre-validate version fields (fail-fast)
+        id: validate-versions
+        shell: bash
+        run: |
+          echo "Installing semver helper (no-save)..."
+          # Attempt lightweight install of semver for validation. If install fails, continue so we still try npm ci and capture logs.
+          npm i semver@7 --no-save --no-audit --no-fund || true
+          node - <<'NODE'
+          const fs = require('fs');
+          let semver;
+          try { semver = require('semver'); } catch (e) { console.error('semver not available - skipping strict validation, will rely on npm error logs.'); process.exit(0); }
+          function findInvalidVersions(path) {
+            if (!fs.existsSync(path)) return [];
+            const obj = JSON.parse(fs.readFileSync(path, 'utf8'));
+            const bad = [];
+            (function rec(o, p) {
+              if (!o || typeof o !== 'object') return;
+              for (const k of Object.keys(o)) {
+                if (k === 'version' && o[k] !== undefined) {
+                  const v = String(o[k]);
+                  if (!semver.valid(v)) bad.push(`${p || path} -> ${v}`);
+                } else {
+                  rec(o[k], p ? `${p}.${k}` : k);
+                }
+              }
+            })(obj, '');
+            return bad;
+          }
+          const invalid = [...findInvalidVersions('package.json'), ...findInvalidVersions('package-lock.json'), ...findInvalidVersions('desktop/package.json'), ...findInvalidVersions('desktop/package-lock.json')];
+          if (invalid.length) {
+            console.error('Invalid version strings detected:');
+            invalid.forEach(i => console.error(' - ' + i));
+            process.exit(2);
+          } else {
+            console.log('Version fields look valid (semver check passed).');
+          }
+          NODE
 
       - name: Install root dependencies
         id: npm-ci
@@ -104,6 +139,20 @@ jobs:
             done
           fi
           exit 1
+
+      - name: Dump npm debug log on failure (Windows PowerShell)
+        if: steps.npm-ci.outcome == 'failure'
+        shell: pwsh
+        run: |
+          $logDir = 'C:\npm\cache\_logs'
+          if (Test-Path $logDir) {
+            Get-ChildItem -Path $logDir -Filter '*.log' | Sort-Object LastWriteTime -Descending | ForEach-Object {
+              Write-Host "=== Showing $($_.FullName) ==="
+              Get-Content $_.FullName -Raw
+            }
+          } else {
+            Write-Host "No Windows npm debug logs found at $logDir"
+          }
 
       - name: Install desktop dependencies
         run: |
