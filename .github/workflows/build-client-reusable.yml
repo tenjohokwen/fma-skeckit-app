@@ -54,8 +54,56 @@ jobs:
           node-version: '20'
           cache: 'npm'
 
+      - name: Validate package.json versions (diagnostic)
+        run: |
+          echo "=== Checking package.json engines ==="
+          cat package.json | grep -A4 '"engines"' || echo "No engines field found"
+          echo ""
+          echo "=== Checking for empty version strings ==="
+          grep -n '"version".*:.*""' package.json package-lock.json || echo "No empty versions found"
+          echo ""
+          echo "=== Node.js version ==="
+          node --version
+          echo "=== npm version ==="
+          npm --version
+
       - name: Install root dependencies
+        id: npm-ci
+        continue-on-error: true
         run: npm ci
+
+      - name: Upload npm debug log on failure
+        if: steps.npm-ci.outcome == 'failure'
+        uses: actions/upload-artifact@v4
+        with:
+          name: npm-debug-log-${{ matrix.platform }}
+          path: |
+            ~/.npm/_logs/*.log
+            C:\npm\cache\_logs\*.log
+          if-no-files-found: warn
+
+      - name: Display npm debug log on failure
+        if: steps.npm-ci.outcome == 'failure'
+        shell: bash
+        run: |
+          echo "=== NPM CI FAILED - Debug Log ==="
+          if [ -d ~/.npm/_logs ]; then
+            for log in ~/.npm/_logs/*.log; do
+              if [ -f "$log" ]; then
+                echo "=== Contents of $log ==="
+                cat "$log"
+              fi
+            done
+          fi
+          if [ -d /c/npm/cache/_logs ]; then
+            for log in /c/npm/cache/_logs/*.log; do
+              if [ -f "$log" ]; then
+                echo "=== Contents of $log ==="
+                cat "$log"
+              fi
+            done
+          fi
+          exit 1
 
       - name: Install desktop dependencies
         run: |
