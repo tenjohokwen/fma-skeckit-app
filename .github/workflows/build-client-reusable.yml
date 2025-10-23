@@ -54,8 +54,137 @@ jobs:
           node-version: '20'
           cache: 'npm'
 
+      - name: Quick diagnostics
+        run: |
+          echo "=== Quick diagnostics ==="
+          echo "== engines in package.json =="
+          cat package.json | grep -A4 '"engines"' || echo "No engines field found"
+          echo ""
+          echo "== Node/npm versions =="
+          node --version || true
+          npm --version || true
+
+      - name: Pre-validate version fields (fail-fast)
+        id: validate-versions
+        continue-on-error: true
+        shell: bash
+        run: |
+          echo "Installing semver helper (no-save)..."
+          # Attempt lightweight install of semver for validation. If install fails, continue so we still try npm ci and capture logs.
+          npm i semver@7 --no-save --no-audit --no-fund || true
+          node - <<'NODE'
+          const fs = require('fs');
+          let semver;
+          try { semver = require('semver'); } catch (e) { console.error('semver not available - skipping strict validation, will rely on npm error logs.'); process.exit(0); }
+          function findInvalidVersions(path) {
+            if (!fs.existsSync(path)) return [];
+            const obj = JSON.parse(fs.readFileSync(path, 'utf8'));
+            const bad = [];
+            (function rec(o, p) {
+              if (!o || typeof o !== 'object') return;
+              for (const k of Object.keys(o)) {
+                if (k === 'version' && o[k] !== undefined) {
+                  const v = String(o[k]);
+                  if (!semver.valid(v)) bad.push(`${p || path} -> ${v}`);
+                } else {
+                  rec(o[k], p ? `${p}.${k}` : k);
+                }
+              }
+            })(obj, '');
+            return bad;
+          }
+          const invalid = [...findInvalidVersions('package.json'), ...findInvalidVersions('package-lock.json'), ...findInvalidVersions('desktop/package.json'), ...findInvalidVersions('desktop/package-lock.json')];
+          if (invalid.length) {
+            console.error('Invalid version strings detected:');
+            invalid.forEach(i => console.error(' - ' + i));
+            process.exit(2);
+          } else {
+            console.log('Version fields look valid (semver check passed).');
+          }
+          NODE
+
       - name: Install root dependencies
+        id: npm-ci
+        continue-on-error: true
         run: npm ci
+
+      - name: Upload npm debug log on failure
+        if: failure()
+        uses: actions/upload-artifact@v4
+        with:
+          name: npm-debug-log-${{ matrix.platform }}
+          path: |
+            ~/.npm/_logs/*.log
+            $RUNNER_TEMP/npm-cache/_logs/*.log
+            $HOME/.npm/_logs/*.log
+            C:\npm\cache\_logs\*.log
+            C:\Users\*\AppData\Roaming\npm-cache\_logs\*.log
+            C:\Users\*\AppData\Local\npm-cache\_logs\*.log
+          if-no-files-found: warn
+
+      - name: Display npm debug log on failure
+        if: failure()
+        shell: bash
+        run: |
+          echo "=== SEARCHING FOR NPM DEBUG LOGS ==="
+          found=0
+          # Common *nix / macOS logs
+          if [ -d "$HOME/.npm/_logs" ]; then
+            for log in "$HOME"/.npm/_logs/*.log; do
+              [ -f "$log" ] || continue
+              echo "=== Contents of $log ==="
+              sed -n '1,200p' "$log" || true
+              found=1
+            done
+          fi
+          # AppData / npm-cache locations (Windows, Git Bash)
+          if [ -n "$APPDATA" ] && [ -d "$APPDATA/npm-cache/_logs" ]; then
+            for log in "$APPDATA"/npm-cache/_logs/*.log; do
+              [ -f "$log" ] || continue
+              echo "=== Contents of $log ==="
+              sed -n '1,200p' "$log" || true
+              found=1
+            done
+          fi
+          # Search common Windows-style paths exposed in Git Bash (e.g., /c/Users/...)
+          for d in /c/npm/cache/_logs /c/Users/*/AppData/Roaming/npm-cache/_logs /c/Users/*/AppData/Local/npm-cache/_logs; do
+            if [ -d "$d" ]; then
+              for log in "$d"/*.log; do
+                [ -f "$log" ] || continue
+                echo "=== Contents of $log ==="
+                sed -n '1,200p' "$log" || true
+                found=1
+              done
+            fi
+          done
+          if [ "$found" -eq 0 ]; then
+            echo "No npm debug logs found in common locations."
+          fi
+          # Fail the step so the job shows failure after printing logs
+          exit 1
+
+      - name: Dump npm debug log on failure (Windows PowerShell)
+        if: failure()
+        shell: pwsh
+        run: |
+          Write-Host "=== Searching for npm debug logs (PowerShell) ==="
+          $candidates = @()
+          $candidates += 'C:\npm\cache\_logs'
+          if ($env:APPDATA) { $candidates += Join-Path $env:APPDATA 'npm-cache\_logs' }
+          if ($env:USERPROFILE) { $candidates += Join-Path $env:USERPROFILE 'AppData\Roaming\npm-cache\_logs' }
+          $candidates += 'C:\Users\*\AppData\Roaming\npm-cache\_logs'
+          $found = $false
+          foreach ($d in $candidates) {
+            $paths = Get-ChildItem -Path $d -Filter '*.log' -ErrorAction SilentlyContinue -Recurse:$false
+            if ($paths) {
+              foreach ($p in $paths) {
+                Write-Host "=== Showing $($p.FullName) ==="
+                Get-Content $p.FullName -Raw
+                $found = $true
+              }
+            }
+          }
+          if (-not $found) { Write-Host 'No Windows npm debug logs found in candidate locations.' }
 
       - name: Install desktop dependencies
         run: |
