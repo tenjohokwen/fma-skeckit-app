@@ -15,7 +15,7 @@ Auto-generated from all feature plans. Last updated: 2025-10-18
 - N/A (no data model changes - frontend only) (011-as-a-user)
 - Markdown (documentation format) + None (plain text editing of existing documentation file) (012-functionality-has-been)
 - Local filesystem (`/docs/user-guide.md`) (012-functionality-has-been)
-- JavaScript ES6+ (for desktop wrapper/main process), existing Vue 3 application unchanged (013-i-want-to)
+- **Electron v28+ (desktop framework), electron-builder v24+ (packaging), electron-updater (auto-update)** + JavaScript ES6+ (desktop wrapper), existing Vue 3 application unchanged (013-i-want-to)
 - Local filesystem using platform-appropriate directories (AppData on Windows, Application Support on macOS, ~/.config on Linux); existing backend API via HTTPS (no changes) (013-i-want-to)
 
 ## Project Structure

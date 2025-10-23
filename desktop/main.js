@@ -1,6 +1,7 @@
-const { app, BrowserWindow, protocol, shell, Menu } = require('electron');
+const { app, BrowserWindow, protocol, shell, Menu, dialog } = require('electron');
 const path = require('path');
 const log = require('electron-log');
+const { autoUpdater } = require('electron-updater');
 
 // Enable logging
 log.transports.file.level = 'info';
@@ -127,6 +128,11 @@ app.whenReady().then(() => {
   log.info('App ready, creating menu and window...');
   createMenu(); // Create macOS menu bar first
   createWindow();
+
+  // Check for updates after window is created (T033)
+  setTimeout(() => {
+    checkForUpdates();
+  }, 3000); // Wait 3 seconds after launch to check for updates
 });
 
 // macOS: Re-create window when dock icon is clicked and no windows are open
@@ -201,4 +207,77 @@ if (!gotTheLock) {
       mainWindow.focus();
     }
   });
+}
+
+// Auto-Update Configuration (T032-T035)
+// Configure electron-updater logging
+autoUpdater.logger = log;
+autoUpdater.logger.transports.file.level = 'info';
+
+// Auto-update event handlers
+autoUpdater.on('checking-for-update', () => {
+  log.info('Checking for updates...');
+});
+
+autoUpdater.on('update-available', (info) => {
+  log.info('Update available:', info.version);
+});
+
+autoUpdater.on('update-not-available', (info) => {
+  log.info('Update not available:', info.version);
+});
+
+autoUpdater.on('error', (err) => {
+  log.error('Error in auto-updater:', err);
+});
+
+autoUpdater.on('download-progress', (progressObj) => {
+  let log_message = 'Download speed: ' + progressObj.bytesPerSecond;
+  log_message = log_message + ' - Downloaded ' + progressObj.percent + '%';
+  log_message = log_message + ' (' + progressObj.transferred + '/' + progressObj.total + ')';
+  log.info(log_message);
+
+  // Send progress to renderer if window exists
+  if (mainWindow) {
+    mainWindow.webContents.send('update-progress', {
+      percent: Math.round(progressObj.percent),
+      transferred: progressObj.transferred,
+      total: progressObj.total
+    });
+  }
+});
+
+autoUpdater.on('update-downloaded', (info) => {
+  log.info('Update downloaded:', info.version);
+
+  // Show dialog to user
+  const dialogOpts = {
+    type: 'info',
+    buttons: ['Restart Now', 'Later'],
+    title: 'Application Update',
+    message: `A new version (${info.version}) has been downloaded.`,
+    detail: 'The application will restart to apply the update. Click "Restart Now" to update immediately, or "Later" to update on next restart.'
+  };
+
+  dialog.showMessageBox(dialogOpts).then((returnValue) => {
+    if (returnValue.response === 0) {
+      // User clicked "Restart Now"
+      log.info('User chose to install update immediately');
+      setImmediate(() => autoUpdater.quitAndInstall());
+    } else {
+      // User clicked "Later"
+      log.info('User chose to install update later');
+    }
+  });
+});
+
+// Function to check for updates
+function checkForUpdates() {
+  // Only check for updates in production builds
+  if (process.env.NODE_ENV !== 'development' && !process.mas) {
+    log.info('Checking for updates...');
+    autoUpdater.checkForUpdates();
+  } else {
+    log.info('Auto-update disabled in development mode');
+  }
 }

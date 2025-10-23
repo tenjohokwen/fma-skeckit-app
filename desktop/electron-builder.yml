@@ -4,6 +4,14 @@ productName: FMA Skeckit App
 directories:
   output: ../dist-desktop
 
+# Auto-update configuration (T036)
+# Publish to GitHub Releases for electron-updater
+publish:
+  provider: github
+  owner: <GITHUB_USERNAME>
+  repo: <GITHUB_REPO>
+  releaseType: release
+
 files:
   - main.js
   - preload.js
