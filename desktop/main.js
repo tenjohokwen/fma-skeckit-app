@@ -167,7 +167,16 @@ function createWindow() {
   });
 
   // Load production build from dist/
-  const distPath = path.join(__dirname, '..', 'dist', 'index.html');
+  // In packaged app: electron-builder copies ../dist/spa to ./dist
+  // In development: we need to go up to ../dist/spa/index.html
+  const isDev = !app.isPackaged;
+  const distPath = isDev
+    ? path.join(__dirname, '..', 'dist', 'spa', 'index.html')
+    : path.join(__dirname, 'dist', 'index.html');
+
+  log.info(`Loading app from: ${distPath}`);
+  log.info(`File exists: ${fs.existsSync(distPath)}`);
+
   mainWindow.loadFile(distPath);
 
   // Show window when ready
