@@ -30,7 +30,7 @@ jobs:
             platform: mac
             platform_name: macOS
             build_command: 'npm run electron:build:mac'
-            artifact_pattern: 'dist-desktop/*.dmg'
+            artifact_pattern: 'dist-desktop/*.zip'
           - os: windows-latest
             platform: win
             platform_name: Windows
