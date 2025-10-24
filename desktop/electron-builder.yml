@@ -5,12 +5,13 @@ directories:
   output: ../dist-desktop
 
 # Auto-update configuration (T036)
-# Publish to GitHub Releases for electron-updater
-publish:
-  provider: github
-  owner: <GITHUB_USERNAME>
-  repo: <GITHUB_REPO>
-  releaseType: release
+# Publishing is handled by GitHub Actions workflow (build-client-manual.yml)
+# Do not auto-publish during build - artifacts are uploaded via workflow
+# publish:
+#   provider: github
+#   owner: <GITHUB_USERNAME>
+#   repo: <GITHUB_REPO>
+#   releaseType: release
 
 files:
   - main.js
