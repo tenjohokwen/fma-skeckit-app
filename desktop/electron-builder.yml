@@ -60,7 +60,9 @@ nsis:
 # macOS configuration (T023, T024)
 mac:
   target:
-    - target: dmg
+    # Using zip instead of dmg to avoid hdiutil issues
+    # DMG creation can be re-enabled after resolving hdiutil errors
+    - target: zip
       arch:
         - x64
         - arm64
