@@ -45,7 +45,8 @@ export default defineConfig((ctx) => {
 
       // rebuildCache: true, // rebuilds Vite/linter/etc cache on startup
 
-      // publicPath: '/',
+      // Use relative paths for Electron compatibility (file:// protocol)
+      publicPath: './',
       // analyze: true,
       // env: {},
       // rawDefine: {}
@@ -54,7 +55,10 @@ export default defineConfig((ctx) => {
       // polyfillModulePreload: true,
       // distDir
 
-      // extendViteConf (viteConf) {},
+      // Configure Vite for Electron (use relative paths for file:// protocol)
+      extendViteConf(viteConf) {
+        viteConf.base = './'
+      },
       // viteVuePluginOptions: {},
 
       vitePlugins: [
