@@ -8,6 +8,28 @@ const DashboardService = {
   CACHE_TTL: 300, // 5 minutes
 
   /**
+   * Normalizes status string to title case for consistent display
+   * Feature 017: Case-Insensitive Status Handling
+   * @param {string} status - Raw status value from data source
+   * @returns {string} Normalized status in title case (e.g., "Open", "In Progress")
+   * @private
+   */
+  _normalizeStatus: function(status) {
+    // Handle null/undefined/empty
+    if (!status || typeof status !== 'string') return 'Unknown';
+
+    // Trim whitespace
+    const trimmed = status.trim();
+    if (trimmed === '') return 'Unknown';
+
+    // Title case: capitalize first letter of each word
+    const lower = trimmed.toLowerCase();
+    return lower.split(' ').map(word =>
+      word.charAt(0).toUpperCase() + word.slice(1)
+    ).join(' ');
+  },
+
+  /**
    * Gets all dashboard metrics (with caching)
    * @param {string} userEmail - Current user's email
    * @param {string} userRole - User's role (ROLE_ADMIN or ROLE_USER)
@@ -55,6 +77,12 @@ const DashboardService = {
       };
     }
 
+    // Feature 017: Pre-compute normalized status for all cases
+    // This optimization normalizes status once per case, avoiding repeated normalization
+    cases.forEach(c => {
+      c._normalizedStatus = this._normalizeStatus(c.status);
+    });
+
     return {
       activeCases: this.getActiveCasesMetric(cases),
       casesByStatus: this.getCasesByStatus(cases),
@@ -77,20 +105,21 @@ const DashboardService = {
 
   /**
    * Get active cases count with trend
-   * @param {Array} cases - Array of case objects
+   * Feature 017: Uses normalized status for accurate filtering
+   * @param {Array} cases - Array of case objects with _normalizedStatus
    * @returns {Object} Active cases metric
    */
   getActiveCasesMetric: function(cases) {
     const now = new Date();
     const thirtyDaysAgo = new Date(now - 30 * 24 * 60 * 60 * 1000);
 
-    // Current active cases (status ≠ 'Closed')
-    const currentActive = cases.filter(c => c.status !== 'Closed').length;
+    // Current active cases (status ≠ 'Closed') - Feature 017: case-insensitive
+    const currentActive = cases.filter(c => c._normalizedStatus !== 'Closed').length;
 
     // Previous period: cases created before 30 days ago that are still active
     const previousCases = cases.filter(c => {
       const createdDate = new Date(c.createdAt);
-      return createdDate < thirtyDaysAgo && c.status !== 'Closed';
+      return createdDate < thirtyDaysAgo && c._normalizedStatus !== 'Closed';
     }).length;
 
     const trend = this._calculateTrend(currentActive, previousCases);
@@ -102,15 +131,16 @@ const DashboardService = {
   },
 
   /**
-   * Get cases grouped by status
-   * @param {Array} cases - Array of case objects
-   * @returns {Array} Array of status metrics
+   * Get cases grouped by status (case-insensitive)
+   * Feature 017: Case-Insensitive Status Handling
+   * @param {Array} cases - Array of case objects with _normalizedStatus property
+   * @returns {Array} Array of status metrics with normalized status labels
    */
   getCasesByStatus: function(cases) {
     const statusCounts = {};
 
     cases.forEach(c => {
-      const status = c.status || 'Unknown';
+      const status = c._normalizedStatus || 'Unknown';
       statusCounts[status] = (statusCounts[status] || 0) + 1;
     });
 
@@ -163,12 +193,13 @@ const DashboardService = {
 
   /**
    * Get active cases per attorney with workload levels
-   * @param {Array} cases - Array of case objects
+   * Feature 017: Uses normalized status for accurate workload calculation
+   * @param {Array} cases - Array of case objects with _normalizedStatus
    * @returns {Array} Array of attorney metrics, sorted by count descending
    */
   getCasesPerAttorney: function(cases) {
-    // Only count active cases (status ≠ 'Closed')
-    const activeCases = cases.filter(c => c.status !== 'Closed');
+    // Only count active cases (status ≠ 'Closed') - Feature 017: case-insensitive
+    const activeCases = cases.filter(c => c._normalizedStatus !== 'Closed');
     const attorneyCounts = {};
 
     activeCases.forEach(c => {
@@ -187,11 +218,12 @@ const DashboardService = {
 
   /**
    * Get resolution time metrics for closed cases
-   * @param {Array} cases - Array of case objects
+   * Feature 017: Uses normalized status to include all closed case variations
+   * @param {Array} cases - Array of case objects with _normalizedStatus
    * @returns {Object} Resolution metrics
    */
   getResolutionMetrics: function(cases) {
-    const closedCases = cases.filter(c => c.status === 'Closed');
+    const closedCases = cases.filter(c => c._normalizedStatus === 'Closed');
 
     const resolutionTimes = closedCases.map(c => {
       const created = new Date(c.createdAt);
