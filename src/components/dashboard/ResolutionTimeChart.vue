@@ -1,7 +1,7 @@
 <template>
   <q-card flat bordered>
     <q-card-section>
-      <div class="text-overline text-grey-7">Case Resolution Time (Days)</div>
+      <div class="text-overline text-primary">{{ $t('dashboard.charts.resolutionTime') }}</div>
       <apexchart
         v-if="data.count > 0"
         type="bar"

@@ -1,7 +1,7 @@
 <template>
   <q-card flat bordered>
     <q-card-section>
-      <div class="text-overline text-grey-7">Cases by Status</div>
+      <div class="text-overline text-primary">{{ $t('dashboard.charts.casesByStatus') }}</div>
       <apexchart
         v-if="series.length > 0"
         type="donut"

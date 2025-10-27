@@ -12,10 +12,11 @@ const DashboardService = {
    * @param {string} userEmail - Current user's email
    * @param {string} userRole - User's role (ROLE_ADMIN or ROLE_USER)
    * @returns {Object} Dashboard metrics
+   * Feature 016: Shared cache for organization-wide metrics
    */
   getAllMetrics: function(userEmail, userRole) {
     const cache = CacheService.getScriptCache();
-    const cacheKey = `dashboard_metrics_${userRole}_${userEmail}`;
+    const cacheKey = 'dashboard_metrics_org_wide'; // Shared cache across all users
 
     // Try to get from cache
     const cached = cache.get(cacheKey);
@@ -65,18 +66,13 @@ const DashboardService = {
   },
 
   /**
-   * Filter cases by user role
+   * Get all cases for organization-wide metrics
    * @private
+   * Feature 016: Dashboard Access Parity - All users see org-wide data
    */
   _getFilteredCases: function(userEmail, userRole) {
-    const allCases = SheetsService.getAllCases();
-
-    if (userRole === 'ROLE_ADMIN') {
-      return allCases;
-    }
-
-    // Filter to user's assigned cases only
-    return allCases.filter(c => c.assignedTo === userEmail);
+    // Return all cases for organization-wide metrics (no role-based filtering)
+    return SheetsService.getAllCases();
   },
 
   /**

@@ -457,6 +457,25 @@ export default {
     successLogin: "Vous êtes connecté avec succès!",
     user: "Utilisateur",
     role: "Rôle",
+    title: "Aperçu des Activités",
+    subtitle: "Analytiques en temps réel de vos dossiers",
+    refresh: "Actualiser",
+    autoRefresh: "Actualisation automatique",
+    loading: "Chargement des analytiques...",
+    error: "Échec du chargement des analytiques",
+    lastUpdated: "Dernière mise à jour",
+    charts: {
+      activeCases: "Total des Dossiers Actifs",
+      casesByStatus: "Dossiers par Statut",
+      casesByType: "Dossiers par Domaine de Pratique",
+      casesPerAttorney: "Dossiers Actifs par Avocat",
+      resolutionTime: "Temps de Résolution des Dossiers (Jours)"
+    },
+    personalMetrics: {
+      myCases: "Mes Cas",
+      youLabel: "Vous",
+      yourWorkload: "Votre Charge de Travail"
+    },
     analytics: {
       title: "Indicateurs de Gestion",
       subtitle: "Analyses en temps réel de vos dossiers",

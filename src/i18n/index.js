@@ -1,5 +1,5 @@
-import enUS from './en-US'
-import frFR from './fr-FR'
+import enUS from './en-US/index.js'
+import frFR from './fr-FR/index.js'
 
 export default {
   'en-US': enUS,
