@@ -430,7 +430,26 @@ export default {
     welcome: "Welcome to Dashboard",
     successLogin: "You are successfully logged in!",
     user: "User",
-    role: "Role"
+    role: "Role",
+    title: "Business Insights",
+    subtitle: "Real-time analytics from your cases",
+    refresh: "Refresh",
+    autoRefresh: "Auto-refresh",
+    loading: "Loading analytics...",
+    error: "Failed to load analytics",
+    lastUpdated: "Last updated",
+    charts: {
+      activeCases: "Total Active Cases",
+      casesByStatus: "Cases by Status",
+      casesByType: "Cases by Practice Area",
+      casesPerAttorney: "Active Cases per Attorney",
+      resolutionTime: "Case Resolution Time (Days)"
+    },
+    personalMetrics: {
+      myCases: "My Cases",
+      youLabel: "You",
+      yourWorkload: "Your Workload"
+    }
   },
   language: {
     switch: "Switch Language",

@@ -1,7 +1,7 @@
 <template>
   <q-card flat bordered>
     <q-card-section>
-      <div class="text-overline text-grey-7">Total Active Cases</div>
+      <div class="text-overline text-primary">{{ $t('dashboard.charts.activeCases') }}</div>
 
       <div class="row items-center q-mt-md">
         <div class="col">
