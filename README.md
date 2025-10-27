@@ -106,6 +106,7 @@ Desktop installers are created in `dist-desktop/`:
 Complete desktop packaging documentation:
 
 - [Desktop README](desktop/README.md) - Comprehensive usage guide
+- [**Icon Replacement Guide**](docs/ICON-REPLACEMENT.md) - Replace application icon & splash screen
 - [Build Notes](desktop/scripts/BUILD-NOTES.md) - Build instructions and troubleshooting
 - [Windows Testing](desktop/scripts/WINDOWS-TESTING.md) - Windows validation checklist
 - [macOS Testing](desktop/scripts/MACOS-TESTING.md) - macOS validation checklist
@@ -122,7 +123,7 @@ npm run electron:dev
 
 ### Before Production Release
 
-1. **Replace placeholder icon**: Add your 1024x1024 PNG logo at `desktop/icons/icon.png`
+1. **Replace placeholder icon**: See [Icon Replacement Guide](docs/ICON-REPLACEMENT.md) for complete instructions
 2. **Add code signing**: Obtain certificates for macOS (Developer ID) and Windows (Authenticode)
 3. **Configure GitHub Releases**: Update `desktop/electron-builder.yml` with your repo details
 4. **Test thoroughly**: Use the provided testing checklists
