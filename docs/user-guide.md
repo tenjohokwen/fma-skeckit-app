@@ -27,7 +27,7 @@
 
 ## Introduction
 
-The **FMA Skeckit App** is a comprehensive file management application designed to help legal professionals and case managers organize client information, documents, and case metadata efficiently. The application provides secure user authentication, powerful search capabilities, and role-based access control to ensure data security and operational efficiency.
+The **FMA App** is a comprehensive file management application designed to help legal professionals and case managers organize client information, documents, and case metadata efficiently. The application provides secure user authentication, powerful search capabilities, and role-based access control to ensure data security and operational efficiency.
 
 ### Key Features
 
@@ -96,7 +96,7 @@ The application features a simplified navigation menu with three main sections:
      - One uppercase letter
      - One lowercase letter
      - One number
-     - One special character (e.g., !@#$%^&*)
+     - One special character (e.g., !@#$%^&\*)
    - **Confirm Password**: Re-enter your password to confirm
 
 3. **Submit the Form**
@@ -242,6 +242,7 @@ Search results are displayed as **UI cards**, each showing:
 ### No Results Found
 
 If your search returns no results:
+
 - Double-check spelling
 - Try searching with partial names
 - Verify the case ID is correct
@@ -263,11 +264,13 @@ Each case is displayed in a card format with:
 ### View-Only Mode (Standard Users)
 
 Standard users (ROLE_USER) can:
+
 - View all case information
 - Search for cases
 - Read metadata
 
 Standard users **cannot**:
+
 - Edit case information
 - Create folders or upload files
 - Delete files
@@ -309,6 +312,7 @@ A column chart displaying how long cases have been open, grouped into age ranges
 ### Using Dashboard Charts
 
 All charts are interactive:
+
 - **Hover** over data points to see detailed information
 - **Click** legend items to show/hide specific data series
 - Charts update automatically as your case data changes
@@ -349,6 +353,7 @@ As an admin, you can edit:
 - Case ID
 
 **System Fields (Not Editable)**:
+
 - Assigned At (auto-updated when "Assigned To" changes)
 - Last Updated By (auto-set to your name)
 - Last Updated At (auto-set to current time)
@@ -374,6 +379,7 @@ As an admin, you can edit:
 #### Concurrent Edit Warning
 
 If another admin edits the same case while you're editing:
+
 - The system detects a version mismatch
 - You'll see a conflict warning
 - Review the changes and decide how to proceed
@@ -467,23 +473,28 @@ The application supports **English** and **French**.
 ### Login Issues
 
 **Problem**: "Email not verified"
+
 - **Solution**: Check your email for the verification link. If expired, use "Resend Verification Email" option.
 
 **Problem**: "Invalid email or password"
+
 - **Solution**: Double-check your credentials. Use "Forgot Password" if needed.
 
 **Problem**: "Account blocked"
+
 - **Solution**: Contact your system administrator for assistance.
 
 ### Search Issues
 
 **Problem**: No results found
+
 - **Solution**:
   - Verify spelling of client name or case ID
   - Try partial name searches
   - Ensure case exists in the system
 
 **Problem**: Slow search results
+
 - **Solution**:
   - Check your internet connection
   - Results should appear in under 2 seconds
@@ -492,17 +503,20 @@ The application supports **English** and **French**.
 ### File Upload Issues
 
 **Problem**: File too large
+
 - **Solution**:
   - Check the error message for maximum file size
   - Compress the file or split into smaller files
   - Contact administrator for size limit increase
 
 **Problem**: File name conflict
+
 - **Solution**:
   - Choose to rename, overwrite, or cancel from the prompt
   - Use descriptive file names to avoid conflicts
 
 **Problem**: Upload failed
+
 - **Solution**:
   - Check your internet connection
   - Ensure you have admin permissions
@@ -512,6 +526,7 @@ The application supports **English** and **French**.
 ### Email Issues
 
 **Problem**: Verification email not received
+
 - **Solution**:
   - Check spam/junk folder
   - Wait 2 minutes (emails can be delayed)
@@ -519,6 +534,7 @@ The application supports **English** and **French**.
   - Verify email address was entered correctly
 
 **Problem**: OTP not received
+
 - **Solution**:
   - Check spam/junk folder
   - Wait up to 2 minutes
@@ -527,6 +543,7 @@ The application supports **English** and **French**.
 ### General Issues
 
 **Problem**: Page not loading
+
 - **Solution**:
   - Refresh the browser
   - Clear browser cache
@@ -534,6 +551,7 @@ The application supports **English** and **French**.
   - Try a different browser
 
 **Problem**: Changes not saving
+
 - **Solution**:
   - Ensure you have admin permissions for edit operations
   - Check for version conflict warnings
@@ -632,6 +650,7 @@ If you encounter issues not covered in this guide:
 ### Providing Feedback
 
 Your feedback helps improve the application:
+
 - Suggest new features
 - Report bugs or usability issues
 - Share your user experience
@@ -648,11 +667,12 @@ Contact your system administrator with feedback.
 - At least one uppercase letter (A-Z)
 - At least one lowercase letter (a-z)
 - At least one number (0-9)
-- At least one special character (!@#$%^&*()_+-=[]{}|;:,.<>?)
+- At least one special character (!@#$%^&\*()\_+-=[]{}|;:,.<>?)
 
 ### Timezone Information
 
 All timestamps use the **Africa/Douala** timezone:
+
 - Assigned At
 - Last Updated At
 - OTP expiry times

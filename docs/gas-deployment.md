@@ -11,6 +11,7 @@ This guide explains how to deploy the Google Apps Script backend to enable CORS 
 ## CORS and Google Apps Script
 
 Google Apps Script web apps **do support CORS** when deployed properly. The key is to:
+
 1. Deploy the web app with correct access settings
 2. Ensure the deployment URL ends in `/exec` (not `/dev`)
 3. Set access to "Anyone, even anonymous" for development
@@ -25,9 +26,10 @@ Google Apps Script web apps **do support CORS** when deployed properly. The key 
 
 ### Step 2: Copy GAS Files
 
-Copy all `.gs` files from the `/gas` directory to your Apps Script project:
+- Copy all `.gs` files from the `/gas` directory to your Apps Script project: (OR use `clasp push --project .clasp-prod.json`)
 
 **Required Files:**
+
 - `Main.gs` - Entry point (doPost/doGet)
 - `gas/utils/Router.gs`
 - `gas/utils/ResponseHandler.gs`
@@ -43,7 +45,7 @@ Copy all `.gs` files from the `/gas` directory to your Apps Script project:
 - `gas/handlers/MetadataHandler.gs`
 - `gas/handlers/FileHandler.gs`
 
-**Note:** Apps Script doesn't support folder structures, so all files go in the root. Remove the folder prefixes from file names if needed.
+**Note:** Apps Script doesn't support folder structures, so all files go in the root. Each file name will be prefixed with its folder name. e.g the ClientHandler.gs file is named handlers/ClientHandler.gs
 
 ### Step 3: Configure Script Properties
 
@@ -51,16 +53,17 @@ Copy all `.gs` files from the `/gas` directory to your Apps Script project:
 2. Scroll to **Script Properties**
 3. Add the following properties:
 
-| Property | Value | Description |
-|----------|-------|-------------|
-| `SPREADSHEET_ID` | Your Google Sheet ID | ID of the spreadsheet for storing users and metadata |
-| `CASES_FOLDER_ID` | Your Drive Folder ID | ID of the Google Drive folder for client files |
-| `ENCRYPTION_KEY` | Random secret key | Used for token encryption (generate a random 32-char string) |
-| `TOKEN_TTL_MINUTES` | `1440` | Auth token time-to-live (24 hours) |
-| `OTP_TTL_HOURS` | `2` | OTP time-to-live for password reset |
-| `APP_TIMEZONE` | `Africa/Douala` | Timezone for timestamps |
+| Property            | Value                | Description                                                  |
+| ------------------- | -------------------- | ------------------------------------------------------------ |
+| `SPREADSHEET_ID`    | Your Google Sheet ID | ID of the spreadsheet for storing users and metadata         |
+| `CASES_FOLDER_ID`   | Your Drive Folder ID | ID of the Google Drive folder for client files               |
+| `ENCRYPTION_KEY`    | Random secret key    | Used for token encryption (generate a random 32-char string) |
+| `TOKEN_TTL_MINUTES` | `1440`               | Auth token time-to-live (24 hours)                           |
+| `OTP_TTL_HOURS`     | `2`                  | OTP time-to-live for password reset                          |
+| `APP_TIMEZONE`      | `Africa/Douala`      | Timezone for timestamps                                      |
 
 **How to get IDs:**
+
 - **SPREADSHEET_ID**: Create a new Google Sheet, copy the ID from the URL: `https://docs.google.com/spreadsheets/d/SPREADSHEET_ID_HERE/edit`
 - **CASES_FOLDER_ID**: Create a new Google Drive folder, copy the ID from the URL: `https://drive.google.com/drive/folders/FOLDER_ID_HERE`
 - **ENCRYPTION_KEY**: Generate a random string (e.g., `openssl rand -hex 32` on Mac/Linux)
@@ -70,14 +73,16 @@ Copy all `.gs` files from the `/gas` directory to your Apps Script project:
 1. Open the Google Spreadsheet (using the SPREADSHEET_ID)
 2. Create two sheets:
    - **users** - For storing user accounts
-   - **caseMetadata** - For storing case information
+   - **metadata** - For storing case information
 
 **Users Sheet Columns (Row 1):**
+
 ```
 email | password | salt | type | role | status | verificationToken | verificationExpiry | otp | otpExpiry | url
 ```
 
-**CaseMetadata Sheet Columns (Row 1):**
+**metadata Sheet Columns (Row 1):**
+
 ```
 Case ID | Client First Name | Client Last Name | Client Email | Client Phone Number | Amount Paid | Payment Status | Folder Name | Folder Path | Assigned To | Assigned At | Last Updated By | Last Updated At | Tasks Remaining | Next Action | Comment | Due Date | status | version
 ```
@@ -112,6 +117,7 @@ Case ID | Client First Name | Client Last Name | Client Email | Client Phone Num
 
 1. Open the `.env` file in your frontend project root
 2. Update `VITE_GAS_API_URL` with the deployment URL:
+
    ```
    VITE_GAS_API_URL=https://script.google.com/macros/s/YOUR_DEPLOYMENT_ID/exec
    ```
@@ -131,6 +137,14 @@ Case ID | Client First Name | Client Last Name | Client Email | Client Phone Num
 
 ## CORS Configuration in GAS
 
+- I do not know if google is trying to block things or what, but ensure you have this header or else you will have CORS issues
+
+```
+'Content-Type': 'text/plain;charset=utf-8'
+```
+
+- This is a workaround for CORS issues. Follow the next steps if you still have issues
+
 Google Apps Script web apps deployed with `/exec` URLs automatically handle CORS correctly when:
 
 1. **Access is set to "Anyone"** or "Anyone, even anonymous"
@@ -144,6 +158,7 @@ Google Apps Script web apps deployed with `/exec` URLs automatically handle CORS
 **Cause**: Using the `/dev` URL instead of `/exec`
 
 **Solution**:
+
 - Ensure you deployed as a Web App (not just saved)
 - Use the `/exec` URL from the deployment, not the test URL
 
@@ -152,6 +167,7 @@ Google Apps Script web apps deployed with `/exec` URLs automatically handle CORS
 **Cause**: Deployment access settings are too restrictive
 
 **Solution**:
+
 - Redeploy with access set to "Anyone" or "Anyone, even anonymous"
 - Ensure "Execute as" is set to "Me"
 
@@ -160,6 +176,7 @@ Google Apps Script web apps deployed with `/exec` URLs automatically handle CORS
 **Cause**: Browser enforces CORS, Postman doesn't
 
 **Solution**:
+
 - Verify you're using the `/exec` URL
 - Check that deployment access is set to "Anyone"
 - Clear browser cache and try again
@@ -169,6 +186,7 @@ Google Apps Script web apps deployed with `/exec` URLs automatically handle CORS
 **Cause**: Missing `doPost` or `doGet` functions
 
 **Solution**:
+
 - Ensure `Main.gs` is included in your project
 - Verify `doPost` and `doGet` functions are defined
 
@@ -214,11 +232,13 @@ curl -X POST https://script.google.com/macros/s/YOUR_DEPLOYMENT_ID/exec \
 If you have clasp installed and configured:
 
 1. **Push your changes**:
+
    ```bash
    clasp push
    ```
 
 2. **Create a new version**:
+
    ```bash
    clasp version "Description of changes"
    ```
@@ -249,6 +269,7 @@ If you have clasp installed and configured:
 ### Verifying the Update
 
 After updating the deployment:
+
 1. Wait 1-2 minutes for Google's servers to propagate the update
 2. Clear your browser cache or use incognito mode
 3. Test the API endpoint to verify the changes are live
