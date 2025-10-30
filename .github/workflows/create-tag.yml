@@ -1,0 +1,71 @@
+name: Create Tag
+
+on:
+  workflow_dispatch:
+    inputs:
+      branch:
+        description: 'Branch to tag'
+        required: true
+        type: string
+        default: 'main'
+      tag:
+        description: 'Tag name (e.g., v1.0.0)'
+        required: true
+        type: string
+      message:
+        description: 'Tag message (optional)'
+        required: false
+        type: string
+        default: ''
+
+jobs:
+  create-tag:
+    runs-on: ubuntu-latest
+
+    steps:
+      - name: Checkout repository
+        uses: actions/checkout@v4
+        with:
+          ref: ${{ inputs.branch }}
+          fetch-depth: 0
+
+      - name: Configure Git
+        run: |
+          git config user.name "github-actions[bot]"
+          git config user.email "github-actions[bot]@users.noreply.github.com"
+
+      - name: Validate tag name
+        run: |
+          if [[ ! "${{ inputs.tag }}" =~ ^v?[0-9]+\.[0-9]+\.[0-9]+(-[a-zA-Z0-9]+)?$ ]]; then
+            echo "❌ Invalid tag format. Expected format: v1.0.0 or 1.0.0 (with optional -suffix)"
+            exit 1
+          fi
+          echo "✅ Tag format is valid"
+
+      - name: Check if tag already exists
+        run: |
+          if git rev-parse "${{ inputs.tag }}" >/dev/null 2>&1; then
+            echo "❌ Tag ${{ inputs.tag }} already exists"
+            exit 1
+          fi
+          echo "✅ Tag ${{ inputs.tag }} is available"
+
+      - name: Create and push tag
+        run: |
+          if [ -n "${{ inputs.message }}" ]; then
+            git tag -a "${{ inputs.tag }}" -m "${{ inputs.message }}"
+          else
+            git tag -a "${{ inputs.tag }}" -m "Release ${{ inputs.tag }}"
+          fi
+          git push origin "${{ inputs.tag }}"
+
+      - name: Summary
+        run: |
+          echo "### Tag Created Successfully ✅" >> $GITHUB_STEP_SUMMARY
+          echo "" >> $GITHUB_STEP_SUMMARY
+          echo "- **Tag:** \`${{ inputs.tag }}\`" >> $GITHUB_STEP_SUMMARY
+          echo "- **Branch:** \`${{ inputs.branch }}\`" >> $GITHUB_STEP_SUMMARY
+          echo "- **Commit:** \`$(git rev-parse HEAD)\`" >> $GITHUB_STEP_SUMMARY
+          if [ -n "${{ inputs.message }}" ]; then
+            echo "- **Message:** ${{ inputs.message }}" >> $GITHUB_STEP_SUMMARY
+          fi
