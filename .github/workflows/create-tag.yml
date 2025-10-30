@@ -9,7 +9,7 @@ on:
         type: string
         default: 'main'
       tag:
-        description: 'Tag name (e.g., v1.0.0)'
+        description: 'Tag name (e.g., client/bechem-1.0.0)'
         required: true
         type: string
       message:
@@ -37,13 +37,56 @@ jobs:
           git config user.name "github-actions[bot]"
           git config user.email "github-actions[bot]@users.noreply.github.com"
 
-      - name: Validate tag name
+      - name: Validate tag format and version
         run: |
-          if [[ ! "${{ inputs.tag }}" =~ ^v?[0-9]+\.[0-9]+\.[0-9]+(-[a-zA-Z0-9]+)?$ ]]; then
-            echo "❌ Invalid tag format. Expected format: v1.0.0 or 1.0.0 (with optional -suffix)"
+          BRANCH="${{ inputs.branch }}"
+          TAG="${{ inputs.tag }}"
+
+          # Expected format: branchName-version (e.g., client/bechem-1.0.0)
+          # Extract version from tag (everything after the last dash)
+          TAG_VERSION="${TAG##*-}"
+          # Extract branch name from tag (everything before the last dash)
+          TAG_BRANCH="${TAG%-*}"
+
+          echo "Branch: $BRANCH"
+          echo "Tag: $TAG"
+          echo "Extracted branch from tag: $TAG_BRANCH"
+          echo "Extracted version from tag: $TAG_VERSION"
+
+          # Validate that tag starts with branch name
+          if [[ "$TAG" != "$BRANCH-"* ]]; then
+            echo "❌ Tag must start with branch name. Expected format: $BRANCH-x.y.z"
+            echo "   Example: $BRANCH-1.0.0"
             exit 1
           fi
+
+          # Validate version format (x.y.z)
+          if [[ ! "$TAG_VERSION" =~ ^[0-9]+\.[0-9]+\.[0-9]+$ ]]; then
+            echo "❌ Invalid version format. Expected format: x.y.z (e.g., 1.0.0)"
+            exit 1
+          fi
+
+          # Read package.json version
+          if [ ! -f "package.json" ]; then
+            echo "❌ package.json not found in branch $BRANCH"
+            exit 1
+          fi
+
+          PACKAGE_VERSION=$(node -p "require('./package.json').version")
+
+          echo "Package.json version: $PACKAGE_VERSION"
+
+          # Compare versions
+          if [ "$TAG_VERSION" != "$PACKAGE_VERSION" ]; then
+            echo "❌ Version mismatch!"
+            echo "   Tag version: $TAG_VERSION"
+            echo "   package.json version: $PACKAGE_VERSION"
+            echo "   Tag must match package.json version on branch $BRANCH"
+            exit 1
+          fi
+
           echo "✅ Tag format is valid"
+          echo "✅ Version matches package.json ($PACKAGE_VERSION)"
 
       - name: Check if tag already exists
         run: |
