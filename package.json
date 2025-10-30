@@ -1,6 +1,6 @@
 {
-  "name": "fma-skeckit-app",
-  "version": "0.0.1",
+  "name": "fma-app",
+  "version": "1.0.0",
   "description": "Manages files and folders",
   "productName": "File Management App",
   "author": "mokwen <mokwen@groupon.com>",
