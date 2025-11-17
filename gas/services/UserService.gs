@@ -258,7 +258,11 @@ const UserService = {
       );
     }
 
-    if (!user.passwordResetOTP || user.passwordResetOTP !== otp) {
+    // Convert both to strings for comparison (Google Sheets may store as number)
+    const storedOTP = String(user.passwordResetOTP || '');
+    const providedOTP = String(otp);
+
+    if (!storedOTP || storedOTP !== providedOTP) {
       throw ResponseHandler.validationError(
         'Invalid OTP',
         'error.otp.invalid'
