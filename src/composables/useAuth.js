@@ -227,7 +227,7 @@ export function useAuth() {
 
       await authStore.resetPassword(email, otp, newPassword)
       notifySuccess('auth.passwordReset.success')
-      router.push({ name: 'login' })
+      // Note: Navigation handled by calling component (LoginPage manages its own view state)
     } catch (err) {
       error.value = err.message
       notifyApiError(err)

@@ -159,7 +159,13 @@ async function handleResetPassword(newPassword) {
 
   try {
     await resetPassword(resetEmail.value, resetOTP.value, newPassword)
-    // Router navigation handled in useAuth.resetPassword()
+
+    // Reset view to login form after successful password reset
+    currentView.value = 'login'
+
+    // Clear reset flow data
+    resetEmail.value = ''
+    resetOTP.value = ''
   } catch (err) {
     error.value = err.message || $t('error.unknown')
   }
