@@ -71,6 +71,24 @@ export default {
       success: "Password reset successfully. You can now log in with your new password.",
       backToLogin: "Back to login"
     },
+    verifyToken: {
+      title: "Verify Your Account",
+      instructions: "A verification code has been sent to your email address:",
+      tokenLabel: "Verification Code",
+      tokenHint: "Enter the code from your email",
+      tokenRequired: "Verification code is required",
+      tokenMinLength: "Please enter a valid verification code",
+      submitButton: "Verify Account",
+      resendLink: "Didn't receive the code? Resend",
+      backToLogin: "Go to Login",
+      success: "Account Verified!",
+      successMessage: "Your account has been successfully activated. You can now log in.",
+      successNotification: "Account verified successfully",
+      errorDefault: "Verification failed. Please check your code and try again.",
+      emailMissing: "Email address is missing. Please sign up again.",
+      resendSuccess: "A new verification code has been sent to your email.",
+      resendError: "Failed to resend verification code. Please try again."
+    },
     logout: "Log Out"
   },
   validation: {

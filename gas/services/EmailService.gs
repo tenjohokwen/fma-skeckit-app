@@ -26,42 +26,39 @@ const EmailService = {
   },
 
   /**
-   * Sends verification email to new user
+   * Sends verification email to new user with token (no link)
    * @param {string} email - User email address
    * @param {string} verificationToken - Verification token
    */
   sendVerificationEmail: function(email, verificationToken) {
     const appName = this.getAppName();
-    const baseUrl = this.getBaseUrl();
-    const verificationLink = baseUrl + '/#/verify-email?email=' +
-                            encodeURIComponent(email) +
-                            '&token=' + verificationToken;
 
     const subject = appName + ' - Verify Your Email';
 
     const htmlBody =
       '<div style="font-family: Arial, sans-serif; max-width: 600px; margin: 0 auto;">' +
       '<h2 style="color: #2563eb;">Welcome to ' + appName + '!</h2>' +
-      '<p>Thank you for signing up. Please verify your email address to complete your registration.</p>' +
-      '<p style="margin: 30px 0;">' +
-      '<a href="' + verificationLink + '" ' +
-      'style="background-color: #2563eb; color: white; padding: 12px 24px; ' +
-      'text-decoration: none; border-radius: 4px; display: inline-block;">' +
-      'Verify Email Address' +
-      '</a>' +
-      '</p>' +
-      '<p style="color: #64748b; font-size: 14px;">Or copy and paste this link into your browser:</p>' +
-      '<p style="color: #64748b; font-size: 12px; word-break: break-all;">' + verificationLink + '</p>' +
+      '<p>Thank you for signing up. Please use the verification code below to complete your registration.</p>' +
+      '<div style="background-color: #f1f5f9; padding: 20px; text-align: center; ' +
+      'border-radius: 8px; margin: 30px 0;">' +
+      '<p style="color: #64748b; font-size: 14px; margin: 0 0 10px 0;">Your Verification Code:</p>' +
+      '<span style="font-size: 24px; font-weight: bold; letter-spacing: 4px; color: #1e293b; ' +
+      'font-family: monospace;">' +
+      verificationToken +
+      '</span>' +
+      '</div>' +
+      '<p>Enter this code in the application to verify your email address and activate your account.</p>' +
       '<hr style="border: none; border-top: 1px solid #e2e8f0; margin: 30px 0;">' +
-      '<p style="color: #94a3b8; font-size: 12px;">This verification link will expire in 24 hours.</p>' +
+      '<p style="color: #94a3b8; font-size: 12px;">This verification code will expire in 24 hours.</p>' +
       '<p style="color: #94a3b8; font-size: 12px;">If you did not create this account, please ignore this email.</p>' +
       '</div>';
 
     const plainBody =
       'Welcome to ' + appName + '!\n\n' +
-      'Thank you for signing up. Please verify your email address by clicking the link below:\n\n' +
-      verificationLink + '\n\n' +
-      'This verification link will expire in 24 hours.\n\n' +
+      'Thank you for signing up. Please use the verification code below to complete your registration:\n\n' +
+      'VERIFICATION CODE: ' + verificationToken + '\n\n' +
+      'Enter this code in the application to verify your email address and activate your account.\n\n' +
+      'This verification code will expire in 24 hours.\n\n' +
       'If you did not create this account, please ignore this email.';
 
     try {
