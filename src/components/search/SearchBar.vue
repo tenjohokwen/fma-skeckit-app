@@ -169,16 +169,16 @@ const hasSearched = ref(false)
 // Computed
 const canSearch = computed(() => {
   if (searchTab.value === 'name') {
-    return firstName.value.trim() || lastName.value.trim()
+    return (firstName.value || '').trim() || (lastName.value || '').trim()
   } else {
-    return caseId.value.trim()
+    return (caseId.value || '').trim()
   }
 })
 
 // Methods
 function onNameSearchChange() {
   // Trigger debounced search automatically when typing
-  if (firstName.value.trim() || lastName.value.trim()) {
+  if ((firstName.value || '').trim() || (lastName.value || '').trim()) {
     hasSearched.value = true
     searchByName(firstName.value, lastName.value, false)
   } else {
@@ -189,7 +189,7 @@ function onNameSearchChange() {
 
 function onCaseIdSearchChange() {
   // Trigger debounced search automatically when typing
-  if (caseId.value.trim()) {
+  if ((caseId.value || '').trim()) {
     hasSearched.value = true
     searchByCaseId(caseId.value, false)
   } else {

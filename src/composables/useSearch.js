@@ -39,12 +39,16 @@ export function useSearch() {
       debounceTimer = null
     }
 
+    // Ensure params are strings (handle null from clearable inputs)
+    const firstNameStr = String(firstName || '')
+    const lastNameStr = String(lastName || '')
+
     // Store search params
-    lastSearch.value = { firstName, lastName, caseId: '' }
+    lastSearch.value = { firstName: firstNameStr, lastName: lastNameStr, caseId: '' }
     searchType.value = 'name'
 
     // Skip if both fields are empty
-    if (!firstName.trim() && !lastName.trim()) {
+    if (!firstNameStr.trim() && !lastNameStr.trim()) {
       searchResults.value = []
       searchError.value = null
       return
@@ -55,7 +59,7 @@ export function useSearch() {
       searchError.value = null
 
       try {
-        const response = await metadataApi.searchByName(firstName.trim(), lastName.trim())
+        const response = await metadataApi.searchByName(firstNameStr.trim(), lastNameStr.trim())
 
         // Update auth token if returned
         if (response.token) {
@@ -93,12 +97,15 @@ export function useSearch() {
       debounceTimer = null
     }
 
+    // Ensure param is a string (handle null from clearable inputs)
+    const caseIdStr = String(caseId || '')
+
     // Store search params
-    lastSearch.value = { firstName: '', lastName: '', caseId }
+    lastSearch.value = { firstName: '', lastName: '', caseId: caseIdStr }
     searchType.value = 'caseId'
 
     // Skip if empty
-    if (!caseId.trim()) {
+    if (!caseIdStr.trim()) {
       searchResults.value = []
       searchError.value = null
       return
@@ -109,7 +116,7 @@ export function useSearch() {
       searchError.value = null
 
       try {
-        const response = await metadataApi.searchByCaseId(caseId.trim())
+        const response = await metadataApi.searchByCaseId(caseIdStr.trim())
 
         // Update auth token if returned
         if (response.token) {
