@@ -81,9 +81,21 @@ const SheetsService = {
    * @returns {Object} Case metadata object
    */
   parseRow: function(row, rowIndex, includeSystemFields) {
+    // Remove leading apostrophe from caseId if present (used to force text format)
+    let caseId = String(row[0]);
+    if (caseId.startsWith("'")) {
+      caseId = caseId.substring(1);
+    }
+
+    // Remove leading apostrophe from caseName if present (used to force text format)
+    let caseName = String(row[1] || '');
+    if (caseName.startsWith("'")) {
+      caseName = caseName.substring(1);
+    }
+
     const caseData = {
-      caseId: row[0],          // A: caseId
-      caseName: row[1],        // B: caseName
+      caseId: caseId,          // A: caseId (strip apostrophe and force string)
+      caseName: caseName,      // B: caseName (strip apostrophe and force string)
       clientId: row[2],        // C: clientId (UUID)
       assignedTo: row[3],      // D: assignedTo
       caseType: row[4],        // E: caseType
@@ -168,7 +180,14 @@ const SheetsService = {
     // Skip header row
     for (let i = 1; i < data.length; i++) {
       const row = data[i];
-      if (row[0] === caseId) { // A: caseId
+      // Convert to strings and strip leading apostrophe for comparison
+      // Handle both old format (number conversion) and new format (apostrophe prefix)
+      let storedCaseId = String(row[0]);
+      if (storedCaseId.startsWith("'")) {
+        storedCaseId = storedCaseId.substring(1);
+      }
+
+      if (storedCaseId === String(caseId)) { // A: caseId
         // Exclude system-generated fields for search results
         return this.parseRow(row, i + 1, false);
       }
@@ -189,7 +208,14 @@ const SheetsService = {
     // Skip header row
     for (let i = 1; i < data.length; i++) {
       const row = data[i];
-      if (row[0] === caseId) { // A: caseId
+      // Convert to strings and strip leading apostrophe for comparison
+      // Handle both old format (number conversion) and new format (apostrophe prefix)
+      let storedCaseId = String(row[0]);
+      if (storedCaseId.startsWith("'")) {
+        storedCaseId = storedCaseId.substring(1);
+      }
+
+      if (storedCaseId === String(caseId)) { // A: caseId
         // Include system-generated fields for editing
         const caseData = this.parseRow(row, i + 1, true);
 
@@ -279,9 +305,11 @@ const SheetsService = {
     // ROW DATA: Include clientId in Column C
     // Feature 007: clientName column removed from metadata sheet
     // ========================================
+    // Prefix caseId and caseName with apostrophe to force text format and prevent scientific notation
+    // This prevents values like "33E26" from being converted to 3.3e+26
     const row = [
-      caseData.caseId,                       // A: caseId
-      caseData.caseName || '',               // B: caseName
+      "'" + caseData.caseId,                 // A: caseId (prefixed with ' to force text)
+      "'" + (caseData.caseName || ''),       // B: caseName (prefixed with ' to force text)
       caseData.clientId,                     // C: clientId (UUID)
       caseData.assignedTo || '',             // D: assignedTo
       caseData.caseType || '',               // E: caseType
