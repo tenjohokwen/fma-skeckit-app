@@ -68,7 +68,7 @@
               dense
               clearable
               :disable="isSearching"
-              @update:model-value="onCaseIdSearchChange"
+              @update:model-value="onCaseIdClear"
               @keyup.enter="handleSearch"
             >
               <template #prepend>
@@ -187,12 +187,9 @@ function onNameSearchChange() {
   }
 }
 
-function onCaseIdSearchChange() {
-  // Trigger debounced search automatically when typing
-  if ((caseId.value || '').trim()) {
-    hasSearched.value = true
-    searchByCaseId(caseId.value, false)
-  } else {
+function onCaseIdClear() {
+  // Only clear search results when field is cleared, don't auto-search
+  if (!(caseId.value || '').trim()) {
     clearSearch()
     hasSearched.value = false
   }
