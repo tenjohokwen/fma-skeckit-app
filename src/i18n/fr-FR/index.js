@@ -73,6 +73,24 @@ export default {
       success: "Mot de passe réinitialisé avec succès. Vous pouvez maintenant vous connecter avec votre nouveau mot de passe.",
       backToLogin: "Retour à la connexion"
     },
+    verifyToken: {
+      title: "Vérifier Votre Compte",
+      instructions: "Un code de vérification a été envoyé à votre adresse email:",
+      tokenLabel: "Code de Vérification",
+      tokenHint: "Entrez le code de votre email",
+      tokenRequired: "Le code de vérification est requis",
+      tokenMinLength: "Veuillez entrer un code de vérification valide",
+      submitButton: "Vérifier le Compte",
+      resendLink: "Vous n'avez pas reçu le code? Renvoyer",
+      backToLogin: "Aller à la Connexion",
+      success: "Compte Vérifié!",
+      successMessage: "Votre compte a été activé avec succès. Vous pouvez maintenant vous connecter.",
+      successNotification: "Compte vérifié avec succès",
+      errorDefault: "Échec de la vérification. Veuillez vérifier votre code et réessayer.",
+      emailMissing: "L'adresse email est manquante. Veuillez vous inscrire à nouveau.",
+      resendSuccess: "Un nouveau code de vérification a été envoyé à votre email.",
+      resendError: "Échec de l'envoi du code de vérification. Veuillez réessayer."
+    },
     logout: "Se Déconnecter"
   },
   validation: {

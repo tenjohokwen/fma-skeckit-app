@@ -56,17 +56,19 @@
  * SignUpPage.vue
  *
  * User registration page with email verification flow.
- * Shows success message after signup and prompts to check email.
+ * Redirects to token entry page after successful signup.
  *
  * Per constitution: Vue 3 Composition API with <script setup>
  */
 
 import { ref } from 'vue'
+import { useRouter } from 'vue-router'
 import { useI18n } from 'vue-i18n'
 import { useAuth } from 'src/composables/useAuth'
 import SignUpForm from 'src/components/auth/SignUpForm.vue'
 import ErrorDisplay from 'src/components/shared/ErrorDisplay.vue'
 
+const router = useRouter()
 const { t: $t } = useI18n()
 const { signup, isLoading } = useAuth()
 
@@ -84,6 +86,14 @@ async function handleSignup(credentials) {
   try {
     await signup(credentials)
     signupSuccess.value = true
+
+    // Redirect to token entry page with email in query
+    setTimeout(() => {
+      router.push({
+        name: 'verify-token',
+        query: { email: credentials.email }
+      })
+    }, 1500)
   } catch (err) {
     error.value = err.message || $t('error.unknown')
   }

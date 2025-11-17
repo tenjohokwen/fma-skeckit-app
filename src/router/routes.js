@@ -34,6 +34,12 @@ const routes = [
         name: 'verify-email',
         component: () => import('pages/auth/EmailVerificationPage.vue'),
         meta: { requiresAuth: false }
+      },
+      {
+        path: 'verify-token',
+        name: 'verify-token',
+        component: () => import('pages/auth/VerifyTokenPage.vue'),
+        meta: { requiresAuth: false }
       }
     ]
   },
