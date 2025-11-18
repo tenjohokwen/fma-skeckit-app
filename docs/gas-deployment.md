@@ -231,30 +231,62 @@ curl -X POST https://script.google.com/macros/s/YOUR_DEPLOYMENT_ID/exec \
 
 If you have clasp installed and configured:
 
-1. **Push your changes**:
+#### Client-Specific Deployment Accounts
 
+**IMPORTANT**: Different clients have different Google accounts for their Apps Script deployments.
+
+**For client/bechem branch:**
+- **Test Environment**: `softropicblessed@gmail.com`
+- **Production Environment**: `notaire.danielbechem7@gmail.com`
+
+#### Deploying to Test Environment
+
+1. **Login to test account**:
+   ```bash
+   clasp login
+   # Login with: softropicblessed@gmail.com
+   ```
+
+2. **Push your changes to test**:
    ```bash
    clasp push
    ```
 
-2. **Create a new version**:
-
-   ```bash
-   clasp version "Description of changes"
-   ```
-
 3. **Update the web app deployment**:
    - You MUST update the deployment through the Google Apps Script UI
-   - Go to https://script.google.com/home/projects/YOUR_SCRIPT_ID/deployments
-   - Or get your script ID: `cat .clasp.json | grep scriptId`
-   - Visit: https://script.google.com/home
-   - Find your project "FMA-Backend-API"
+   - Go to https://script.google.com/home
+   - Find your test project
    - Click **Deploy** > **Manage deployments**
    - Click the **edit icon** (pencil) next to your active web app deployment
    - Under **Version**: Select **New version** (choose the latest version number)
    - Click **Deploy**
 
-**IMPORTANT**: Simply running `clasp push` does NOT automatically update the web app! You must manually update the deployment to the new version through the UI.
+#### Deploying to Production Environment
+
+1. **Login to production account**:
+   ```bash
+   clasp login
+   # Login with: notaire.danielbechem7@gmail.com (for client/bechem branch)
+   ```
+
+2. **Push your changes to production**:
+   ```bash
+   clasp push --project .clasp-prod.json
+   ```
+
+3. **Update the web app deployment**:
+   - You MUST update the deployment through the Google Apps Script UI
+   - Go to https://script.google.com/home
+   - Find your production project
+   - Click **Deploy** > **Manage deployments**
+   - Click the **edit icon** (pencil) next to your active web app deployment
+   - Under **Version**: Select **New version** (choose the latest version number)
+   - Click **Deploy**
+
+**IMPORTANT**:
+- Simply running `clasp push` does NOT automatically update the web app! You must manually update the deployment to the new version through the UI.
+- Always test changes in the test environment before deploying to production.
+- The `.clasp.json` file points to the test environment, while `.clasp-prod.json` points to production.
 
 ### Method 2: Using Google Apps Script UI
 
