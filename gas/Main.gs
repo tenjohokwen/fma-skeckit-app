@@ -16,16 +16,16 @@
  * @returns {GoogleAppsScript.Content.TextOutput} JSON response
  */
 function doPost(e) {
-  return ResponseHandler.handle(function() {
+  return ResponseHandler.handle(function () {
     // Step 1: Validate request and authenticate user
-    const context = SecurityInterceptor.validateRequest(e);
+    const context = SecurityInterceptor.validateRequest(e)
 
     // Step 2: Route to appropriate handler
-    const result = Router.route(context);
+    const result = Router.route(context)
 
     // Step 3: Return result (ResponseHandler.handle wraps this)
-    return result;
-  });
+    return result
+  })
 }
 
 /**
@@ -34,16 +34,24 @@ function doPost(e) {
  * @returns {GoogleAppsScript.Content.TextOutput} JSON response
  */
 function doGet(e) {
+  const props = PropertiesService.getScriptProperties()
+
+  // Get environment and client from script properties
+  const environment = props.getProperty('ENV') || 'unknown'
+  const client = props.getProperty('CLIENT') || 'unknown'
+
   return ResponseHandler.success({
     status: 200,
     msgKey: 'health.ok',
     message: 'File Management System API is running',
     data: {
-      version: '1.0.0',
+      version: '1.0.1',
+      environment: environment,
+      client: client,
       timestamp: DateUtil.getCurrentTimestamp(),
-      timezone: DateUtil.getTimezone()
-    }
-  });
+      timezone: DateUtil.getTimezone(),
+    },
+  })
 }
 
 /**
@@ -51,68 +59,74 @@ function doGet(e) {
  * Run this manually in Apps Script editor to verify configuration
  */
 function testSetup() {
-  const props = PropertiesService.getScriptProperties();
+  const props = PropertiesService.getScriptProperties()
 
   const requiredProps = [
+    'ENV',
+    'CLIENT',
     'SPREADSHEET_ID',
     'CASES_FOLDER_ID',
     'ENCRYPTION_KEY',
     'TOKEN_TTL_MINUTES',
     'OTP_TTL_HOURS',
-    'APP_TIMEZONE'
-  ];
+    'APP_TIMEZONE',
+  ]
 
   const results = {
     configured: [],
-    missing: []
-  };
+    missing: [],
+  }
 
-  requiredProps.forEach(function(prop) {
-    const value = props.getProperty(prop);
+  requiredProps.forEach(function (prop) {
+    const value = props.getProperty(prop)
     if (value) {
-      results.configured.push(prop);
+      results.configured.push(prop)
     } else {
-      results.missing.push(prop);
+      results.missing.push(prop)
     }
-  });
+  })
 
-  console.log('Setup Test Results:');
-  console.log('Configured properties:', results.configured);
-  console.log('Missing properties:', results.missing);
+  console.log('Setup Test Results:')
+  console.log('Configured properties:', results.configured)
+  console.log('Missing properties:', results.missing)
 
   if (results.missing.length > 0) {
-    console.error('ERROR: Missing required properties. Please configure them in Project Settings.');
-    return false;
+    console.error('ERROR: Missing required properties. Please configure them in Project Settings.')
+    return false
   }
+
+  // Display environment and client information
+  console.log('Environment: ' + props.getProperty('ENV'))
+  console.log('Client: ' + props.getProperty('CLIENT'))
 
   // Test spreadsheet access
   try {
-    const ss = SpreadsheetApp.openById(props.getProperty('SPREADSHEET_ID'));
-    const usersSheet = ss.getSheetByName('users');
-    const metadataSheet = ss.getSheetByName('caseMetadata');
+    const ss = SpreadsheetApp.openById(props.getProperty('SPREADSHEET_ID'))
+    const usersSheet = ss.getSheetByName('users')
+    const metadataSheet = ss.getSheetByName('caseMetadata')
 
     if (!usersSheet || !metadataSheet) {
-      console.error('ERROR: Required sheets not found. Expected: users, caseMetadata');
-      return false;
+      console.error('ERROR: Required sheets not found. Expected: users, caseMetadata')
+      return false
     }
 
-    console.log('Spreadsheet access: OK');
+    console.log('Spreadsheet access: OK')
   } catch (error) {
-    console.error('ERROR: Cannot access spreadsheet:', error.message);
-    return false;
+    console.error('ERROR: Cannot access spreadsheet:', error.message)
+    return false
   }
 
   // Test Drive folder access
   try {
-    const folder = DriveApp.getFolderById(props.getProperty('CASES_FOLDER_ID'));
-    console.log('Drive folder access: OK (' + folder.getName() + ')');
+    const folder = DriveApp.getFolderById(props.getProperty('CASES_FOLDER_ID'))
+    console.log('Drive folder access: OK (' + folder.getName() + ')')
   } catch (error) {
-    console.error('ERROR: Cannot access Drive folder:', error.message);
-    return false;
+    console.error('ERROR: Cannot access Drive folder:', error.message)
+    return false
   }
 
-  console.log('All checks passed! Setup is complete.');
-  return true;
+  console.log('All checks passed! Setup is complete.')
+  return true
 }
 
 /**
@@ -120,10 +134,10 @@ function testSetup() {
  * Run this manually in Apps Script editor to see available endpoints
  */
 function listApiRoutes() {
-  const routes = Router.listRoutes();
-  console.log('Available API Routes:');
+  const routes = Router.listRoutes()
+  console.log('Available API Routes:')
 
-  Object.keys(routes).forEach(function(route) {
-    console.log(' - ' + route + ': ' + routes[route]);
-  });
+  Object.keys(routes).forEach(function (route) {
+    console.log(' - ' + route + ': ' + routes[route])
+  })
 }
