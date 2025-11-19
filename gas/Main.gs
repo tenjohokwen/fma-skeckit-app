@@ -45,7 +45,7 @@ function doGet(e) {
     msgKey: 'health.ok',
     message: 'File Management System API is running',
     data: {
-      version: '1.0.1',
+      version: '1.0.2',
       environment: environment,
       client: client,
       timestamp: DateUtil.getCurrentTimestamp(),
