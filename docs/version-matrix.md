@@ -1,6 +1,6 @@
 # Version Matrix
 
-Last Updated: 2025-11-18
+Last Updated: 2025-11-19
 
 | Client ID | Client Version | Core Version | Release Date | Status | Notes |
 |-----------|----------------|--------------|--------------|--------|-------|
@@ -9,3 +9,4 @@ Last Updated: 2025-11-18
 | bechem | v0.55 | v1.0.0 | 2025-10-27 | Production | Release via GitHub Actions |
 | bechem | v1.0.0 | v1.0.0 | 2025-10-30 | Production | Release via GitHub Actions |
 | bechem | v1.0.1 | v1.0.0 | 2025-11-18 | Production | Release via GitHub Actions |
+| bechem | v1.0.2 | v1.0.0 | 2025-11-19 | Production | Release via GitHub Actions |
