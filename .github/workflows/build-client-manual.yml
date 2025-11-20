@@ -55,11 +55,35 @@ jobs:
         uses: actions/download-artifact@v4
         with:
           path: release-artifacts
+          pattern: ${{ inputs.client }}-*-v${{ inputs.version }}
 
       - name: Display artifact structure
         run: |
           echo "Artifact directory structure:"
-          ls -R release-artifacts/
+          if [ -d "release-artifacts" ]; then
+            ls -R release-artifacts/
+            # Count actual artifact directories (exclude debug logs)
+            ARTIFACT_COUNT=$(find release-artifacts -mindepth 1 -maxdepth 1 -type d ! -name 'npm-debug-log-*' | wc -l)
+            echo "Found $ARTIFACT_COUNT artifact(s)"
+            if [ "$ARTIFACT_COUNT" -eq 0 ]; then
+              echo "ERROR: No build artifacts found. Build may have failed."
+              exit 1
+            fi
+          else
+            echo "ERROR: No release-artifacts directory found"
+            echo "Available files in current directory:"
+            ls -la
+            exit 1
+          fi
+
+      - name: Flatten artifacts for release
+        run: |
+          echo "Flattening artifact structure..."
+          mkdir -p release-files
+          # Copy all files from artifact subdirectories to release-files
+          find release-artifacts -type f \( -name '*.dmg' -o -name '*.exe' -o -name '*.AppImage' -o -name '*.zip' \) -exec cp {} release-files/ \;
+          echo "Files to release:"
+          ls -lh release-files/
 
       - name: Create GitHub Release
         uses: softprops/action-gh-release@v1
@@ -68,7 +92,7 @@ jobs:
           name: ${{ inputs.client }} v${{ inputs.version }}
           draft: false
           prerelease: false
-          files: release-artifacts/**/*
+          files: release-files/*
           generate_release_notes: true
           body: |
             ## ${{ inputs.client }} v${{ inputs.version }}
