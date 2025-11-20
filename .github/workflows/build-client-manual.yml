@@ -41,7 +41,7 @@ jobs:
     name: Create GitHub Release
     needs: build
     runs-on: ubuntu-latest
-    if: inputs.release == true
+    if: inputs.release == true && needs.build.result == 'success'
     permissions:
       contents: write
 
@@ -51,28 +51,73 @@ jobs:
         with:
           ref: client/${{ inputs.client }}
 
+      - name: List all available artifacts (diagnostic)
+        uses: actions/github-script@v7
+        with:
+          script: |
+            const artifacts = await github.rest.actions.listWorkflowRunArtifacts({
+              owner: context.repo.owner,
+              repo: context.repo.repo,
+              run_id: context.runId,
+            });
+            console.log('=== All Artifacts in this Workflow Run ===');
+            if (artifacts.data.artifacts.length === 0) {
+              console.log('❌ No artifacts found in this workflow run!');
+              console.log('This means the build job did not upload any artifacts.');
+            } else {
+              console.log(`Found ${artifacts.data.artifacts.length} artifact(s):`);
+              artifacts.data.artifacts.forEach(artifact => {
+                console.log(`  - ${artifact.name} (${artifact.size_in_bytes} bytes)`);
+              });
+            }
+
       - name: Download all artifacts
+        id: download-artifacts
         uses: actions/download-artifact@v4
         with:
           path: release-artifacts
           pattern: ${{ inputs.client }}-*-v${{ inputs.version }}
+          merge-multiple: false
 
       - name: Display artifact structure
         run: |
-          echo "Artifact directory structure:"
+          echo "=== Artifact Download Diagnostics ==="
+          echo "Expected pattern: ${{ inputs.client }}-*-v${{ inputs.version }}"
+          echo "Examples: ${{ inputs.client }}-mac-v${{ inputs.version }}, ${{ inputs.client }}-win-v${{ inputs.version }}, ${{ inputs.client }}-linux-v${{ inputs.version }}"
+          echo ""
+          echo "Current directory contents:"
+          ls -la
+          echo ""
+
           if [ -d "release-artifacts" ]; then
+            echo "✓ release-artifacts directory exists"
+            echo "Directory structure:"
             ls -R release-artifacts/
+
             # Count actual artifact directories (exclude debug logs)
             ARTIFACT_COUNT=$(find release-artifacts -mindepth 1 -maxdepth 1 -type d ! -name 'npm-debug-log-*' | wc -l)
-            echo "Found $ARTIFACT_COUNT artifact(s)"
+            echo ""
+            echo "Found $ARTIFACT_COUNT build artifact(s)"
+
             if [ "$ARTIFACT_COUNT" -eq 0 ]; then
-              echo "ERROR: No build artifacts found. Build may have failed."
+              echo ""
+              echo "ERROR: No build artifacts found!"
+              echo "This usually means:"
+              echo "  1. The build job failed (check build job logs above)"
+              echo "  2. No platforms were built (check platform filter)"
+              echo "  3. Artifact names don't match the expected pattern"
               exit 1
             fi
           else
-            echo "ERROR: No release-artifacts directory found"
-            echo "Available files in current directory:"
-            ls -la
+            echo "✗ release-artifacts directory does NOT exist"
+            echo ""
+            echo "ERROR: actions/download-artifact did not create the directory"
+            echo "This means NO artifacts matched the pattern: ${{ inputs.client }}-*-v${{ inputs.version }}"
+            echo ""
+            echo "Possible causes:"
+            echo "  1. Build job failed before uploading artifacts"
+            echo "  2. Version mismatch in artifact names"
+            echo "  3. Client name mismatch in artifact names"
             exit 1
           fi
 
