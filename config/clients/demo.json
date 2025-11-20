@@ -1,0 +1,30 @@
+{
+  "clientId": "demo",
+  "displayName": "Demo",
+  "branding": {
+    "appName": "FMA Skeckit - Demo",
+    "logo": "branding/bechem/logo.png",
+    "icon": "branding/bechem/icons/icon.png",
+    "primaryColor": "#1E3A8A",
+    "secondaryColor": "#3B82F6"
+  },
+  "apiEndpoints": {
+    "baseUrl": "https://api-bechem.fmaskeckit.com",
+    "authUrl": "https://auth-bechem.fmaskeckit.com"
+  },
+  "features": {
+    "dashboard": true,
+    "advancedAnalytics": true,
+    "clientSearch": false,
+    "exportFeatures": true
+  },
+  "version": {
+    "client": "1.0.2",
+    "core": "1.0.2"
+  },
+  "metadata": {
+    "contactEmail": "support@demo.example.com",
+    "region": "Cameroon",
+    "industry": "Financial Services"
+  }
+}
